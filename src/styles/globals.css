@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Mapeo a HSL para shadcn — corresponde a nuestra paleta neutral cálida */
+    --background: 60 9% 98%;          /* neutral-50 */
+    --foreground: 24 10% 10%;         /* neutral-900 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 24 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 10% 10%;
+
+    --muted: 60 5% 96%;               /* neutral-100 */
+    --muted-foreground: 25 5% 45%;    /* neutral-500 */
+
+    --border: 20 6% 90%;              /* neutral-200 */
+    --input: 20 6% 90%;
+    --ring: 8 100% 61%;               /* primary-500 */
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    --background: 24 10% 10%;
+    --foreground: 60 9% 98%;
+
+    --card: 24 10% 14%;
+    --card-foreground: 60 9% 98%;
+
+    --popover: 24 10% 14%;
+    --popover-foreground: 60 9% 98%;
+
+    --muted: 24 6% 20%;
+    --muted-foreground: 25 5% 65%;
+
+    --border: 24 6% 20%;
+    --input: 24 6% 20%;
+    --ring: 8 100% 61%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  /* Inputs sin estilos nativos feos en iOS */
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+  }
+
+  /* Scrollbars sutiles en desktop */
+  @media (pointer: fine) {
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: theme(colors.neutral.300);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: theme(colors.neutral.400);
+    }
+  }
+
+  /* Focus ring consistente */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  /* Helpers semánticos del proyecto */
+  .container-shop {
+    @apply mx-auto w-full max-w-screen-sm px-4;
+  }
+
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Scroll horizontal "snap" para carruseles de categorías */
+  .scroll-snap-x {
+    @apply flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory;
+    scrollbar-width: none;
+  }
+  .scroll-snap-x::-webkit-scrollbar {
+    display: none;
+  }
+  .scroll-snap-x > * {
+    @apply snap-start shrink-0;
+  }
+
+  /* Skeleton loading */
+  .skeleton {
+    @apply animate-pulse-soft rounded-md bg-neutral-200/70;
+  }
+}
