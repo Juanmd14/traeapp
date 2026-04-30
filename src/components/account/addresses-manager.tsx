@@ -56,6 +56,7 @@ export function AddressesManager({ initial }: Props) {
       let next = idx >= 0
         ? prev.map((a) => (a.id === updated.id ? updated : a))
         : [...prev, updated];
+      // Si es default, marcar las demás como no-default
       if (updated.is_default) {
         next = next.map((a) =>
           a.id === updated.id ? a : { ...a, is_default: false },
@@ -90,6 +91,7 @@ export function AddressesManager({ initial }: Props) {
         )}
       </div>
 
+      {/* Form de nueva */}
       {editingId === "new" && (
         <AddressForm
           onCancel={() => setEditingId(null)}
@@ -97,6 +99,7 @@ export function AddressesManager({ initial }: Props) {
         />
       )}
 
+      {/* Lista */}
       {addresses.length === 0 && editingId !== "new" ? (
         <div className="bg-white border border-neutral-200 rounded-xl p-10 text-center">
           <div className="size-14 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-3">

@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { authAction } from "./safe-action";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 const updateProfileSchema = z.object({
   fullName: z.string().min(2, "Ingresá tu nombre").max(80),
@@ -34,9 +35,13 @@ export const updateProfileAction = authAction
     return { ok: true };
   });
 
+/**
+ * Sube avatar al bucket 'avatars' y guarda la URL en profiles.
+ * El archivo se guarda como `{user_id}/avatar.jpg`.
+ */
 export const uploadAvatarAction = authAction
   .schema(z.object({
-    avatarBase64: z.string(),
+    avatarBase64: z.string(),  // data URL: "data:image/jpeg;base64,...."
   }))
   .action(async ({ parsedInput, ctx }) => {
     const userId = ctx.session.id;
@@ -67,6 +72,7 @@ export const uploadAvatarAction = authAction
       .from("avatars")
       .getPublicUrl(path);
 
+    // Append timestamp para invalidar cache del browser después de update
     const url = `${publicUrl.publicUrl}?t=${Date.now()}`;
 
     const { error: updateErr } = await supabaseAdmin

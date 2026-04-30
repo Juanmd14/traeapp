@@ -198,3 +198,40 @@ export const publishStoreAction = authAction
     revalidatePath("/comercio", "layout");
     return { ok: true };
   });
+
+/**
+ * Pausa o reactiva la tienda — toggle entre 'active' y 'paused'.
+ * Cuando está 'paused', no aparece en el marketplace y no recibe pedidos.
+ */
+export const toggleStoreStatusAction = authAction
+  .schema(z.object({
+    storeId: z.string().uuid(),
+    pause: z.boolean(),
+  }))
+  .action(async ({ parsedInput, ctx }) => {
+    const supabase = createClient();
+    const { data: membership } = await supabase
+      .from("store_users")
+      .select("role")
+      .eq("store_id", parsedInput.storeId)
+      .eq("user_id", ctx.session.id)
+      .eq("is_active", true)
+      .single();
+
+    if (!membership && ctx.session.role !== "admin") {
+      throw new Error("No tenés permiso sobre este comercio");
+    }
+
+    const newStatus = parsedInput.pause ? "paused" : "active";
+
+    const { error } = await supabaseAdmin
+      .from("stores")
+      .update({ status: newStatus })
+      .eq("id", parsedInput.storeId);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/", "layout");
+    revalidatePath("/comercio", "layout");
+    return { ok: true, newStatus };
+  });
