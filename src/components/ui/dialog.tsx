@@ -3,6 +3,7 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 export const Dialog = DialogPrimitive.Root;
@@ -18,13 +19,13 @@ export const DialogOverlay = React.forwardRef<
     ref={ref}
     className={cn(
       "fixed inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm",
-      "data-[state=open]:animate-in data-[state=open]:fade-in-0",
-      "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
+      "data-[state=open]:animate-fade-in",
       className,
     )}
     {...props}
   />
 ));
+
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 export const DialogContent = React.forwardRef<
@@ -33,40 +34,40 @@ export const DialogContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed z-50 bg-white shadow-elevated",
-        // Mobile: bottom sheet
-        "inset-x-0 bottom-0 rounded-t-2xl px-4 pb-6 pt-5",
-        // Desktop: centered dialog
-        "sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%]",
-        "sm:bottom-auto sm:inset-x-auto sm:rounded-xl sm:max-w-md sm:w-full sm:p-6",
-        "data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-4 data-[state=open]:fade-in-0",
-        "data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-4 data-[state=closed]:fade-out-0",
-        "sm:data-[state=open]:slide-in-from-bottom-0 sm:data-[state=open]:zoom-in-95",
-        "sm:data-[state=closed]:slide-out-to-bottom-0 sm:data-[state=closed]:zoom-out-95",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-      <DialogPrimitive.Close
-        className="absolute right-3 top-3 size-8 rounded-md hover:bg-neutral-100 inline-flex items-center justify-center text-neutral-500 transition"
-        aria-label="Cerrar"
+
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
+      <DialogPrimitive.Content
+        ref={ref}
+        className={cn(
+          "relative w-full max-w-md bg-white shadow-elevated",
+          "rounded-t-2xl sm:rounded-xl",
+          "px-4 pb-6 pt-5 sm:p-6",
+          "max-h-[90vh] overflow-y-auto",
+          "data-[state=open]:animate-slide-up",
+          className,
+        )}
+        {...props}
       >
-        <X className="size-4" />
-      </DialogPrimitive.Close>
-    </DialogPrimitive.Content>
+        {children}
+
+        <DialogPrimitive.Close
+          className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-md text-neutral-500 transition hover:bg-neutral-100"
+          aria-label="Cerrar"
+        >
+          <X className="size-4" />
+        </DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+    </div>
   </DialogPortal>
 ));
+
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 export const DialogHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("space-y-1 mb-4", className)} {...props} />
+  <div className={cn("mb-4 space-y-1 pr-8", className)} {...props} />
 );
 
 export const DialogTitle = React.forwardRef<
@@ -79,6 +80,7 @@ export const DialogTitle = React.forwardRef<
     {...props}
   />
 ));
+
 DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
 export const DialogDescription = React.forwardRef<
@@ -91,4 +93,6 @@ export const DialogDescription = React.forwardRef<
     {...props}
   />
 ));
-DialogDescription.displayName = DialogPrimitive.Description.displayName;
+
+DialogDescription.displayName =
+  DialogPrimitive.Description.displayName;
