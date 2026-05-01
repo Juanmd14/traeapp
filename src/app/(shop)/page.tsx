@@ -27,7 +27,7 @@ export default async function HomePage() {
       .limit(20),
   ]);
 
-  const mappedCategories: Category[] = (categories ?? []).map((c) => ({
+  const mappedCategories: Category[] = ((categories ?? []) as any[]).map((c) => ({
     slug: c.slug,
     name: c.name,
     emoji: c.emoji ?? "🏪",
