@@ -6,7 +6,7 @@ import { PromoBanner } from "@/components/shop/promo-banner";
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const [{ data: categories }, { data: stores }] = await Promise.all([
     supabase
