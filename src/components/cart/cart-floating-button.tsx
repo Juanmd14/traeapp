@@ -1,16 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCart } from "@/stores/cart";
 import { formatPrice } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
 
+const HIDDEN_ROUTES = ["/carrito", "/checkout", "/pedido"];
+
 export function CartFloatingButton() {
+  const pathname = usePathname();
   const items = useCart((s) => s.items);
   const itemCount = useCart((s) => s.getItemCount());
   const total = useCart((s) => s.getTotal());
 
   if (items.length === 0) return null;
+
+  if (HIDDEN_ROUTES.some((route) => pathname.startsWith(route))) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-20 sm:bottom-6 inset-x-0 z-30 px-4 pointer-events-none">

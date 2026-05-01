@@ -13,6 +13,7 @@ export default async function PerfilPage() {
         email: session.email,
         phone: session.phone,
         avatarUrl: session.avatarUrl,
+        role: session.role,
       }}
     />
   );

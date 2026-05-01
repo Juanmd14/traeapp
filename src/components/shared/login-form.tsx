@@ -141,9 +141,9 @@ export function LoginForm() {
           id="token"
           inputMode="numeric"
           autoComplete="one-time-code"
-          maxLength={6}
+          maxLength={8}
           autoFocus
-          placeholder="123456"
+          placeholder="12345678"
           className="text-center text-heading-lg tracking-widest font-medium"
           invalid={!!otpForm.formState.errors.token}
           {...otpForm.register("token")}

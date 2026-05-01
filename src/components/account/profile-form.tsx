@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Camera, LogOut, MapPin, ClipboardList, ChevronRight } from "lucide-react";
+import { Camera, LogOut, MapPin, ClipboardList, ChevronRight, Store } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ type Props = {
     email: string | null;
     phone: string | null;
     avatarUrl: string | null;
+    role: string;
   };
 };
 
@@ -247,6 +248,24 @@ export function ProfileForm({ initial }: Props) {
           </div>
           <ChevronRight className="size-5 text-neutral-400" />
         </Link>
+
+        {(initial.role === "store_owner" || initial.role === "store_staff" || initial.role === "admin") && (
+          <Link
+            href="/comercio/pedidos"
+            className="flex items-center justify-between bg-white border border-neutral-200 rounded-md p-4 hover:bg-neutral-50 transition"
+          >
+            <div className="flex items-center gap-3">
+              <div className="size-9 bg-warning-100 text-warning-700 rounded-md flex items-center justify-center">
+                <Store className="size-5" />
+              </div>
+              <div>
+                <p className="text-body-md font-medium text-neutral-900">Panel del comercio</p>
+                <p className="text-body-xs text-neutral-500">Pedidos, productos y más</p>
+              </div>
+            </div>
+            <ChevronRight className="size-5 text-neutral-400" />
+          </Link>
+        )}
       </section>
 
       {/* Logout */}

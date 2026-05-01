@@ -46,7 +46,6 @@ export function OnboardingBasicForm({ categories }: Props) {
         return;
       }
       if (result?.data?.ok) {
-        // Avanza al paso 2 con el storeId
         router.push(`/comercio/onboarding/direccion?storeId=${result.data.storeId}`);
       }
     });
@@ -84,10 +83,12 @@ export function OnboardingBasicForm({ categories }: Props) {
               <button
                 key={cat.id}
                 type="button"
-                onClick={() => form.setValue("categoryId", cat.id, { shouldValidate: true })}
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-md border text-body-md transition ${
+                onClick={() =>
+                  form.setValue("categoryId", cat.id, { shouldValidate: true })
+                }
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-md border-2 text-body-md transition-all ${
                   isSelected
-                    ? "border-primary-600 bg-primary-50 text-primary-700 font-medium"
+                    ? "border-accent-500 bg-accent-50 text-accent-800 font-medium ring-2 ring-accent-100"
                     : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
                 }`}
               >

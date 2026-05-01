@@ -19,7 +19,7 @@ export type LoginInput = z.infer<typeof loginSchema>;
 
 export const otpSchema = z.object({
   email: emailSchema,
-  token: z.string().length(6, "El código tiene 6 dígitos"),
+  token: z.string().min(6, "Código inválido").max(8, "Código inválido"),
 });
 export type OtpInput = z.infer<typeof otpSchema>;
 

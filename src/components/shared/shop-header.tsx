@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Search, User } from "lucide-react";
+import { MapPin, Search, User, Store } from "lucide-react";
 import { getSession } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
@@ -44,23 +44,45 @@ export async function ShopHeader() {
           </Link>
 
           {session ? (
-            <Link
-              href="/perfil"
-              className="size-9 rounded-full overflow-hidden bg-primary-600 text-white flex items-center justify-center font-medium text-body-md shrink-0 ml-2 relative"
-              aria-label="Mi perfil"
-            >
-              {session.avatarUrl ? (
-                <Image
-                  src={session.avatarUrl}
-                  alt=""
-                  fill
-                  sizes="36px"
-                  className="object-cover"
-                />
-              ) : (
-                <span>{session.fullName.charAt(0).toUpperCase()}</span>
+            <div className="flex items-center gap-2 ml-2 shrink-0">
+              {(session.role === "store_owner" ||
+                session.role === "store_staff" ||
+                session.role === "admin") && (
+                <Link
+                  href="/comercio/pedidos"
+                  className="inline-flex items-center gap-1.5 text-body-sm font-medium bg-primary-50 text-primary-700 hover:bg-primary-100 border border-primary-200 transition rounded-full size-9 sm:size-auto sm:px-3 sm:py-1.5 justify-center"
+                  aria-label="Mi comercio"
+                >
+                  <Store className="size-4" />
+                  <span className="hidden sm:inline">Mi comercio</span>
+                </Link>
               )}
-            </Link>
+            <Link
+  href="/perfil"
+  className="group flex items-center gap-2.5 px-2 py-1 rounded-full hover:bg-neutral-100 transition"
+  aria-label="Mi perfil"
+>
+  <div className="text-right hidden sm:block">
+    <p className="text-[11px] text-neutral-500 leading-tight">Hola</p>
+    <p className="text-body-sm font-medium text-neutral-900 leading-tight group-hover:text-primary-700 transition">
+      {session.fullName.split(" ")[0]}
+    </p>
+  </div>
+  <div className="size-9 rounded-full overflow-hidden bg-primary-100 text-primary-700 flex items-center justify-center font-medium text-body-md relative ring-2 ring-primary-500 ring-offset-2 ring-offset-white group-hover:ring-primary-600 transition">
+    {session.avatarUrl ? (
+      <Image
+        src={session.avatarUrl}
+        alt=""
+        fill
+        sizes="36px"
+        className="object-cover"
+      />
+    ) : (
+      <span>{session.fullName.charAt(0).toUpperCase()}</span>
+    )}
+  </div>
+</Link>
+            </div>
           ) : (
             <Link
               href="/login?next=/"

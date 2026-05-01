@@ -51,16 +51,15 @@ export function KdsOrderCard({ order, items, variant }: Props) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  // Tiempo desde creación
-  const [elapsed, setElapsed] = useState(() => Math.floor(
-    (Date.now() - new Date(order.created_at).getTime()) / 60000,
-  ));
+  const [elapsed, setElapsed] = useState(() =>
+    Math.floor((Date.now() - new Date(order.created_at).getTime()) / 60000),
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setElapsed(Math.floor(
-        (Date.now() - new Date(order.created_at).getTime()) / 60000,
-      ));
+      setElapsed(
+        Math.floor((Date.now() - new Date(order.created_at).getTime()) / 60000),
+      );
     }, 30_000);
     return () => clearInterval(interval);
   }, [order.created_at]);
@@ -103,7 +102,8 @@ export function KdsOrderCard({ order, items, variant }: Props) {
     ready: "bg-accent-50 border-accent-200",
   };
 
-  const isMpApproved = order.payment_method === "mercadopago" && order.payment_status === "approved";
+  const isMpApproved =
+    order.payment_method === "mercadopago" && order.payment_status === "approved";
 
   return (
     <>
@@ -176,7 +176,9 @@ export function KdsOrderCard({ order, items, variant }: Props) {
               </ul>
             ) : (
               <p className="line-clamp-2">
-                {items.map((it) => `${it.quantity}× ${it.product_name}`).join(" · ")}
+                {items
+                  .map((it) => `${it.quantity}× ${it.product_name}`)
+                  .join(" · ")}
               </p>
             )}
             <button
@@ -184,14 +186,17 @@ export function KdsOrderCard({ order, items, variant }: Props) {
               className="mt-1 text-body-xs font-medium text-neutral-500 hover:text-neutral-900 inline-flex items-center gap-0.5 transition"
             >
               <ChevronDown
-                className={cn("size-3 transition-transform", expanded && "rotate-180")}
+                className={cn(
+                  "size-3 transition-transform",
+                  expanded && "rotate-180",
+                )}
               />
               {expanded ? "Cerrar" : "Ver detalle"}
             </button>
           </div>
         )}
 
-        {/* Dirección y notas (siempre visibles si expandido) */}
+        {/* Dirección y notas */}
         {expanded && (
           <div className="border-t border-neutral-200/70 pt-2 space-y-1.5">
             <p className="text-body-xs text-neutral-500 uppercase tracking-wider">
@@ -215,7 +220,7 @@ export function KdsOrderCard({ order, items, variant }: Props) {
           </p>
         )}
 
-        {/* Acciones según variante */}
+        {/* Acciones */}
         {variant === "new" && (
           <div className="flex gap-2 pt-1">
             <Button
@@ -264,7 +269,8 @@ export function KdsOrderCard({ order, items, variant }: Props) {
           <DialogHeader>
             <DialogTitle>¿Por qué rechazás este pedido?</DialogTitle>
             <DialogDescription>
-              El cliente va a recibir tu motivo. Si pagó con Mercado Pago, se le reintegra automáticamente.
+              El cliente va a recibir tu motivo. Si pagó con Mercado Pago, se le
+              reintegra automáticamente.
             </DialogDescription>
           </DialogHeader>
 
@@ -273,9 +279,9 @@ export function KdsOrderCard({ order, items, variant }: Props) {
               <label
                 key={r}
                 className={cn(
-                  "flex items-center gap-3 p-3 border-2 rounded-md cursor-pointer transition",
+                  "flex items-center gap-3 p-3 border-2 rounded-md cursor-pointer transition-all",
                   rejectReason === r
-                    ? "border-primary-600 bg-primary-50"
+                    ? "border-accent-500 bg-accent-50 ring-2 ring-accent-100"
                     : "border-neutral-200 hover:border-neutral-300",
                 )}
               >
@@ -285,7 +291,7 @@ export function KdsOrderCard({ order, items, variant }: Props) {
                   value={r}
                   checked={rejectReason === r}
                   onChange={() => setRejectReason(r)}
-                  className="accent-primary-600"
+                  className="accent-accent-600"
                 />
                 <span className="text-body-md">{r}</span>
               </label>
@@ -310,7 +316,9 @@ export function KdsOrderCard({ order, items, variant }: Props) {
 
           <div className="flex gap-2 mt-4">
             <DialogClose asChild>
-              <Button variant="ghost" fullWidth>Cancelar</Button>
+              <Button variant="ghost" fullWidth>
+                Cancelar
+              </Button>
             </DialogClose>
             <Button
               variant="destructive"
