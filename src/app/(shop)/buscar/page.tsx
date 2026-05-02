@@ -10,39 +10,68 @@ type Props = {
   searchParams: { q?: string };
 };
 
+type ProductWithStore = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  compare_at_price: number | null;
+  image_url: string | null;
+  is_available: boolean;
+  stores: {
+    id: string;
+    name: string;
+    slug: string;
+    status: string;
+    delivery_fee: number;
+    min_order_amount: number;
+  } | null;
+};
+
 export default async function BuscarPage({ searchParams }: Props) {
   const q = searchParams.q?.trim() ?? "";
   const supabase = createClient();
 
   let stores: any[] = [];
-  let products: any[] = [];
+  let products: ProductWithStore[] = [];
 
   if (q.length >= 2) {
-    // Buscar comercios
+    // 🔎 Comercios
     const { data: storeResults } = await supabase
       .from("stores")
-      .select("id, name, slug, description, logo_url, cover_url, delivery_fee, avg_delivery_minutes, rating, review_count, min_order_amount, status")
+      .select(
+        "id, name, slug, description, logo_url, cover_url, delivery_fee, avg_delivery_minutes, rating, review_count, min_order_amount, status"
+      )
       .eq("status", "active")
       .or(`name.ilike.%${q}%,description.ilike.%${q}%`)
       .limit(6);
 
     stores = storeResults ?? [];
 
-    // Buscar productos
+    // 🔎 Productos (FIX acá)
     const { data: productResults } = await supabase
       .from("products")
       .select(`
         id, name, description, price, compare_at_price, image_url, is_available,
-        stores ( id, name, slug, status )
+        stores (
+          id,
+          name,
+          slug,
+          status,
+          delivery_fee,
+          min_order_amount
+        )
       `)
       .eq("is_active", true)
       .eq("is_available", true)
       .or(`name.ilike.%${q}%,description.ilike.%${q}%`)
       .limit(12);
 
-    products = (productResults ?? []).filter(
-      (p: any) => p.stores?.status === "active"
-    );
+   const typedProducts = (productResults ?? []) as ProductWithStore[];
+
+products = typedProducts.filter(
+  (p) => p.stores?.status === "active"
+);
   }
 
   const hasResults = stores.length > 0 || products.length > 0;
@@ -77,7 +106,8 @@ export default async function BuscarPage({ searchParams }: Props) {
       ) : (
         <div className="space-y-8">
           <h1 className="text-heading-xl font-semibold text-neutral-900">
-            Resultados para <span className="text-primary-600">"{q}"</span>
+            Resultados para{" "}
+            <span className="text-primary-600">"{q}"</span>
           </h1>
 
           {/* Comercios */}
@@ -101,7 +131,7 @@ export default async function BuscarPage({ searchParams }: Props) {
                 Productos
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {products.map((product: any) => (
+                {products.map((product) => (
                   <div key={product.id} className="space-y-1">
                     <p className="text-body-xs text-neutral-500 truncate px-1">
                       en{" "}
@@ -112,6 +142,7 @@ export default async function BuscarPage({ searchParams }: Props) {
                         {product.stores?.name}
                       </a>
                     </p>
+
                     <ProductCard
                       product={{
                         id: product.id,
@@ -125,6 +156,8 @@ export default async function BuscarPage({ searchParams }: Props) {
                       storeId={product.stores?.id ?? ""}
                       storeSlug={product.stores?.slug ?? ""}
                       storeName={product.stores?.name ?? ""}
+                      deliveryFee={product.stores?.delivery_fee ?? 0}
+                      minOrderAmount={product.stores?.min_order_amount ?? 0}
                     />
                   </div>
                 ))}
