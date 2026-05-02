@@ -28,7 +28,6 @@ function mergeOrder(existing: StoreOrderRow, patch: OrderPatch): StoreOrderRow {
   return { ...existing, ...patch };
 }
 
-/** Firma estable para detectar cuando el SSR trae datos nuevos (p. ej. tras router.refresh()). */
 function ordersSyncKey(rows: StoreOrderRow[]): string {
   return [...rows]
     .sort((a, b) => a.id.localeCompare(b.id))
@@ -45,7 +44,6 @@ export function useStoreOrders(storeId: string, initial: StoreOrderRow[]) {
   const knownIdsRef = useRef<Set<string>>(new Set(initial.map((o) => o.id)));
   const serverSyncKeyRef = useRef<string | null>(null);
 
-  // Cuando el servidor revalida (router.refresh), alinear estado local con `initial`.
   useEffect(() => {
     const key = ordersSyncKey(initial);
     if (serverSyncKeyRef.current === null) {
@@ -59,7 +57,6 @@ export function useStoreOrders(storeId: string, initial: StoreOrderRow[]) {
     }
   }, [initial]);
 
-  // Pre-cargar el audio
   useEffect(() => {
     if (typeof window === "undefined") return;
     const audio = new Audio("/sounds/new-order.mp3");
@@ -100,15 +97,7 @@ export function useStoreOrders(storeId: string, initial: StoreOrderRow[]) {
 
   useEffect(() => {
     const supabase = createClient();
-
-    void (async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session?.access_token) {
-        await supabase.realtime.setAuth(session.access_token);
-      }
-    })();
+    let channel: ReturnType<typeof supabase.channel>;
 
     const {
       data: { subscription: authSub },
@@ -118,58 +107,50 @@ export function useStoreOrders(storeId: string, initial: StoreOrderRow[]) {
       }
     });
 
-    const channel = supabase
-      .channel(`store:${storeId}:orders`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "orders",
-          filter: `store_id=eq.${storeId}`,
-        },
-        (payload) => {
-          const row = payload.new as StoreOrderRow;
-          if (knownIdsRef.current.has(row.id)) return;
-          knownIdsRef.current.add(row.id);
-          setOrders((prev) => [row, ...prev]);
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        await supabase.realtime.setAuth(session.access_token);
+      }
 
-          if (row.status === "pending" || row.status === "confirmed") {
-            playSound();
-          }
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "orders",
-          filter: `store_id=eq.${storeId}`,
-        },
-        (payload) => {
-          const patch = payload.new as OrderPatch;
-
-          setOrders((prev) => {
-            const existing = prev.find((o) => o.id === patch.id);
-            const merged = existing ? mergeOrder(existing, patch) : (patch as StoreOrderRow);
-            const status = merged.status;
-
-            if (!ACTIVE_STATUSES.includes(status)) {
-              return prev.filter((o) => o.id !== patch.id);
+      channel = supabase
+        .channel(`store:${storeId}:orders`)
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "orders", filter: `store_id=eq.${storeId}` },
+          (payload) => {
+            const row = payload.new as StoreOrderRow;
+            if (knownIdsRef.current.has(row.id)) return;
+            knownIdsRef.current.add(row.id);
+            setOrders((prev) => [row, ...prev]);
+            if (row.status === "pending" || row.status === "confirmed") {
+              playSound();
             }
-            if (existing) {
-              return prev.map((o) => (o.id === patch.id ? merged : o));
-            }
-            return [merged, ...prev];
-          });
-        },
-      )
-      .subscribe();
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "orders", filter: `store_id=eq.${storeId}` },
+          (payload) => {
+            const patch = payload.new as OrderPatch;
+            setOrders((prev) => {
+              const existing = prev.find((o) => o.id === patch.id);
+              const merged = existing ? mergeOrder(existing, patch) : (patch as StoreOrderRow);
+              const status = merged.status;
+              if (!ACTIVE_STATUSES.includes(status)) return prev.filter((o) => o.id !== patch.id);
+              if (existing) return prev.map((o) => (o.id === patch.id ? merged : o));
+              return [merged, ...prev];
+            });
+          },
+        )
+        .subscribe();
+    };
+
+    void init();
 
     return () => {
       authSub.unsubscribe();
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [storeId, playSound]);
 
