@@ -22,10 +22,10 @@ export default async function OnboardingLayout({
       <header className="bg-white border-b border-neutral-200">
         <div className="container-page py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="size-8 bg-primary-600 rounded-md flex items-center justify-center text-white font-bold">
-              D
+            <div className="size-8 bg-primary-600 rounded-md flex items-center justify-center text-white font-bold text-body-sm">
+              V
             </div>
-            <span className="text-heading-sm font-semibold">DeliveryLocal</span>
+            <span className="text-heading-sm font-semibold">Vadelivery</span>
           </Link>
           <p className="text-body-sm text-neutral-500">
             ¡Hola, <span className="font-medium text-neutral-900">{session.fullName}</span>!

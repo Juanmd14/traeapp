@@ -52,7 +52,7 @@ export default function CarritoPage() {
   }
 
   return (
-    <div className="container-shop py-4 pb-32">
+    <div className="container-shop py-4 pb-10">
       <Link
         href={storeSlug ? `/s/${storeSlug}` : "/"}
         className="inline-flex items-center gap-1 text-body-sm text-neutral-500 hover:text-neutral-900 mb-3"
@@ -162,15 +162,10 @@ export default function CarritoPage() {
         </p>
       )}
 
-      {/* CTA sticky */}
-      <div className="fixed bottom-16 sm:bottom-0 inset-x-0 bg-white border-t border-neutral-200 p-4 z-20">
-        <div className="container-shop">
-          <Button asChild fullWidth size="lg" disabled={!meetsMin}>
-            <Link href="/checkout">
-              Continuar · {formatPrice(total)}
-            </Link>
-          </Button>
-        </div>
+      <div className="mt-5">
+        <Button asChild fullWidth size="lg" variant="success" disabled={!meetsMin}>
+          <Link href="/checkout">Continuar con el pago</Link>
+        </Button>
       </div>
     </div>
   );

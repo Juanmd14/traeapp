@@ -9,6 +9,43 @@ import { formatPrice } from "@/lib/utils";
 
 export const metadata = { title: "Seguimiento del pedido" };
 
+type StoreData = {
+  id: string;
+  name: string;
+  slug: string;
+  phone: string | null;
+};
+
+type OrderData = {
+  id: string;
+  order_number: string;
+  status: string;
+  payment_status: string;
+  payment_method: string;
+  subtotal: number;
+  delivery_fee: number;
+  discount: number;
+  total: number;
+  delivery_address_text: string;
+  customer_notes: string | null;
+  estimated_delivery_at: string | null;
+  confirmed_at: string | null;
+  ready_at: string | null;
+  picked_up_at: string | null;
+  delivered_at: string | null;
+  driver_id: string | null;
+  customer_id: string;
+  stores: StoreData | null;
+};
+
+type OrderItemData = {
+  id: string;
+  product_name: string;
+  quantity: number;
+  unit_price: number;
+  total: number;
+};
+
 export default async function OrderPage({
   params,
   searchParams,
@@ -17,34 +54,51 @@ export default async function OrderPage({
   searchParams: { status?: string };
 }) {
   const session = await requireAuth(`/login?next=/pedido/${params.id}`);
-  const supabase = createClient();
+  const supabase = await createClient();
 
-  const { data: order } = await supabase
+  const { data } = await supabase
     .from("orders")
     .select(`
-      id, order_number, status, payment_status, payment_method,
-      subtotal, delivery_fee, discount, total,
-      delivery_address_text, customer_notes,
-      estimated_delivery_at, confirmed_at, ready_at, picked_up_at, delivered_at,
-      driver_id, customer_id,
+      id,
+      order_number,
+      status,
+      payment_status,
+      payment_method,
+      subtotal,
+      delivery_fee,
+      discount,
+      total,
+      delivery_address_text,
+      customer_notes,
+      estimated_delivery_at,
+      confirmed_at,
+      ready_at,
+      picked_up_at,
+      delivered_at,
+      driver_id,
+      customer_id,
       stores ( id, name, slug, phone )
     `)
     .eq("id", params.id)
     .single();
 
+  const order = data as OrderData | null;
+
   if (!order) notFound();
 
-  // Sólo el cliente, comercio o admin pueden ver
+  // Sólo el cliente o admin pueden ver
   if (order.customer_id !== session.id && session.role !== "admin") {
     notFound();
   }
 
-  const { data: items } = await supabase
+  const { data: itemsData } = await supabase
     .from("order_items")
     .select("id, product_name, quantity, unit_price, total")
     .eq("order_id", order.id);
 
-  const store = order.stores as { id: string; name: string; slug: string; phone: string | null } | null;
+  const items = (itemsData ?? []) as OrderItemData[];
+
+  const store = order.stores;
 
   return (
     <div className="container-shop py-4 pb-24">
@@ -60,6 +114,7 @@ export default async function OrderPage({
         <p className="text-body-xs text-neutral-500 uppercase tracking-wider">
           Pedido #{order.order_number}
         </p>
+
         <h1 className="text-heading-xl font-semibold text-neutral-900">
           {store?.name}
         </h1>
@@ -70,6 +125,7 @@ export default async function OrderPage({
           <p className="text-body-md font-medium text-accent-900">
             ¡Pago aprobado! 🎉
           </p>
+
           <p className="text-body-sm text-accent-700 mt-0.5">
             El comercio ya recibió tu pedido.
           </p>
@@ -81,6 +137,7 @@ export default async function OrderPage({
           <p className="text-body-md font-medium text-warning-900">
             Pago pendiente
           </p>
+
           <p className="text-body-sm text-warning-700 mt-0.5">
             Estamos esperando confirmación de Mercado Pago.
           </p>
@@ -108,10 +165,15 @@ export default async function OrderPage({
         <p className="text-body-xs text-neutral-500 uppercase tracking-wider mb-1.5">
           Entrega
         </p>
+
         <div className="flex items-start gap-2">
           <MapPin className="size-4 text-neutral-400 mt-0.5 shrink-0" />
+
           <div>
-            <p className="text-body-md text-neutral-900">{order.delivery_address_text}</p>
+            <p className="text-body-md text-neutral-900">
+              {order.delivery_address_text}
+            </p>
+
             {order.customer_notes && (
               <p className="text-body-sm text-neutral-500 mt-1">
                 Nota: {order.customer_notes}
@@ -129,9 +191,15 @@ export default async function OrderPage({
         >
           <div className="flex items-center gap-2">
             <Phone className="size-4 text-neutral-500" />
-            <span className="text-body-md text-neutral-900">Llamar al comercio</span>
+
+            <span className="text-body-md text-neutral-900">
+              Llamar al comercio
+            </span>
           </div>
-          <span className="text-body-sm text-neutral-500">{store.phone}</span>
+
+          <span className="text-body-sm text-neutral-500">
+            {store.phone}
+          </span>
         </a>
       )}
 
@@ -140,39 +208,64 @@ export default async function OrderPage({
         <p className="text-body-xs text-neutral-500 uppercase tracking-wider mb-2">
           Detalle del pedido
         </p>
+
         <ul className="space-y-2">
-          {items?.map((it) => (
-            <li key={it.id} className="flex justify-between text-body-md">
+          {items.map((it) => (
+            <li
+              key={it.id}
+              className="flex justify-between text-body-md"
+            >
               <span className="text-neutral-700">
-                <span className="font-medium">{it.quantity}×</span> {it.product_name}
+                <span className="font-medium">{it.quantity}×</span>{" "}
+                {it.product_name}
               </span>
-              <span className="text-neutral-900">{formatPrice(it.total)}</span>
+
+              <span className="text-neutral-900">
+                {formatPrice(it.total)}
+              </span>
             </li>
           ))}
         </ul>
+
         <div className="border-t border-neutral-200 mt-3 pt-3 space-y-1.5">
           <div className="flex justify-between text-body-sm">
             <span className="text-neutral-500">Subtotal</span>
-            <span className="text-neutral-700">{formatPrice(order.subtotal)}</span>
-          </div>
-          <div className="flex justify-between text-body-sm">
-            <span className="text-neutral-500">Envío</span>
+
             <span className="text-neutral-700">
-              {Number(order.delivery_fee) === 0 ? "Gratis" : formatPrice(order.delivery_fee)}
+              {formatPrice(order.subtotal)}
             </span>
           </div>
+
+          <div className="flex justify-between text-body-sm">
+            <span className="text-neutral-500">Envío</span>
+
+            <span className="text-neutral-700">
+              {Number(order.delivery_fee) === 0
+                ? "Gratis"
+                : formatPrice(order.delivery_fee)}
+            </span>
+          </div>
+
           {Number(order.discount) > 0 && (
             <div className="flex justify-between text-body-sm">
               <span className="text-neutral-500">Descuento</span>
-              <span className="text-accent-600">- {formatPrice(order.discount)}</span>
+
+              <span className="text-accent-600">
+                - {formatPrice(order.discount)}
+              </span>
             </div>
           )}
+
           <div className="flex justify-between text-heading-sm font-semibold pt-1.5 border-t border-neutral-100">
             <span>Total</span>
+
             <span>{formatPrice(order.total)}</span>
           </div>
+
           <p className="text-body-xs text-neutral-500 pt-1">
-            {order.payment_method === "cash" ? "Pagás en efectivo al recibir" : "Pagado con Mercado Pago"}
+            {order.payment_method === "cash"
+              ? "Pagás en efectivo al recibir"
+              : "Pagado con Mercado Pago"}
           </p>
         </div>
       </section>

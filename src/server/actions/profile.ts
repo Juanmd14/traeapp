@@ -5,7 +5,6 @@ import { z } from "zod";
 
 import { authAction } from "./safe-action";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 
 const updateProfileSchema = z.object({
   fullName: z.string().min(2, "Ingresá tu nombre").max(80),
@@ -21,8 +20,7 @@ const updateProfileSchema = z.object({
 export const updateProfileAction = authAction
   .schema(updateProfileSchema)
   .action(async ({ parsedInput, ctx }) => {
-    const { error } = await supabaseAdmin
-      .from("profiles")
+    const { error } = await (supabaseAdmin.from("profiles") as any)
       .update({
         full_name: parsedInput.fullName,
         phone: parsedInput.phone || null,
@@ -35,23 +33,18 @@ export const updateProfileAction = authAction
     return { ok: true };
   });
 
-/**
- * Sube avatar al bucket 'avatars' y guarda la URL en profiles.
- * El archivo se guarda como `{user_id}/avatar.jpg`.
- */
 export const uploadAvatarAction = authAction
   .schema(z.object({
-    avatarBase64: z.string(),  // data URL: "data:image/jpeg;base64,...."
+    avatarBase64: z.string(),
   }))
   .action(async ({ parsedInput, ctx }) => {
     const userId = ctx.session.id;
     const match = parsedInput.avatarBase64.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
     if (!match) throw new Error("Formato de imagen inválido");
 
-    const mimeType = match[1];
-    const base64 = match[2];
-    const ext = mimeType.split("/")[1].replace("jpeg", "jpg");
-    const buffer = Buffer.from(base64, "base64");
+    const [, mimeType, base64] = match;
+const ext = (mimeType ?? "image/jpeg").split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
+const buffer = Buffer.from(base64 ?? "", "base64");
 
     if (buffer.byteLength > 2 * 1024 * 1024) {
       throw new Error("La imagen es muy grande (máx 2MB)");
@@ -72,11 +65,9 @@ export const uploadAvatarAction = authAction
       .from("avatars")
       .getPublicUrl(path);
 
-    // Append timestamp para invalidar cache del browser después de update
     const url = `${publicUrl.publicUrl}?t=${Date.now()}`;
 
-    const { error: updateErr } = await supabaseAdmin
-      .from("profiles")
+    const { error: updateErr } = await (supabaseAdmin.from("profiles") as any)
       .update({ avatar_url: url })
       .eq("id", userId);
 

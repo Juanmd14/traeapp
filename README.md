@@ -1,4 +1,4 @@
-# DeliveryLocal
+# Vadelivery
 
 Plataforma de delivery local tipo PedidosYa/Rappi para una ciudad pequeña.
 Stack: **Next.js 14 (App Router) · Supabase · PostgreSQL · TailwindCSS · TypeScript · Vercel**.

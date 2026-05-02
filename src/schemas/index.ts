@@ -60,6 +60,15 @@ export const storeOperationSchema = z.object({
 });
 export type StoreOperationInput = z.infer<typeof storeOperationSchema>;
 
+/** Edición de datos públicos y contacto (panel comercio). */
+export const storeProfileSchema = z.object({
+  name: z.string().min(2, "El nombre es muy corto").max(80),
+  description: z.string().max(280, "Máximo 280 caracteres").optional().or(z.literal("")),
+  phone: phoneSchema,
+  email: emailSchema.optional().or(z.literal("")),
+});
+export type StoreProfileInput = z.infer<typeof storeProfileSchema>;
+
 /* ============================================
  * PRODUCTS
  * ============================================ */

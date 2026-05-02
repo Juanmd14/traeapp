@@ -324,9 +324,13 @@ function ProductFormDialog({
           return;
         }
         if (result?.data?.product) {
+          const product = result.data.product as {
+            id: string;
+          };
+        
           onSaved(
             {
-              id: result.data.product.id,
+              id: product.id,
               name: data.name,
               description: data.description ?? null,
               image_url: null,

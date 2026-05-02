@@ -11,18 +11,64 @@ type Props = {
   params: { storeSlug: string };
 };
 
-export const revalidate = 60; // ISR: refresca cada 60s
+type StoreData = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  logo_url: string | null;
+  cover_url: string | null;
+  address: string | null;
+  avg_prep_minutes: number;
+  delivery_fee: number;
+  min_order_amount: number;
+  rating_avg: number | null;
+  rating_count: number;
+  status: string;
+  categories: { name: string } | null;
+};
+
+type ProductCategoryData = {
+  id: string;
+  name: string;
+  sort_order: number;
+};
+
+type ProductData = {
+  id: string;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  price: number;
+  compare_at_price: number | null;
+  is_available: boolean;
+  product_category_id: string | null;
+  sort_order: number;
+};
+
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: Props) {
-  const supabase = createClient();
-  const { data: store } = await supabase
+  const supabase = await createClient();
+
+  const { data } = await supabase
     .from("stores")
     .select("name, description")
     .eq("slug", params.storeSlug)
     .eq("status", "active")
     .single();
 
-  if (!store) return { title: "Comercio no encontrado" };
+  const store = data as Pick<
+    StoreData,
+    "name" | "description"
+  > | null;
+
+  if (!store) {
+    return {
+      title: "Comercio no encontrado",
+    };
+  }
+
   return {
     title: store.name,
     description: store.description ?? `Pedí en ${store.name}`,
@@ -30,44 +76,81 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function StorePage({ params }: Props) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
-  const { data: store } = await supabase
+  const { data } = await supabase
     .from("stores")
     .select(`
-      id, slug, name, description, logo_url, cover_url, address,
-      avg_prep_minutes, delivery_fee, min_order_amount,
-      rating_avg, rating_count, status,
+      id,
+      slug,
+      name,
+      description,
+      logo_url,
+      cover_url,
+      address,
+      avg_prep_minutes,
+      delivery_fee,
+      min_order_amount,
+      rating_avg,
+      rating_count,
+      status,
       categories ( name )
     `)
     .eq("slug", params.storeSlug)
     .eq("status", "active")
     .single();
 
-  if (!store) notFound();
+  const store = data as StoreData | null;
 
-  const [{ data: productCategories }, { data: products }] = await Promise.all([
-    supabase
-      .from("product_categories")
-      .select("id, name, sort_order")
-      .eq("store_id", store.id)
-      .order("sort_order"),
-    supabase
-      .from("products")
-      .select("id, name, description, image_url, price, compare_at_price, is_available, product_category_id, sort_order")
-      .eq("store_id", store.id)
-      .eq("is_active", true)
-      .order("sort_order"),
-  ]);
+  if (!store) {
+    notFound();
+  }
+
+  const [{ data: categoriesData }, { data: productsData }] =
+    await Promise.all([
+      supabase
+        .from("product_categories")
+        .select("id, name, sort_order")
+        .eq("store_id", store.id)
+        .order("sort_order"),
+
+      supabase
+        .from("products")
+        .select(`
+          id,
+          name,
+          description,
+          image_url,
+          price,
+          compare_at_price,
+          is_available,
+          product_category_id,
+          sort_order
+        `)
+        .eq("store_id", store.id)
+        .eq("is_active", true)
+        .order("sort_order"),
+    ]);
+
+  const productCategories = (
+    categoriesData ?? []
+  ) as ProductCategoryData[];
+
+  const products = (productsData ?? []) as ProductData[];
 
   // Agrupar productos por categoría
-  const categoriesWithProducts = (productCategories ?? []).map((cat) => ({
+  const categoriesWithProducts = productCategories.map((cat) => ({
     ...cat,
-    products: (products ?? []).filter((p) => p.product_category_id === cat.id),
+    products: products.filter(
+      (p) => p.product_category_id === cat.id
+    ),
   }));
 
   // Productos sin categoría
-  const uncategorized = (products ?? []).filter((p) => !p.product_category_id);
+  const uncategorized = products.filter(
+    (p) => !p.product_category_id
+  );
+
   if (uncategorized.length > 0) {
     categoriesWithProducts.push({
       id: "uncategorized",
@@ -77,7 +160,11 @@ export default async function StorePage({ params }: Props) {
     });
   }
 
-  const minMin = Math.max(15, store.avg_prep_minutes - 5);
+  const minMin = Math.max(
+    15,
+    store.avg_prep_minutes - 5
+  );
+
   const maxMin = store.avg_prep_minutes + 10;
 
   return (
@@ -94,6 +181,7 @@ export default async function StorePage({ params }: Props) {
             className="object-cover"
           />
         )}
+
         <Link
           href="/"
           className="absolute top-3 left-3 size-9 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-card hover:bg-white transition"
@@ -120,10 +208,12 @@ export default async function StorePage({ params }: Props) {
                 {store.name.charAt(0)}
               </div>
             )}
+
             <div className="min-w-0">
               <h1 className="text-heading-lg font-semibold text-neutral-900 truncate">
                 {store.name}
               </h1>
+
               {store.description && (
                 <p className="text-body-sm text-neutral-500 line-clamp-2 mt-0.5">
                   {store.description}
@@ -137,13 +227,18 @@ export default async function StorePage({ params }: Props) {
               <span className="flex items-center gap-1 bg-neutral-100 text-neutral-700 text-body-xs font-medium px-2 py-1 rounded-full">
                 <Star className="size-3 fill-current text-warning-500" />
                 {Number(store.rating_avg).toFixed(1)}
-                <span className="text-neutral-500">· {store.rating_count}</span>
+
+                <span className="text-neutral-500">
+                  · {store.rating_count}
+                </span>
               </span>
             )}
+
             <span className="flex items-center gap-1 bg-neutral-100 text-neutral-700 text-body-xs font-medium px-2 py-1 rounded-full">
               <Clock className="size-3" />
               {formatDeliveryTime(minMin, maxMin)}
             </span>
+
             <span
               className={
                 store.delivery_fee === 0
@@ -152,8 +247,14 @@ export default async function StorePage({ params }: Props) {
               }
             >
               <Truck className="size-3" />
-              {Number(store.delivery_fee) === 0 ? "Envío gratis" : `Envío ${formatPrice(store.delivery_fee)}`}
+
+              {Number(store.delivery_fee) === 0
+                ? "Envío gratis"
+                : `Envío ${formatPrice(
+                    store.delivery_fee
+                  )}`}
             </span>
+
             {store.min_order_amount > 0 && (
               <span className="bg-neutral-100 text-neutral-700 text-body-xs font-medium px-2 py-1 rounded-full">
                 Mín. {formatPrice(store.min_order_amount)}
@@ -165,7 +266,8 @@ export default async function StorePage({ params }: Props) {
 
       {/* Catálogo */}
       <div className="container-shop py-5 space-y-6">
-        {categoriesWithProducts.length === 0 || (products ?? []).length === 0 ? (
+        {categoriesWithProducts.length === 0 ||
+        products.length === 0 ? (
           <p className="text-center text-body-md text-neutral-500 py-12">
             Este comercio aún no cargó productos.
           </p>
@@ -177,6 +279,7 @@ export default async function StorePage({ params }: Props) {
                 <h2 className="text-heading-md font-semibold text-neutral-900 mb-3">
                   {cat.name}
                 </h2>
+
                 <div className="space-y-2.5">
                   {cat.products.map((p) => (
                     <ProductCard
@@ -187,14 +290,21 @@ export default async function StorePage({ params }: Props) {
                         description: p.description,
                         imageUrl: p.image_url,
                         price: Number(p.price),
-                        compareAtPrice: p.compare_at_price ? Number(p.compare_at_price) : null,
+                        compareAtPrice:
+                          p.compare_at_price
+                            ? Number(p.compare_at_price)
+                            : null,
                         isAvailable: p.is_available,
                       }}
                       storeId={store.id}
                       storeName={store.name}
                       storeSlug={store.slug}
-                      deliveryFee={Number(store.delivery_fee)}
-                      minOrderAmount={Number(store.min_order_amount)}
+                      deliveryFee={Number(
+                        store.delivery_fee
+                      )}
+                      minOrderAmount={Number(
+                        store.min_order_amount
+                      )}
                     />
                   ))}
                 </div>

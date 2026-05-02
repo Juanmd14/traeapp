@@ -37,10 +37,9 @@ export function StoreKds({ storeId, initialOrders, itemsByOrder }: Props) {
     const newO: StoreOrderRow[] = [];
     const prep: StoreOrderRow[] = [];
     const ready: StoreOrderRow[] = [];
-
+  
     orders.forEach((o) => {
       if (o.status === "pending" || o.status === "confirmed") {
-        // Solo mostrar pending si es efectivo, o si MP ya está aprobado
         if (o.payment_method === "cash" || o.payment_status === "approved") {
           newO.push(o);
         }

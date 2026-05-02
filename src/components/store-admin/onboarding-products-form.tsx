@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Trash2, Package } from "lucide-react";
+import { Plus, Package } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,10 +45,21 @@ export function OnboardingProductsForm({ storeId }: Props) {
         return;
       }
       if (result?.data?.product) {
+        const product = result.data.product as {
+          id: string;
+          name: string;
+          price: number;
+        };
+      
         setProducts((prev) => [
-          { id: result.data.product.id, name: result.data.product.name, price: Number(result.data.product.price) },
+          {
+            id: product.id,
+            name: product.name,
+            price: Number(product.price),
+          },
           ...prev,
         ]);
+      
         form.reset();
       }
       setIsAdding(false);

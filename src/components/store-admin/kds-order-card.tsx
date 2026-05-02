@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronDown, Banknote, CreditCard, Clock, MapPin } from "lucide-react";
 import {
   Dialog,
@@ -44,6 +45,7 @@ const REJECT_REASONS = [
 ];
 
 export function KdsOrderCard({ order, items, variant }: Props) {
+  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState(REJECT_REASONS[0]);
@@ -68,7 +70,11 @@ export function KdsOrderCard({ order, items, variant }: Props) {
     setServerError(null);
     startTransition(async () => {
       const result = await acceptOrderAction({ orderId: order.id });
-      if (result?.serverError) setServerError(result.serverError);
+      if (result?.serverError) {
+        setServerError(result.serverError);
+        return;
+      }
+      router.refresh();
     });
   };
 
@@ -76,12 +82,17 @@ export function KdsOrderCard({ order, items, variant }: Props) {
     setServerError(null);
     startTransition(async () => {
       const result = await markOrderReadyAction({ orderId: order.id });
-      if (result?.serverError) setServerError(result.serverError);
+      if (result?.serverError) {
+        setServerError(result.serverError);
+        return;
+      }
+      router.refresh();
     });
   };
 
   const onReject = () => {
-    const reason = rejectReason === "Otro" ? customReason.trim() : rejectReason;
+    const reason =
+      (rejectReason === "Otro" ? customReason.trim() : rejectReason) ?? "";
     if (reason.length < 3) {
       setServerError("Indicá un motivo");
       return;
@@ -93,6 +104,7 @@ export function KdsOrderCard({ order, items, variant }: Props) {
         return;
       }
       setRejectOpen(false);
+      router.refresh();
     });
   };
 
@@ -244,17 +256,17 @@ export function KdsOrderCard({ order, items, variant }: Props) {
           </div>
         )}
 
-        {variant === "preparing" && (
-          <Button
-            variant="dark"
-            size="sm"
-            fullWidth
-            onClick={onMarkReady}
-            loading={isPending}
-          >
-            Marcar listo
-          </Button>
-        )}
+{variant === "preparing" && (
+  <Button
+    variant="success"
+    size="sm"
+    fullWidth
+    onClick={onMarkReady}
+    loading={isPending}
+  >
+    Marcar listo ✓
+  </Button>
+)}
 
         {variant === "ready" && (
           <p className="text-body-xs text-accent-700 text-center font-medium">

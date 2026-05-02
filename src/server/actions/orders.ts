@@ -23,7 +23,6 @@ const cartItemInputSchema = z.object({
 const createOrderInputSchema = z.object({
   storeId: z.string().uuid(),
   addressId: z.string().uuid().optional(),
-  // Snapshot por si no hay dirección guardada
   deliveryAddressText: z.string().min(5).max(200),
   deliveryLat: z.number().optional(),
   deliveryLng: z.number().optional(),
@@ -33,27 +32,13 @@ const createOrderInputSchema = z.object({
   items: z.array(cartItemInputSchema).min(1, "El carrito está vacío"),
 });
 
-/**
- * Crea un pedido con servicio de pricing del lado server.
- * NO se confía en el total del cliente — se recalcula desde productos.
- *
- * Flujo:
- *   1. Valida que store esté activo y acepte el método elegido.
- *   2. Trae los productos reales de la BD (precios actuales).
- *   3. Aplica promo si vino código.
- *   4. Calcula pricing.
- *   5. Inserta order + order_items + payment (pending) en transacción.
- *   6. Si MP, crea preferencia y devuelve init_point.
- *   7. Si efectivo, queda en 'pending' hasta que el comercio acepte.
- */
 export const createOrderAction = authAction
   .schema(createOrderInputSchema)
   .action(async ({ parsedInput, ctx }) => {
     const userId = ctx.session.id;
 
     // 1. Validar comercio
-    const { data: store, error: storeErr } = await supabaseAdmin
-      .from("stores")
+    const { data: store, error: storeErr } = await (supabaseAdmin.from("stores") as any)
       .select("id, name, status, delivery_fee, min_order_amount, accepts_cash, accepts_mp, commission_pct")
       .eq("id", parsedInput.storeId)
       .single();
@@ -68,22 +53,19 @@ export const createOrderAction = authAction
       throw new Error("Este comercio no acepta Mercado Pago");
     }
 
-    // 2. Traer productos (precios actuales del server, no del cliente)
+    // 2. Traer productos
     const productIds = parsedInput.items.map((i) => i.productId);
-    const { data: products, error: prodErr } = await supabaseAdmin
-      .from("products")
+    const { data: products, error: prodErr } = await (supabaseAdmin.from("products") as any)
       .select("id, name, price, is_active, is_available, store_id")
       .in("id", productIds);
 
     if (prodErr) throw new Error(prodErr.message);
 
-    // Verificar que todos los productos sean del mismo comercio
-    if (!products || products.some((p) => p.store_id !== store.id)) {
+    if (!products || products.some((p: any) => p.store_id !== store.id)) {
       throw new Error("Los productos no pertenecen al comercio seleccionado");
     }
 
-    // Verificar disponibilidad
-    const unavailable = products.find((p) => !p.is_active || !p.is_available);
+    const unavailable = products.find((p: any) => !p.is_active || !p.is_available);
     if (unavailable) {
       throw new Error(`"${unavailable.name}" no está disponible en este momento`);
     }
@@ -91,8 +73,7 @@ export const createOrderAction = authAction
     // 3. Promo (opcional)
     let promo = null;
     if (parsedInput.promoCode) {
-      const { data: p } = await supabaseAdmin
-        .from("promotions")
+      const { data: p } = await (supabaseAdmin.from("promotions") as any)
         .select("id, type, value, min_order_amount, is_active, ends_at")
         .eq("code", parsedInput.promoCode.toUpperCase())
         .eq("is_active", true)
@@ -109,9 +90,9 @@ export const createOrderAction = authAction
       }
     }
 
-    // 4. Calcular pricing con datos reales
+    // 4. Calcular pricing
     const itemsForPricing = parsedInput.items.map((it) => {
-      const product = products.find((p) => p.id === it.productId)!;
+      const product = products.find((p: any) => p.id === it.productId)!;
       const modifiersTotal = it.modifiers.reduce((acc, m) => acc + m.priceDelta, 0);
       return {
         productId: it.productId,
@@ -131,9 +112,8 @@ export const createOrderAction = authAction
 
     if (pricing.error) throw new Error(pricing.error);
 
-    // 5. Insertar order + items + payment (transacción manual)
-    const { data: order, error: orderErr } = await supabaseAdmin
-      .from("orders")
+    // 5. Insertar order
+    const { data: order, error: orderErr } = await (supabaseAdmin.from("orders") as any)
       .insert({
         customer_id: userId,
         store_id: store.id,
@@ -160,7 +140,7 @@ export const createOrderAction = authAction
 
     // Items
     const orderItems = parsedInput.items.map((it) => {
-      const product = products.find((p) => p.id === it.productId)!;
+      const product = products.find((p: any) => p.id === it.productId)!;
       const modifiersTotal = it.modifiers.reduce((acc, m) => acc + m.priceDelta, 0);
       const unitTotal = Number(product.price) + modifiersTotal;
       return {
@@ -175,18 +155,15 @@ export const createOrderAction = authAction
       };
     });
 
-    const { error: itemsErr } = await supabaseAdmin
-      .from("order_items")
+    const { error: itemsErr } = await (supabaseAdmin.from("order_items") as any)
       .insert(orderItems);
 
     if (itemsErr) {
-      // rollback manual
-      await supabaseAdmin.from("orders").delete().eq("id", order.id);
+      await (supabaseAdmin.from("orders") as any).delete().eq("id", order.id);
       throw new Error(itemsErr.message);
     }
 
-    // Crear payment row
-    await supabaseAdmin.from("payments").insert({
+    await (supabaseAdmin.from("payments") as any).insert({
       order_id: order.id,
       method: parsedInput.paymentMethod,
       status: "pending",
@@ -219,8 +196,7 @@ export const createOrderAction = authAction
           payerEmail: ctx.session.email ?? undefined,
         });
 
-        await supabaseAdmin
-          .from("payments")
+        await (supabaseAdmin.from("payments") as any)
           .update({ mp_preference_id: pref.id })
           .eq("order_id", order.id);
 
@@ -233,34 +209,28 @@ export const createOrderAction = authAction
             process.env.NODE_ENV === "production" ? pref.initPoint : pref.sandboxInitPoint,
         };
       } catch (err) {
-        // Si falla MP, cancelamos el pedido
-        await supabaseAdmin
-          .from("orders")
+        await (supabaseAdmin.from("orders") as any)
           .update({ status: "cancelled", cancelled_by: "system", cancel_reason: "Error al iniciar Mercado Pago" })
           .eq("id", order.id);
         throw new Error("No se pudo iniciar el pago. Intentá con efectivo.");
       }
     }
 
-    // 7. Efectivo: pedido queda 'pending' hasta que el comercio acepte
+    // 7. Efectivo
     revalidatePath("/pedidos");
     return {
       ok: true,
       orderId: order.id,
       orderNumber: order.order_number,
-      checkoutUrl: null, // no redirige
+      checkoutUrl: null,
     };
   });
 
-/**
- * Cancela un pedido (cliente, antes de que el comercio acepte).
- */
 export const cancelOrderAction = authAction
   .schema(z.object({ orderId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
     const supabase = createClient();
-    const { data: order } = await supabase
-      .from("orders")
+    const { data: order } = await (supabase.from("orders") as any)
       .select("id, status, customer_id")
       .eq("id", parsedInput.orderId)
       .single();
@@ -273,8 +243,7 @@ export const cancelOrderAction = authAction
       throw new Error("El pedido ya no se puede cancelar");
     }
 
-    await supabaseAdmin
-      .from("orders")
+    await (supabaseAdmin.from("orders") as any)
       .update({
         status: "cancelled",
         cancelled_by: "customer",
@@ -282,46 +251,43 @@ export const cancelOrderAction = authAction
       })
       .eq("id", parsedInput.orderId);
 
-    // TODO: si payment_status='approved' → disparar reembolso MP
-
     revalidatePath("/pedidos");
     return { ok: true };
   });
 
-/**
- * Acciones del comercio sobre el pedido.
- */
 export const acceptOrderAction = authAction
   .schema(z.object({ orderId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
-    const { data: order } = await supabase
-      .from("orders")
+    const { data: order } = await (supabaseAdmin.from("orders") as any)
       .select("id, store_id, status")
       .eq("id", parsedInput.orderId)
       .single();
+
     if (!order) throw new Error("Pedido no encontrado");
 
-    // Verificar membresía
-    const { data: m } = await supabase
-      .from("store_users")
+    const supabase = createClient();
+    const { data: membership } = await (supabase.from("store_users") as any)
       .select("user_id")
       .eq("store_id", order.store_id)
       .eq("user_id", ctx.session.id)
       .maybeSingle();
-    if (!m && ctx.session.role !== "admin") throw new Error("No autorizado");
 
-    if (order.status !== "pending" && order.status !== "confirmed") {
+    if (!membership && ctx.session.role !== "admin") {
+      throw new Error("No autorizado");
+    }
+
+    if (!["pending", "confirmed"].includes(order.status)) {
       throw new Error("El pedido ya no puede aceptarse");
     }
 
-    await supabaseAdmin
-      .from("orders")
+    const { error } = await (supabaseAdmin.from("orders") as any)
       .update({
         status: "preparing",
         confirmed_at: new Date().toISOString(),
       })
       .eq("id", parsedInput.orderId);
+
+    if (error) throw new Error(error.message);
 
     revalidatePath("/comercio", "layout");
     return { ok: true };
@@ -330,30 +296,36 @@ export const acceptOrderAction = authAction
 export const markOrderReadyAction = authAction
   .schema(z.object({ orderId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
-    const { data: order } = await supabase
-      .from("orders")
+    const { data: order } = await (supabaseAdmin.from("orders") as any)
       .select("id, store_id, status")
       .eq("id", parsedInput.orderId)
       .single();
+
     if (!order) throw new Error("Pedido no encontrado");
 
-    const { data: m } = await supabase
-      .from("store_users")
+    const supabase = createClient();
+    const { data: membership } = await (supabase.from("store_users") as any)
       .select("user_id")
       .eq("store_id", order.store_id)
       .eq("user_id", ctx.session.id)
       .maybeSingle();
-    if (!m && ctx.session.role !== "admin") throw new Error("No autorizado");
+
+    if (!membership && ctx.session.role !== "admin") {
+      throw new Error("No autorizado");
+    }
 
     if (order.status !== "preparing") {
       throw new Error("El pedido no está en preparación");
     }
 
-    await supabaseAdmin
-      .from("orders")
-      .update({ status: "ready", ready_at: new Date().toISOString() })
+    const { error } = await (supabaseAdmin.from("orders") as any)
+      .update({
+        status: "ready",
+        ready_at: new Date().toISOString(),
+      })
       .eq("id", parsedInput.orderId);
+
+    if (error) throw new Error(error.message);
 
     revalidatePath("/comercio", "layout");
     return { ok: true };
@@ -365,24 +337,25 @@ export const rejectOrderAction = authAction
     reason: z.string().min(3).max(200),
   }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
-    const { data: order } = await supabase
-      .from("orders")
+    const { data: order } = await (supabaseAdmin.from("orders") as any)
       .select("id, store_id, status, payment_method, payment_status")
       .eq("id", parsedInput.orderId)
       .single();
+
     if (!order) throw new Error("Pedido no encontrado");
 
-    const { data: m } = await supabase
-      .from("store_users")
+    const supabase = createClient();
+    const { data: membership } = await (supabase.from("store_users") as any)
       .select("user_id")
       .eq("store_id", order.store_id)
       .eq("user_id", ctx.session.id)
       .maybeSingle();
-    if (!m && ctx.session.role !== "admin") throw new Error("No autorizado");
 
-    await supabaseAdmin
-      .from("orders")
+    if (!membership && ctx.session.role !== "admin") {
+      throw new Error("No autorizado");
+    }
+
+    const { error } = await (supabaseAdmin.from("orders") as any)
       .update({
         status: "rejected",
         cancelled_by: "store",
@@ -390,7 +363,7 @@ export const rejectOrderAction = authAction
       })
       .eq("id", parsedInput.orderId);
 
-    // TODO: reembolso MP si ya estaba aprobado
+    if (error) throw new Error(error.message);
 
     revalidatePath("/comercio", "layout");
     return { ok: true };

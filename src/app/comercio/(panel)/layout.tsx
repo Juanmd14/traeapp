@@ -1,11 +1,21 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutGrid, ClipboardList, Package, Tag, Clock, BarChart3, LogOut } from "lucide-react";
+import Image from "next/image";
+import {
+  ClipboardList,
+  Package,
+  Tag,
+  Clock,
+  BarChart3,
+  LogOut,
+  Building2,
+} from "lucide-react";
 import { requireAuth, getUserStores } from "@/server/auth/session";
 import { logoutAction } from "@/server/actions/auth";
 
 const navItems = [
   { href: "/comercio/pedidos", label: "Pedidos", icon: ClipboardList },
+  { href: "/comercio/datos", label: "Mi comercio", icon: Building2 },
   { href: "/comercio/productos", label: "Productos", icon: Package },
   { href: "/comercio/promociones", label: "Promociones", icon: Tag },
   { href: "/comercio/horarios", label: "Horarios", icon: Clock },
@@ -34,10 +44,13 @@ export default async function ComercioLayout({
       <aside className="hidden lg:flex w-60 bg-white border-r border-neutral-200 flex-col">
         <div className="p-5 border-b border-neutral-200">
           <Link href="/" className="flex items-center gap-2">
-            <div className="size-8 bg-primary-600 rounded-md flex items-center justify-center text-white font-bold">
-              D
-            </div>
-            <span className="text-heading-sm font-semibold">DeliveryLocal</span>
+            <Image
+              src="/logo-vadelivery.png"
+              alt="Vadelivery"
+              width={140}
+              height={44}
+              className="h-8 w-auto max-w-[120px] object-contain object-left"
+            />
           </Link>
           <p className="text-body-xs text-neutral-500 mt-1.5">Panel comercio</p>
         </div>
@@ -81,11 +94,14 @@ export default async function ComercioLayout({
       <main className="flex-1 flex flex-col min-w-0">
         {/* Top bar móvil */}
         <header className="lg:hidden bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="size-7 bg-primary-600 rounded-md flex items-center justify-center text-white font-bold text-body-sm">
-              D
-            </div>
-            <span className="text-body-md font-semibold">Comercio</span>
+          <Link href="/" className="flex items-center min-w-0">
+            <Image
+              src="/logo-vadelivery.png"
+              alt="Vadelivery"
+              width={120}
+              height={40}
+              className="h-7 w-auto max-w-[108px] object-contain object-left"
+            />
           </Link>
         </header>
 

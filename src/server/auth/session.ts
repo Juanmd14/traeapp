@@ -18,18 +18,13 @@ export type SessionProfile = {
   phone: string | null;
 };
 
-/**
- * Devuelve el usuario autenticado o null.
- * Para usar en Server Components / Layouts que toleran usuario anónimo.
- */
 export async function getSession(): Promise<SessionProfile | null> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return null;
 
-  const { data: profile } = await supabase
-    .from("profiles")
+  const { data: profile } = await (supabase.from("profiles") as any)
     .select("id, email, full_name, role, avatar_url, phone")
     .eq("id", user.id)
     .single();
@@ -46,19 +41,12 @@ export async function getSession(): Promise<SessionProfile | null> {
   };
 }
 
-/**
- * Requiere usuario autenticado. Redirige a /login si no lo está.
- * Usar en layouts/pages protegidas.
- */
 export async function requireAuth(redirectTo = "/login"): Promise<SessionProfile> {
   const session = await getSession();
   if (!session) redirect(redirectTo);
   return session;
 }
 
-/**
- * Requiere rol específico. Redirige a / si no cumple.
- */
 export async function requireRole(
   allowed: UserRole | UserRole[],
   redirectTo = "/",
@@ -66,7 +54,6 @@ export async function requireRole(
   const session = await requireAuth();
   const allowedArr = Array.isArray(allowed) ? allowed : [allowed];
 
-  // admin pasa siempre
   if (session.role === "admin") return session;
 
   if (!allowedArr.includes(session.role)) {
@@ -75,20 +62,14 @@ export async function requireRole(
   return session;
 }
 
-/**
- * Devuelve los store_id de los que el usuario es miembro.
- */
-export async function getUserStores(userId: string): Promise<
-  Array<{ storeId: string; role: "owner" | "manager" | "staff" }>
-> {
+export async function getUserStores(userId: string): Promise<Array<{ storeId: string; role: "owner" | "manager" | "staff" }>> {
   const supabase = createClient();
-  const { data } = await supabase
-    .from("store_users")
+  const { data } = await (supabase.from("store_users") as any)
     .select("store_id, role")
     .eq("user_id", userId)
     .eq("is_active", true);
 
-  return (data ?? []).map((r) => ({
+  return (data ?? []).map((r: any) => ({
     storeId: r.store_id,
     role: r.role as "owner" | "manager" | "staff",
   }));

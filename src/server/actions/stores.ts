@@ -11,6 +11,7 @@ import {
   storeBasicSchema,
   storeAddressSchema,
   storeOperationSchema,
+  storeProfileSchema,
 } from "@/schemas";
 import { slugify } from "@/lib/utils";
 
@@ -85,6 +86,46 @@ export const createStoreAction = authAction
 
     revalidatePath("/comercio", "layout");
     return { ok: true, storeId: store.id, slug };
+  });
+
+const updateStoreProfileInput = storeProfileSchema.extend({
+  storeId: z.string().uuid(),
+});
+
+export const updateStoreProfileAction = authAction
+  .schema(updateStoreProfileInput)
+  .action(async ({ parsedInput, ctx }) => {
+    const supabase = createClient();
+    const { data: membership } = await supabase
+      .from("store_users")
+      .select("role")
+      .eq("store_id", parsedInput.storeId)
+      .eq("user_id", ctx.session.id)
+      .eq("is_active", true)
+      .single();
+
+    if (!membership && ctx.session.role !== "admin") {
+      throw new Error("No tenés permiso sobre este comercio");
+    }
+
+    const email =
+      parsedInput.email === "" ? null : parsedInput.email ?? null;
+
+    const { error } = await supabaseAdmin
+      .from("stores")
+      .update({
+        name: parsedInput.name,
+        description: parsedInput.description === "" ? null : parsedInput.description ?? null,
+        phone: parsedInput.phone,
+        email,
+      })
+      .eq("id", parsedInput.storeId);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/comercio", "layout");
+    revalidatePath("/", "layout");
+    return { ok: true };
   });
 
 const updateStoreAddressInput = storeAddressSchema.extend({

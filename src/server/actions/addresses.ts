@@ -19,16 +19,13 @@ const addressSchema = z.object({
 export const createAddressAction = authAction
   .schema(addressSchema)
   .action(async ({ parsedInput, ctx }) => {
-    // Si es default, primero quitar default de las otras
     if (parsedInput.isDefault) {
-      await supabaseAdmin
-        .from("addresses")
+      await (supabaseAdmin.from("addresses") as any)
         .update({ is_default: false })
         .eq("profile_id", ctx.session.id);
     }
 
-    const { data, error } = await supabaseAdmin
-      .from("addresses")
+    const { data, error } = await (supabaseAdmin.from("addresses") as any)
       .insert({
         profile_id: ctx.session.id,
         label: parsedInput.label || null,
@@ -53,14 +50,12 @@ export const updateAddressAction = authAction
   .schema(addressSchema.extend({ id: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
     if (parsedInput.isDefault) {
-      await supabaseAdmin
-        .from("addresses")
+      await (supabaseAdmin.from("addresses") as any)
         .update({ is_default: false })
         .eq("profile_id", ctx.session.id);
     }
 
-    const { error } = await supabaseAdmin
-      .from("addresses")
+    const { error } = await (supabaseAdmin.from("addresses") as any)
       .update({
         label: parsedInput.label || null,
         street: parsedInput.street,
@@ -83,8 +78,7 @@ export const updateAddressAction = authAction
 export const deleteAddressAction = authAction
   .schema(z.object({ id: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
-    const { error } = await supabaseAdmin
-      .from("addresses")
+    const { error } = await (supabaseAdmin.from("addresses") as any)
       .delete()
       .eq("id", parsedInput.id)
       .eq("profile_id", ctx.session.id);
@@ -99,15 +93,11 @@ export const deleteAddressAction = authAction
 export const setDefaultAddressAction = authAction
   .schema(z.object({ id: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
-    // Quitar default de todas
-    await supabaseAdmin
-      .from("addresses")
+    await (supabaseAdmin.from("addresses") as any)
       .update({ is_default: false })
       .eq("profile_id", ctx.session.id);
 
-    // Setear la nueva default
-    const { error } = await supabaseAdmin
-      .from("addresses")
+    const { error } = await (supabaseAdmin.from("addresses") as any)
       .update({ is_default: true })
       .eq("id", parsedInput.id)
       .eq("profile_id", ctx.session.id);

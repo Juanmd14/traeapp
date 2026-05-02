@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function AuthLayout({
@@ -9,8 +10,18 @@ export default function AuthLayout({
     <div className="min-h-screen flex flex-col lg:flex-row bg-neutral-50">
       {/* Panel lateral (sólo desktop) */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-500 to-primary-700 text-white p-12 flex-col justify-between">
-        <Link href="/" className="text-heading-lg font-bold">
-          DeliveryLocal
+        <Link
+          href="/"
+          className="inline-block w-fit rounded-lg bg-white px-3 py-2 shadow-sm"
+        >
+          <Image
+            src="/logo-vadelivery.png"
+            alt="Vadelivery"
+            width={180}
+            height={56}
+            className="h-9 w-auto object-contain object-left"
+            priority
+          />
         </Link>
         <div className="space-y-4 max-w-md">
           <p className="text-display-md font-bold leading-tight">
@@ -21,7 +32,7 @@ export default function AuthLayout({
           </p>
         </div>
         <p className="text-body-sm opacity-70">
-          © {new Date().getFullYear()} DeliveryLocal
+          © {new Date().getFullYear()} Vadelivery
         </p>
       </div>
 
@@ -31,9 +42,16 @@ export default function AuthLayout({
           {/* Logo móvil */}
           <Link
             href="/"
-            className="lg:hidden block text-heading-lg font-bold text-primary-600 mb-8 text-center"
+            className="lg:hidden flex justify-center mb-8"
           >
-            DeliveryLocal
+            <Image
+              src="/logo-vadelivery.png"
+              alt="Vadelivery"
+              width={200}
+              height={64}
+              className="h-12 w-auto object-contain"
+              priority
+            />
           </Link>
           {children}
         </div>

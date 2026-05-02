@@ -6,10 +6,6 @@ import { createClient } from "@/lib/supabase/server";
 import { action } from "./safe-action";
 import { loginSchema, otpSchema, signupSchema } from "@/schemas";
 
-/**
- * Envía código OTP de 6 dígitos al email.
- * Si el email no existe, se crea cuenta automáticamente (passwordless).
- */
 export const requestOtpAction = action
   .schema(loginSchema)
   .action(async ({ parsedInput }) => {
@@ -17,7 +13,6 @@ export const requestOtpAction = action
     const { error } = await supabase.auth.signInWithOtp({
       email: parsedInput.email,
       options: {
-        // No envía link mágico; usaremos el OTP de 6 dígitos.
         shouldCreateUser: true,
       },
     });
@@ -27,9 +22,6 @@ export const requestOtpAction = action
     return { ok: true, email: parsedInput.email };
   });
 
-/**
- * Verifica el OTP y crea sesión.
- */
 export const verifyOtpAction = action
   .schema(otpSchema)
   .action(async ({ parsedInput }) => {
@@ -47,10 +39,6 @@ export const verifyOtpAction = action
     return { ok: true };
   });
 
-/**
- * Completa el perfil después del primer registro
- * (cuando el trigger creó el profile pero faltan datos).
- */
 export const completeProfileAction = action
   .schema(signupSchema)
   .action(async ({ parsedInput }) => {
@@ -59,8 +47,7 @@ export const completeProfileAction = action
 
     if (!user) throw new Error("No autenticado");
 
-    const { error } = await supabase
-      .from("profiles")
+    const { error } = await (supabase.from("profiles") as any)
       .update({
         full_name: parsedInput.fullName,
         phone: parsedInput.phone || null,
@@ -73,9 +60,6 @@ export const completeProfileAction = action
     return { ok: true };
   });
 
-/**
- * Cerrar sesión.
- */
 export async function logoutAction() {
   const supabase = createClient();
   await supabase.auth.signOut();
