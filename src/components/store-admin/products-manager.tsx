@@ -2,7 +2,10 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { Plus, Pencil, Trash2, Package } from "lucide-react";
+import {
+  Plus, Pencil, Trash2, Package,
+  Search, Check, EyeOff,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -42,9 +45,28 @@ type Props = {
   initial: ProductRow[];
 };
 
+type FilterType = "all" | "available" | "unavailable";
+
 export function ProductsManager({ storeId, initial }: Props) {
   const [products, setProducts] = useState<ProductRow[]>(initial);
   const [editingProduct, setEditingProduct] = useState<ProductRow | "new" | null>(null);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<FilterType>("all");
+
+  const filtered = products.filter((p) => {
+    const matchSearch =
+      search.length < 2 ||
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      (p.description ?? "").toLowerCase().includes(search.toLowerCase());
+    const matchFilter =
+      filter === "all" ||
+      (filter === "available" && p.is_available) ||
+      (filter === "unavailable" && !p.is_available);
+    return matchSearch && matchFilter;
+  });
+
+  const availableCount = products.filter((p) => p.is_available).length;
+  const unavailableCount = products.length - availableCount;
 
   const handleSaved = (saved: ProductRow, isNew: boolean) => {
     setProducts((prev) =>
@@ -65,21 +87,71 @@ export function ProductsManager({ storeId, initial }: Props) {
 
   return (
     <div>
-      <header className="flex items-center justify-between mb-5">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-heading-xl font-semibold text-neutral-900">
             Productos
           </h1>
-          <p className="text-body-md text-neutral-500 mt-0.5">
-            {products.length} {products.length === 1 ? "producto" : "productos"} en tu menú
-          </p>
+          <div className="flex items-center gap-3 mt-1 text-body-sm text-neutral-500">
+            <span>{products.length} en total</span>
+            <span>·</span>
+            <span className="text-accent-600 font-medium">
+              {availableCount} disponibles
+            </span>
+            {unavailableCount > 0 && (
+              <>
+                <span>·</span>
+                <span className="text-neutral-400">{unavailableCount} ocultos</span>
+              </>
+            )}
+          </div>
         </div>
         <Button onClick={() => setEditingProduct("new")}>
           <Plus className="size-4" />
           Nuevo producto
         </Button>
-      </header>
+      </div>
 
+      {/* Filtros + búsqueda — solo si hay productos suficientes */}
+      {products.length > 3 && (
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
+          <div className="flex-1 min-w-[180px]">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
+              <input
+                type="search"
+                placeholder="Buscar producto..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 bg-neutral-100 rounded-lg text-body-md placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-primary-500 transition"
+              />
+            </div>
+          </div>
+          <div className="flex rounded-lg border border-neutral-200 overflow-hidden shrink-0">
+            {(["all", "available", "unavailable"] as FilterType[]).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={cn(
+                  "px-3 py-2 text-body-sm font-medium transition",
+                  filter === f
+                    ? "bg-neutral-900 text-white"
+                    : "bg-white text-neutral-600 hover:bg-neutral-50",
+                )}
+              >
+                {f === "all"
+                  ? "Todos"
+                  : f === "available"
+                    ? "Disponibles"
+                    : "Ocultos"}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Lista */}
       {products.length === 0 ? (
         <div className="bg-white border border-neutral-200 rounded-xl p-10 text-center">
           <div className="size-14 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -96,20 +168,31 @@ export function ProductsManager({ storeId, initial }: Props) {
             Agregar producto
           </Button>
         </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-body-md text-neutral-500">
+            Sin resultados para "{search}"
+          </p>
+          <button
+            onClick={() => { setSearch(""); setFilter("all"); }}
+            className="text-body-sm text-primary-600 hover:underline mt-1"
+          >
+            Limpiar filtros
+          </button>
+        </div>
       ) : (
-        <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {products.map((product) => (
-            <li key={product.id}>
-              <ProductCard
-                product={product}
-                onEdit={() => setEditingProduct(product)}
-                onDeleted={handleDeleted}
-                onAvailabilityChange={handleAvailabilityChange}
-                storeId={storeId}
-              />
-            </li>
+        <div className="space-y-2">
+          {filtered.map((product) => (
+            <ProductListRow
+              key={product.id}
+              product={product}
+              onEdit={() => setEditingProduct(product)}
+              onDeleted={handleDeleted}
+              onAvailabilityChange={handleAvailabilityChange}
+              storeId={storeId}
+            />
           ))}
-        </ul>
+        </div>
       )}
 
       {editingProduct && (
@@ -124,7 +207,7 @@ export function ProductsManager({ storeId, initial }: Props) {
   );
 }
 
-function ProductCard({
+function ProductListRow({
   product,
   onEdit,
   onDeleted,
@@ -141,7 +224,7 @@ function ProductCard({
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const onToggleAvailable = (next: boolean) => {
-    onAvailabilityChange(product.id, next); // optimista
+    onAvailabilityChange(product.id, next);
     startTransition(async () => {
       const result = await toggleProductAvailabilityAction({
         storeId,
@@ -149,7 +232,7 @@ function ProductCard({
         isAvailable: next,
       });
       if (result?.serverError) {
-        onAvailabilityChange(product.id, !next); // revertir
+        onAvailabilityChange(product.id, !next);
       }
     });
   };
@@ -164,50 +247,50 @@ function ProductCard({
     });
   };
 
-  const hasDiscount = product.compare_at_price && product.compare_at_price > product.price;
+  const hasDiscount =
+    product.compare_at_price && product.compare_at_price > product.price;
 
   return (
     <div
       className={cn(
-        "bg-white border border-neutral-200 rounded-md overflow-hidden transition",
+        "bg-white border border-neutral-200 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 transition hover:border-neutral-300",
         !product.is_available && "opacity-60",
       )}
     >
-      <div className="relative aspect-[4/3] bg-neutral-100">
+      {/* Imagen */}
+      <div className="size-16 sm:size-20 rounded-lg overflow-hidden bg-neutral-100 shrink-0 relative">
         {product.image_url ? (
           <Image
             src={product.image_url}
             alt={product.name}
             fill
-            sizes="(max-width:640px) 100vw, 33vw"
+            sizes="80px"
             className="object-cover"
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-300 flex items-center justify-center">
-            <Package className="size-8 text-primary-700/50" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+            <Package className="size-6 text-primary-400" />
           </div>
         )}
         {!product.is_available && (
           <div className="absolute inset-0 bg-neutral-900/40 flex items-center justify-center">
-            <span className="bg-white text-neutral-900 text-body-sm font-medium px-3 py-1 rounded-full">
-              Sin stock
-            </span>
+            <EyeOff className="size-4 text-white" />
           </div>
         )}
       </div>
 
-      <div className="p-3">
-        <h3 className="text-body-md font-medium text-neutral-900 truncate">
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <h3 className="text-body-md font-semibold text-neutral-900 truncate">
           {product.name}
         </h3>
         {product.description && (
-          <p className="text-body-sm text-neutral-500 line-clamp-1">
+          <p className="text-body-sm text-neutral-500 line-clamp-1 mt-0.5">
             {product.description}
           </p>
         )}
-
-        <div className="flex items-baseline gap-1.5 mt-1">
-          <span className="text-body-md font-semibold text-neutral-900">
+        <div className="flex items-baseline gap-2 mt-1.5">
+          <span className="text-body-md font-bold text-neutral-900">
             {formatPrice(product.price)}
           </span>
           {hasDiscount && (
@@ -216,52 +299,61 @@ function ProductCard({
             </span>
           )}
         </div>
+      </div>
 
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <Switch
-              checked={product.is_available}
-              onCheckedChange={onToggleAvailable}
-              disabled={isPending}
-            />
-            <span className="text-body-xs text-neutral-600">Disponible</span>
-          </label>
-
-          <div className="flex items-center gap-1">
-            <button
-              onClick={onEdit}
-              className="size-8 rounded-md hover:bg-neutral-100 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition"
-              aria-label="Editar"
-            >
-              <Pencil className="size-4" />
-            </button>
-            {confirmDelete ? (
-              <div className="flex items-center gap-1 text-body-xs">
-                <button
-                  onClick={onDelete}
-                  disabled={isPending}
-                  className="font-medium text-destructive px-2 py-1 hover:underline"
-                >
-                  ¿Borrar?
-                </button>
-                <button
-                  onClick={() => setConfirmDelete(false)}
-                  className="text-neutral-500 px-2 py-1 hover:underline"
-                >
-                  No
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setConfirmDelete(true)}
-                className="size-8 rounded-md hover:bg-red-50 flex items-center justify-center text-neutral-500 hover:text-destructive transition"
-                aria-label="Borrar"
-              >
-                <Trash2 className="size-4" />
-              </button>
+      {/* Acciones */}
+      <div className="flex items-center gap-2 shrink-0">
+        <label className="flex items-center gap-1.5 cursor-pointer select-none">
+          <Switch
+            checked={product.is_available}
+            onCheckedChange={onToggleAvailable}
+            disabled={isPending}
+          />
+          <span
+            className={cn(
+              "text-body-xs font-medium hidden sm:block transition",
+              product.is_available ? "text-accent-600" : "text-neutral-400",
             )}
+          >
+            {product.is_available ? "Activo" : "Oculto"}
+          </span>
+        </label>
+
+        <button
+          onClick={onEdit}
+          className="size-8 rounded-md hover:bg-neutral-100 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition"
+          aria-label="Editar"
+        >
+          <Pencil className="size-4" />
+        </button>
+
+        {confirmDelete ? (
+          <div className="flex items-center gap-1 bg-red-50 rounded-lg px-2 py-1">
+            <span className="text-body-xs text-neutral-600">¿Borrar?</span>
+            <button
+              onClick={onDelete}
+              disabled={isPending}
+              className="text-body-xs font-semibold text-destructive hover:underline"
+            >
+              Sí
+            </button>
+            <span className="text-neutral-300">|</span>
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="text-body-xs font-medium text-neutral-500 hover:underline"
+            >
+              No
+            </button>
           </div>
-        </div>
+        ) : (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="size-8 rounded-md hover:bg-red-50 flex items-center justify-center text-neutral-500 hover:text-destructive transition"
+            aria-label="Borrar"
+          >
+            <Trash2 className="size-4" />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -280,6 +372,9 @@ function ProductFormDialog({
 }) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [imagePreview, setImagePreview] = useState<string>(
+    initial?.image_url ?? "",
+  );
   const isEditing = !!initial;
 
   const form = useForm<ProductInput>({
@@ -324,16 +419,13 @@ function ProductFormDialog({
           return;
         }
         if (result?.data?.product) {
-          const product = result.data.product as {
-            id: string;
-          };
-        
+          const product = result.data.product as { id: string };
           onSaved(
             {
               id: product.id,
               name: data.name,
               description: data.description ?? null,
-              image_url: null,
+              image_url: imagePreview || null,
               price: data.price,
               compare_at_price: data.compareAtPrice ?? null,
               is_available: data.isAvailable,
@@ -356,6 +448,39 @@ function ProductFormDialog({
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {/* Preview de imagen */}
+          {imagePreview && (
+            <div className="relative w-full h-36 rounded-lg overflow-hidden bg-neutral-100">
+              <Image
+                src={imagePreview}
+                alt="Preview"
+                fill
+                className="object-cover"
+                onError={() => setImagePreview("")}
+              />
+              <button
+                type="button"
+                onClick={() => setImagePreview("")}
+                className="absolute top-2 right-2 size-6 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 hover:text-destructive transition shadow-sm"
+              >
+                <Trash2 className="size-3.5" />
+              </button>
+            </div>
+          )}
+
+          <FormField
+            label="URL de imagen"
+            htmlFor="imageUrl"
+            hint="Pegá un link de imagen (opcional)"
+          >
+            <Input
+              id="imageUrl"
+              placeholder="https://ejemplo.com/foto.jpg"
+              value={imagePreview}
+              onChange={(e) => setImagePreview(e.target.value)}
+            />
+          </FormField>
+
           <FormField
             label="Nombre"
             htmlFor="name"
@@ -370,10 +495,14 @@ function ProductFormDialog({
             />
           </FormField>
 
-          <FormField label="Descripción" htmlFor="description">
+          <FormField
+            label="Descripción"
+            htmlFor="description"
+            hint="Ingredientes o detalles. Se ve en la ficha del comercio."
+          >
             <Input
               id="description"
-              placeholder="Ingredientes, detalles..."
+              placeholder="Ej: con muzzarella extra y aceitunas..."
               {...form.register("description")}
             />
           </FormField>
@@ -417,22 +546,30 @@ function ProductFormDialog({
                   step="50"
                   className="pl-7"
                   {...form.register("compareAtPrice", {
-                    setValueAs: (v) => (v === "" || v == null ? undefined : Number(v)),
+                    setValueAs: (v) =>
+                      v === "" || v == null ? undefined : Number(v),
                   })}
                 />
               </div>
             </FormField>
           </div>
 
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              {...form.register("isAvailable")}
-              className="size-4 rounded text-primary-600"
+          {/* Toggle disponibilidad mejorado */}
+          <label className="flex items-center gap-3 cursor-pointer select-none bg-neutral-50 rounded-lg px-3 py-3">
+            <Switch
+              checked={form.watch("isAvailable")}
+              onCheckedChange={(v) => form.setValue("isAvailable", v)}
             />
-            <span className="text-body-md text-neutral-700">
-              Disponible para pedir
-            </span>
+            <div>
+              <p className="text-body-md font-medium text-neutral-900">
+                Disponible para pedir
+              </p>
+              <p className="text-body-xs text-neutral-500">
+                {form.watch("isAvailable")
+                  ? "Los clientes pueden agregar este producto al carrito"
+                  : "Temporalmente oculto en la app"}
+              </p>
+            </div>
           </label>
 
           {serverError && (
@@ -447,8 +584,9 @@ function ProductFormDialog({
                 Cancelar
               </Button>
             </DialogClose>
-            <Button type="submit" loading={isPending} fullWidth>
-              {isEditing ? "Guardar" : "Crear"}
+            <Button type="submit" loading={isPending} fullWidth variant="success">
+              <Check className="size-4" />
+              {isEditing ? "Guardar cambios" : "Crear producto"}
             </Button>
           </div>
         </form>

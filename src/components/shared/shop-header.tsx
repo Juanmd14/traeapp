@@ -1,30 +1,23 @@
 import Link from "next/link";
 import Image from "next/image";
-
-import {
-  MapPin,
-  Search,
-  User,
-  Store,
-} from "lucide-react";
-
+import { MapPin, User, Store, ClipboardList } from "lucide-react";
 import { getSession } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { SearchBar } from "@/components/shared/search-bar";
 
-/** Marca en el header */
 function BrandLogo() {
   return (
     <Link
       href="/"
-      className="flex items-center shrink-0 py-0.5 pr-2 sm:pr-3 mr-1 border-r border-neutral-200"
+      className="flex items-center shrink-0 pr-4 mr-2 border-r border-neutral-200"
       aria-label="Vadelivery — inicio"
     >
       <Image
-        src="/logo-vadelivery.png"
+        src="/logo-vadelivery.jpg"
         alt="Vadelivery"
-        width={152}
-        height={48}
-        className="h-8 w-auto max-w-[120px] sm:h-9 sm:max-w-[140px] object-contain object-left"
+        width={400}
+        height={128}
+        className="h-16 w-auto max-w-[130px] object-contain object-left"
         priority
       />
     </Link>
@@ -40,127 +33,120 @@ type AddressData = {
 export async function ShopHeader() {
   const session = await getSession();
 
-  let defaultAddressLine: string | null =
-    null;
+  let defaultAddressLine: string | null = null;
 
   if (session) {
     const supabase = await createClient();
 
     const { data } = await supabase
       .from("addresses")
-      .select(`
-        label,
-        street,
-        number
-      `)
+      .select("label, street, number")
       .eq("profile_id", session.id)
       .eq("is_default", true)
       .maybeSingle();
 
-    const addr =
-      data as AddressData | null;
+    const addr = data as AddressData | null;
 
     if (addr) {
       defaultAddressLine = addr.label
         ? addr.label
-        : `${addr.street ?? ""}${
-            addr.number
-              ? " " + addr.number
-              : ""
-          }`;
+        : `${addr.street ?? ""}${addr.number ? " " + addr.number : ""}`;
     }
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b border-neutral-200">
-      <div className="container-shop py-3">
-        <div className="flex items-center gap-2 sm:gap-3 mb-3 min-h-[44px]">
+    <header className="sticky top-0 z-40 bg-white border-b border-neutral-200 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+
+        {/* Fila única — altura fija 64px */}
+        <div className="flex items-center gap-3 h-16">
+
+          {/* Logo */}
           <BrandLogo />
 
-          <Link
-            href={
-              session
-                ? "/direcciones"
-                : "/login?next=/"
-            }
-            className="flex items-center gap-1.5 text-left flex-1 min-w-0"
-          >
-            <MapPin
-              className="size-4 text-primary-600 shrink-0"
-              strokeWidth={2.5}
-            />
+          {/* Dirección — solo desktop */}
+          {session && (
+            <Link
+              href="/direcciones"
+              className="hidden lg:flex items-center gap-1.5 shrink-0 group"
+            >
+              <MapPin
+                className="size-4 text-primary-600 shrink-0"
+                strokeWidth={2.5}
+              />
+              <div className="min-w-0 max-w-[150px]">
+                <p className="text-[10px] text-neutral-400 leading-none uppercase tracking-wider">
+                  Enviar a
+                </p>
+                <p className="text-body-sm font-semibold text-neutral-900 leading-tight truncate group-hover:text-primary-600 transition">
+                  {defaultAddressLine ?? "Agregar dirección"}
+                </p>
+              </div>
+            </Link>
+          )}
 
-            <div className="min-w-0">
-              <p className="text-[11px] text-neutral-500 leading-none">
-                {session
-                  ? "Enviar a"
-                  : "Ingresá para pedir"}
-              </p>
+          {session && (
+            <div className="hidden lg:block w-px h-6 bg-neutral-200 shrink-0" />
+          )}
 
-              <p className="text-body-md font-medium text-neutral-900 leading-tight truncate">
-                {defaultAddressLine ??
-                  (session
-                    ? "Agregar dirección"
-                    : "¿A dónde?")}
-              </p>
-            </div>
-          </Link>
+          {/* Buscador central */}
+          <div className="flex-1">
+            <SearchBar />
+          </div>
 
+          {/* Acciones derecha */}
           {session ? (
             <div className="flex items-center gap-2 shrink-0">
-              {(session.role ===
-                "store_owner" ||
-                session.role ===
-                  "store_staff" ||
-                session.role ===
-                  "admin") && (
+
+              {/* Mis pedidos */}
+              <Link
+                href="/pedidos"
+                className="hidden md:inline-flex items-center gap-1.5 text-body-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 px-3 py-2 rounded-lg transition"
+                aria-label="Mis pedidos"
+              >
+                <ClipboardList className="size-4" />
+                <span className="hidden lg:inline">Mis pedidos</span>
+              </Link>
+
+              {/* Mi comercio */}
+              {(session.role === "store_owner" ||
+                session.role === "store_staff" ||
+                session.role === "admin") && (
                 <Link
                   href="/comercio/pedidos"
-                  className="inline-flex items-center gap-1.5 text-body-sm font-medium bg-primary-50 text-primary-700 hover:bg-primary-100 border border-primary-200 transition rounded-full size-9 sm:size-auto sm:px-3 sm:py-1.5 justify-center"
+                  className="inline-flex items-center gap-1.5 text-body-sm font-semibold bg-primary-600 text-white hover:bg-primary-700 px-3 py-2 rounded-lg transition shadow-sm"
                   aria-label="Mi comercio"
                 >
                   <Store className="size-4" />
-
-                  <span className="hidden sm:inline">
-                    Mi comercio
-                  </span>
+                  <span className="hidden sm:inline">Mi comercio</span>
                 </Link>
               )}
 
+              {/* Avatar + nombre */}
               <Link
                 href="/perfil"
-                className="group flex items-center gap-2.5 px-2 py-1 rounded-full hover:bg-neutral-100 transition"
+                className="group flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg hover:bg-neutral-100 transition"
                 aria-label="Mi perfil"
               >
-                <div className="text-right hidden sm:block">
-                  <p className="text-[11px] text-neutral-500 leading-tight">
+                <div className="hidden md:block text-right">
+                  <p className="text-[10px] text-neutral-500 leading-tight">
                     Hola
                   </p>
-
-                  <p className="text-body-sm font-medium text-neutral-900 leading-tight group-hover:text-primary-700 transition">
-                    {
-                      session.fullName.split(
-                        " "
-                      )[0]
-                    }
+                  <p className="text-body-sm font-semibold text-neutral-900 leading-tight group-hover:text-primary-600 transition">
+                    {session.fullName.split(" ")[0]}
                   </p>
                 </div>
-
-                <div className="size-9 rounded-full overflow-hidden bg-primary-100 text-primary-700 flex items-center justify-center font-medium text-body-md relative ring-2 ring-primary-500 ring-offset-2 ring-offset-white group-hover:ring-primary-600 transition">
+                <div className="size-8 rounded-full overflow-hidden bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-body-sm relative ring-2 ring-primary-400 ring-offset-1 ring-offset-white group-hover:ring-primary-600 transition">
                   {session.avatarUrl ? (
                     <Image
                       src={session.avatarUrl}
                       alt=""
                       fill
-                      sizes="36px"
+                      sizes="32px"
                       className="object-cover"
                     />
                   ) : (
-                    <span>
-                      {session.fullName
-                        .charAt(0)
-                        .toUpperCase()}
-                    </span>
+                    <span>{session.fullName.charAt(0).toUpperCase()}</span>
                   )}
                 </div>
               </Link>
@@ -168,7 +154,7 @@ export async function ShopHeader() {
           ) : (
             <Link
               href="/login?next=/"
-              className="text-body-sm font-medium text-primary-600 hover:text-primary-700 shrink-0 inline-flex items-center gap-1"
+              className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2 rounded-lg transition shadow-sm shrink-0"
             >
               <User className="size-4" />
               Ingresar
@@ -176,17 +162,34 @@ export async function ShopHeader() {
           )}
         </div>
 
-        <button
-          type="button"
-          className="w-full flex items-center gap-2 bg-neutral-100 hover:bg-neutral-200/70 transition rounded-md px-3 py-2.5"
-          aria-label="Buscar"
-        >
-          <Search className="size-4 text-neutral-400" />
+        {/* Fila mobile — dirección debajo */}
+        {session && (
+          <div className="lg:hidden flex items-center justify-between pb-2 gap-2">
+            <Link
+              href="/direcciones"
+              className="flex items-center gap-1.5 min-w-0 group"
+            >
+              <MapPin
+                className="size-3.5 text-primary-600 shrink-0"
+                strokeWidth={2.5}
+              />
+              <span className="text-body-sm font-medium text-neutral-700 group-hover:text-primary-600 transition truncate">
+                {defaultAddressLine ?? "Agregar dirección"}
+              </span>
+            </Link>
 
-          <span className="text-body-md text-neutral-400">
-            Buscar comercios o productos
-          </span>
-        </button>
+            {/* Mis pedidos en mobile — solo ícono */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Link
+                href="/pedidos"
+                className="md:hidden size-8 rounded-lg bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-600 transition"
+                aria-label="Mis pedidos"
+              >
+                <ClipboardList className="size-4" />
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
