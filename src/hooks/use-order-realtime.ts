@@ -23,25 +23,46 @@ export function useOrderRealtime(orderId: string, initial: OrderRealtime) {
 
   useEffect(() => {
     const supabase = createClient();
-    const channel = supabase
-      .channel(`order:${orderId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "orders",
-          filter: `id=eq.${orderId}`,
-        },
-        (payload) => {
-          const next = payload.new as OrderRealtime;
-          setOrder((prev) => ({ ...prev, ...next }));
-        },
-      )
-      .subscribe();
+
+    let channel: ReturnType<typeof supabase.channel>;
+
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        await supabase.realtime.setAuth(session.access_token);
+      }
+
+      channel = supabase
+        .channel(`order:${orderId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "orders",
+            filter: `id=eq.${orderId}`,
+          },
+          (payload) => {
+            const next = payload.new as OrderRealtime;
+            setOrder((prev) => ({ ...prev, ...next }));
+          },
+        )
+        .subscribe();
+    };
+
+    const {
+      data: { subscription: authSub },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.access_token) {
+        await supabase.realtime.setAuth(session.access_token);
+      }
+    });
+
+    void init();
 
     return () => {
-      supabase.removeChannel(channel);
+      authSub.unsubscribe();
+      if (channel) supabase.removeChannel(channel);
     };
   }, [orderId]);
 
