@@ -54,7 +54,7 @@ export function useAvailableOrdersRealtime(
           if (isNowAvailable && !knownIds.current.has(row.id)) {
             knownIds.current.add(row.id);
 
-            const { data } = await supabase
+            const { data } = await (supabase
               .from("orders")
               .select(`
                 id, order_number, total, delivery_fee, delivery_address_text, ready_at,
@@ -62,7 +62,7 @@ export function useAvailableOrdersRealtime(
                 order_items ( quantity )
               `)
               .eq("id", row.id)
-              .single();
+              .single() as any);
 
             if (data) {
               const order: AvailableOrder = {
