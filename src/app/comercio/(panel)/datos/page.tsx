@@ -24,6 +24,8 @@ type StoreData = {
   lat: number | null;
   lng: number | null;
   delivery_radius_km: number | null;
+  logo_url: string | null;
+  cover_url: string | null;
 };
 
 export default async function DatosComercioPage() {
@@ -58,7 +60,9 @@ export default async function DatosComercioPage() {
       address,
       lat,
       lng,
-      delivery_radius_km
+      delivery_radius_km,
+      logo_url,
+      cover_url
     `)
     .eq("id", storeId)
     .single();
@@ -95,6 +99,8 @@ export default async function DatosComercioPage() {
           delivery_radius_km: Number(
             store.delivery_radius_km ?? 0
           ),
+          logo_url: store.logo_url,
+          cover_url: store.cover_url,
         }}
       />
     </div>

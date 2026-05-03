@@ -9,6 +9,7 @@ import { MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormField } from "@/components/ui/form-field";
+import { StoreImageUpload } from "./store-image-upload";
 import {
   storeProfileSchema,
   storeAddressSchema,
@@ -30,6 +31,8 @@ type Initial = {
   lat: number | null;
   lng: number | null;
   delivery_radius_km: number;
+  logo_url: string | null;
+  cover_url: string | null;
 };
 
 type Props = {
@@ -43,6 +46,8 @@ export function StoreDatosForm({ storeId, initial }: Props) {
   const [serverErrorAddress, setServerErrorAddress] = useState<string | null>(null);
   const [pendingProfile, startProfile] = useTransition();
   const [pendingAddress, startAddress] = useTransition();
+  const [logoUrl, setLogoUrl] = useState(initial.logo_url);
+  const [coverUrl, setCoverUrl] = useState(initial.cover_url);
 
   const profileForm = useForm<StoreProfileInput>({
     resolver: zodResolver(storeProfileSchema),
@@ -92,6 +97,40 @@ export function StoreDatosForm({ storeId, initial }: Props) {
 
   return (
     <div className="max-w-xl space-y-10">
+      <section className="border-b border-neutral-200 pb-8">
+        <h2 className="text-heading-md font-semibold text-neutral-900 mb-1">
+          Imágenes del comercio
+        </h2>
+        <p className="text-body-sm text-neutral-500 mb-5">
+          Logo y portada que se muestran en la tienda.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p className="text-body-sm font-medium text-neutral-700 mb-2">
+              Logo
+            </p>
+            <StoreImageUpload
+              storeId={storeId}
+              currentUrl={logoUrl}
+              type="logo"
+              onUploadComplete={setLogoUrl}
+            />
+          </div>
+          <div>
+            <p className="text-body-sm font-medium text-neutral-700 mb-2">
+              Portada
+            </p>
+            <StoreImageUpload
+              storeId={storeId}
+              currentUrl={coverUrl}
+              type="cover"
+              onUploadComplete={setCoverUrl}
+            />
+          </div>
+        </div>
+      </section>
+
       <section>
         <h2 className="text-heading-md font-semibold text-neutral-900 mb-1">
           Datos y contacto

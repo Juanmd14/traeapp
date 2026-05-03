@@ -45,7 +45,7 @@ export default async function ComercioLayout({
         <div className="p-5 border-b border-neutral-200">
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/logo-vadelivery.png"
+              src="/logo-vadelivery.jpg"
               alt="Vadelivery"
               width={140}
               height={44}
@@ -96,7 +96,7 @@ export default async function ComercioLayout({
         <header className="lg:hidden bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
           <Link href="/" className="flex items-center min-w-0">
             <Image
-              src="/logo-vadelivery.png"
+              src="/logo-vadelivery.jpg"
               alt="Vadelivery"
               width={120}
               height={40}
@@ -110,7 +110,7 @@ export default async function ComercioLayout({
         {/* Bottom nav móvil */}
         <nav className="lg:hidden bg-white border-t border-neutral-200 sticky bottom-0">
           <div className="flex justify-around py-2">
-            {navItems.slice(0, 4).map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
