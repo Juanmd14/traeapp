@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, ClipboardList, User } from "lucide-react";
+import { Home, Search, ClipboardList, User, Bike } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Props = {
   isLogged: boolean;
+  role?: string | null;
 };
 
 const baseItems = [
@@ -14,8 +15,10 @@ const baseItems = [
   { href: "/buscar", label: "Buscar", icon: Search },
 ];
 
-export function BottomNav({ isLogged }: Props) {
+export function BottomNav({ isLogged, role }: Props) {
   const pathname = usePathname();
+
+  const isDriver = role === "delivery_driver" || role === "admin";
 
   const items = [
     ...baseItems,
@@ -25,6 +28,9 @@ export function BottomNav({ isLogged }: Props) {
       icon: ClipboardList,
       activeMatch: "/pedidos",
     },
+    ...(isDriver
+      ? [{ href: "/driver/disponibles", label: "Repartidor", icon: Bike, activeMatch: "/driver" }]
+      : []),
     {
       href: isLogged ? "/perfil" : "/login",
       label: "Perfil",
