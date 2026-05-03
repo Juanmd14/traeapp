@@ -1,0 +1,24 @@
+{
+    "name": "Vadelivery",
+    "short_name": "Vadelivery",
+    "description": "El delivery de tu ciudad. Comercios locales, repartidores propios.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#FF4D3A",
+    "orientation": "portrait",
+    "icons": [
+      {
+        "src": "/logo-vadelivery.jpg",
+        "sizes": "192x192",
+        "type": "image/jpeg",
+        "purpose": "any"
+      },
+      {
+        "src": "/logo-vadelivery.jpg",
+        "sizes": "512x512",
+        "type": "image/jpeg",
+        "purpose": "maskable"
+      }
+    ]
+  }
