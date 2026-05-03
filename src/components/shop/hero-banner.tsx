@@ -77,6 +77,7 @@ export function HeroBanner() {
                 alt={currentIcon.alt}
                 width={96}
                 height={96}
+                priority
                 className="object-contain w-16 h-16 sm:w-24 sm:h-24"
                 onError={() => setImgError(true)}
               />

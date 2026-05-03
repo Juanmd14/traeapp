@@ -12,14 +12,14 @@ function BrandLogo() {
       className="flex items-center shrink-0 pr-4 mr-2 border-r border-neutral-200"
       aria-label="Vadelivery — inicio"
     >
-      <Image
-        src="/logo-vadelivery.jpg"
-        alt="Vadelivery"
-        width={400}
-        height={128}
-        className="h-16 w-auto max-w-[130px] object-contain object-left"
-        priority
-      />
+<Image
+              src="/logo-vadelivery.jpg"
+              alt="Vadelivery"
+              width={120}
+              height={40}
+              priority
+              className="h-7 w-auto"
+            />
     </Link>
   );
 }
