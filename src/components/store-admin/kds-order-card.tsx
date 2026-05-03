@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Banknote, CreditCard, Clock, MapPin } from "lucide-react";
+import { ChevronDown, Banknote, CreditCard, Clock, MapPin, AlertTriangle, CheckCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +44,27 @@ const REJECT_REASONS = [
   "Otro",
 ];
 
+const TIME_WARNING_MINUTES = 10;
+const TIME_CRITICAL_MINUTES = 20;
+
+function formatElapsed(minutes: number): string {
+  if (minutes < 60) return `${minutes}m`;
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hrs}h ${mins}m`;
+}
+
+function getTimeColor(minutes: number): string {
+  if (minutes >= TIME_CRITICAL_MINUTES) return "text-red-600 bg-red-50";
+  if (minutes >= TIME_WARNING_MINUTES) return "text-amber-600 bg-amber-50";
+  return "text-neutral-600 bg-neutral-50";
+}
+
+function getTimeIcon(minutes: number) {
+  if (minutes >= TIME_CRITICAL_MINUTES) return <AlertTriangle className="size-4" />;
+  return <Clock className="size-4" />;
+}
+
 export function KdsOrderCard({ order, items, variant }: Props) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
@@ -53,18 +74,25 @@ export function KdsOrderCard({ order, items, variant }: Props) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const [elapsed, setElapsed] = useState(() =>
-    Math.floor((Date.now() - new Date(order.created_at).getTime()) / 60000),
-  );
+  const [elapsed, setElapsed] = useState(0);
 
+  // Timer actualizado cada 10 segundos
   useEffect(() => {
-    const interval = setInterval(() => {
-      setElapsed(
-        Math.floor((Date.now() - new Date(order.created_at).getTime()) / 60000),
-      );
-    }, 30_000);
+    const updateElapsed = () => {
+      const now = Date.now();
+      const startTime = order.status === "preparing" 
+        ? new Date(order.confirmed_at ?? order.created_at).getTime()
+        : new Date(order.created_at).getTime();
+      setElapsed(Math.floor((now - startTime) / 60000));
+    };
+
+    updateElapsed();
+    const interval = setInterval(updateElapsed, 10000);
     return () => clearInterval(interval);
-  }, [order.created_at]);
+  }, [order.created_at, order.confirmed_at, order.status]);
+
+  const isWarning = elapsed >= TIME_WARNING_MINUTES;
+  const isCritical = elapsed >= TIME_CRITICAL_MINUTES;
 
   const onAccept = () => {
     setServerError(null);
@@ -108,237 +136,213 @@ export function KdsOrderCard({ order, items, variant }: Props) {
     });
   };
 
-  const variantClasses = {
-    new: "bg-primary-50 border-primary-200",
-    preparing: "bg-warning-50 border-warning-200",
-    ready: "bg-accent-50 border-accent-200",
+  const statusColor = {
+    new: "border-l-primary-500",
+    preparing: "border-l-warning-500",
+    ready: "border-l-accent-500",
   };
 
-  const isMpApproved =
-    order.payment_method === "mercadopago" && order.payment_status === "approved";
+  const statusBg = {
+    new: "bg-primary-500",
+    preparing: "bg-warning-500",
+    ready: "bg-accent-500",
+  };
 
   return (
     <>
-      <article
+      <div
         className={cn(
-          "border rounded-lg p-3 sm:p-4 space-y-3",
-          variantClasses[variant],
+          "bg-white rounded-lg border border-neutral-200 border-l-4 shadow-sm",
+          statusColor[variant],
+          isPending && "opacity-50"
         )}
       >
-        {/* Header */}
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <p className="text-body-md font-bold text-neutral-900">
-              #{order.order_number}
-            </p>
-            <p className="text-body-xs text-neutral-500 flex items-center gap-1">
-              <Clock className="size-3" />
-              {elapsed === 0 ? "recién" : `${elapsed} min`}
-            </p>
+        <div className="p-3 sm:p-4">
+          {/* Header */}
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div>
+              <p className="text-heading-sm font-bold text-neutral-900">
+                #{order.order_number}
+              </p>
+              <p className="text-body-xs text-neutral-500">
+                {new Date(order.created_at).toLocaleTimeString("es-AR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
+            </div>
+            
+            {/* Timer */}
+            <div className={cn(
+              "flex items-center gap-1.5 px-2 py-1 rounded-full text-body-sm font-medium",
+              getTimeColor(elapsed)
+            )}>
+              {getTimeIcon(elapsed)}
+              <span>{formatElapsed(elapsed)}</span>
+            </div>
           </div>
-          <div className="flex flex-col items-end gap-1">
-            <span className="text-body-md font-bold text-neutral-900">
-              {formatPrice(order.total)}
-            </span>
-            <span
-              className={cn(
-                "inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full",
-                order.payment_method === "cash"
-                  ? "bg-accent-100 text-accent-800"
-                  : isMpApproved
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-warning-100 text-warning-800",
-              )}
+
+          {/* Items summary */}
+          <div className="text-body-sm text-neutral-700 mb-3">
+            {items?.slice(0, 3).map((item) => (
+              <div key={item.id} className="flex justify-between">
+                <span className="truncate">{item.quantity}x {item.product_name}</span>
+              </div>
+            ))}
+            {(items?.length ?? 0) > 3 && (
+              <p className="text-neutral-400 text-body-xs">+{items!.length - 3} más</p>
+            )}
+          </div>
+
+          {/* Payment method */}
+          <div className="flex items-center gap-2 mb-3">
+            {order.payment_method === "cash" ? (
+              <span className="inline-flex items-center gap-1 text-body-xs text-neutral-600">
+                <Banknote className="size-3.5" />
+                Efectivo
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-body-xs text-neutral-600">
+                <CreditCard className="size-3.5" />
+                MercadoPago {order.payment_status === "pending" && "(pendiente)"}
+              </span>
+            )}
+            {order.customer_notes && (
+              <span className="text-body-xs text-amber-600 flex items-center gap-1">
+                <MapPin className="size-3" />
+                Con nota
+              </span>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-2">
+            {variant === "new" && (
+              <>
+                <Button
+                  size="sm"
+                  className="flex-1"
+                  onClick={onAccept}
+                  loading={isPending}
+                >
+                  Aceptar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setRejectOpen(true)}
+                >
+                  X
+                </Button>
+              </>
+            )}
+            {variant === "preparing" && (
+              <Button
+                size="sm"
+                className="w-full"
+                variant="success"
+                onClick={onMarkReady}
+                loading={isPending}
+              >
+                <CheckCircle className="size-4" />
+                Listo
+              </Button>
+            )}
+            {variant === "ready" && (
+              <div className="w-full text-center text-body-sm text-accent-600 font-medium py-2">
+                Esperando repartidor
+              </div>
+            )}
+          </div>
+
+          {/* Expand toggle */}
+          {items && items.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setExpanded(!expanded)}
+              className="w-full mt-2 flex items-center justify-center gap-1 text-body-xs text-neutral-500 hover:text-neutral-700"
             >
-              {order.payment_method === "cash" ? (
-                <>
-                  <Banknote className="size-2.5" /> Efectivo
-                </>
-              ) : (
-                <>
-                  <CreditCard className="size-2.5" />
-                  {isMpApproved ? "MP pagado" : "MP pendiente"}
-                </>
-              )}
-            </span>
-          </div>
+              <span>{expanded ? "Ocultar" : "Ver"} detalles</span>
+              <ChevronDown className={cn("size-3.5 transition-transform", expanded && "rotate-180")} />
+            </button>
+          )}
         </div>
 
-        {/* Items resumen */}
-        {items && items.length > 0 && (
-          <div className="text-body-sm text-neutral-700">
-            {expanded ? (
-              <ul className="space-y-1">
-                {items.map((it) => (
-                  <li key={it.id} className="flex justify-between gap-2">
-                    <span>
-                      <span className="font-semibold">{it.quantity}×</span>{" "}
-                      {it.product_name}
-                      {it.notes && (
-                        <span className="block text-body-xs text-neutral-500 italic ml-4">
-                          “{it.notes}”
-                        </span>
-                      )}
-                    </span>
-                    <span className="text-neutral-500 shrink-0">
-                      {formatPrice(it.total)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="line-clamp-2">
-                {items
-                  .map((it) => `${it.quantity}× ${it.product_name}`)
-                  .join(" · ")}
-              </p>
-            )}
-            <button
-              onClick={() => setExpanded((v) => !v)}
-              className="mt-1 text-body-xs font-medium text-neutral-500 hover:text-neutral-900 inline-flex items-center gap-0.5 transition"
-            >
-              <ChevronDown
-                className={cn(
-                  "size-3 transition-transform",
-                  expanded && "rotate-180",
+        {/* Expanded details */}
+        {expanded && items && (
+          <div className="px-3 sm:px-4 pb-3 border-t border-neutral-100 pt-3 space-y-2">
+            {items.map((item) => (
+              <div key={item.id} className="flex justify-between text-body-sm">
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold text-neutral-900">{item.quantity}x</span>
+                  <span className="text-neutral-700">{item.product_name}</span>
+                </div>
+                {item.notes && (
+                  <span className="text-body-xs text-amber-600 italic">"{item.notes}"</span>
                 )}
-              />
-              {expanded ? "Cerrar" : "Ver detalle"}
-            </button>
-          </div>
-        )}
-
-        {/* Dirección y notas */}
-        {expanded && (
-          <div className="border-t border-neutral-200/70 pt-2 space-y-1.5">
-            <p className="text-body-xs text-neutral-500 uppercase tracking-wider">
-              Entrega
-            </p>
-            <p className="text-body-sm text-neutral-700 flex items-start gap-1.5">
-              <MapPin className="size-3.5 text-neutral-400 mt-0.5 shrink-0" />
-              {order.delivery_address_text}
-            </p>
+              </div>
+            ))}
             {order.customer_notes && (
-              <p className="text-body-sm text-neutral-600 italic">
-                Nota: {order.customer_notes}
-              </p>
+              <div className="mt-2 p-2 bg-amber-50 rounded text-body-xs text-amber-800">
+                <strong>Nota:</strong> {order.customer_notes}
+              </div>
             )}
           </div>
         )}
+      </div>
 
-        {serverError && (
-          <p className="text-body-xs text-destructive bg-red-50 px-2 py-1 rounded-md">
-            {serverError}
-          </p>
-        )}
-
-        {/* Acciones */}
-        {variant === "new" && (
-          <div className="flex gap-2 pt-1">
-            <Button
-              variant="secondary"
-              size="sm"
-              fullWidth
-              onClick={() => setRejectOpen(true)}
-              disabled={isPending}
-            >
-              Rechazar
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              fullWidth
-              onClick={onAccept}
-              loading={isPending}
-            >
-              Aceptar
-            </Button>
-          </div>
-        )}
-
-{variant === "preparing" && (
-  <Button
-    variant="success"
-    size="sm"
-    fullWidth
-    onClick={onMarkReady}
-    loading={isPending}
-  >
-    Marcar listo ✓
-  </Button>
-)}
-
-        {variant === "ready" && (
-          <p className="text-body-xs text-accent-700 text-center font-medium">
-            Esperando que retire el repartidor
-          </p>
-        )}
-      </article>
-
-      {/* Modal de rechazo */}
+      {/* Reject Dialog */}
       <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>¿Por qué rechazás este pedido?</DialogTitle>
+            <DialogTitle>Rechazar pedido #{order.order_number}</DialogTitle>
             <DialogDescription>
-              El cliente va a recibir tu motivo. Si pagó con Mercado Pago, se le
-              reintegra automáticamente.
+              Elegí el motivo por el cual rechazás este pedido.
             </DialogDescription>
           </DialogHeader>
-
-          <div className="space-y-2">
-            {REJECT_REASONS.map((r) => (
+          
+          <div className="space-y-3">
+            {REJECT_REASONS.map((reason) => (
               <label
-                key={r}
+                key={reason}
                 className={cn(
-                  "flex items-center gap-3 p-3 border-2 rounded-md cursor-pointer transition-all",
-                  rejectReason === r
-                    ? "border-accent-500 bg-accent-50 ring-2 ring-accent-100"
-                    : "border-neutral-200 hover:border-neutral-300",
+                  "flex items-center gap-2 p-3 rounded-md border cursor-pointer transition",
+                  rejectReason === reason
+                    ? "border-primary-500 bg-primary-50"
+                    : "border-neutral-200 hover:border-neutral-300"
                 )}
               >
                 <input
                   type="radio"
                   name="rejectReason"
-                  value={r}
-                  checked={rejectReason === r}
-                  onChange={() => setRejectReason(r)}
-                  className="accent-accent-600"
+                  value={reason}
+                  checked={rejectReason === reason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  className="accent-primary-500"
                 />
-                <span className="text-body-md">{r}</span>
+                <span className="text-body-sm">{reason}</span>
               </label>
             ))}
 
             {rejectReason === "Otro" && (
               <Input
-                placeholder="Escribí el motivo..."
+                placeholder="Especificá el motivo..."
                 value={customReason}
                 onChange={(e) => setCustomReason(e.target.value)}
-                maxLength={200}
-                className="mt-2"
               />
-            )}
-
-            {serverError && (
-              <p className="text-body-sm text-destructive bg-red-50 px-3 py-2 rounded-md">
-                {serverError}
-              </p>
             )}
           </div>
 
+          {serverError && (
+            <p className="text-body-sm text-destructive">{serverError}</p>
+          )}
+
           <div className="flex gap-2 mt-4">
-            <DialogClose asChild>
-              <Button variant="ghost" fullWidth>
-                Cancelar
-              </Button>
-            </DialogClose>
-            <Button
-              variant="destructive"
-              fullWidth
-              onClick={onReject}
-              loading={isPending}
-            >
-              Confirmar rechazo
+            <Button variant="outline" onClick={() => setRejectOpen(false)} className="flex-1">
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={onReject} loading={isPending} className="flex-1">
+              Rechazar
             </Button>
           </div>
         </DialogContent>
