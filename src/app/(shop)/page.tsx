@@ -3,7 +3,7 @@ import { HeroBanner } from "@/components/shop/hero-banner";
 import { CategoryPill, type Category } from "@/components/shop/category-pill";
 import { StoreCard, type StoreCardData } from "@/components/shop/store-card";
 
-export const revalidate = 60;
+export const revalidate = 30;
 
 type StoreQuery = {
   id: string;
@@ -47,7 +47,7 @@ export default async function HomePage() {
       .eq("status", "active")
       .is("deleted_at", null)
       .order("is_featured", { ascending: false })
-      .limit(20),
+      .limit(10),
   ]);
 
   const mappedCategories: Category[] = ((categories ?? []) as any[]).map(
