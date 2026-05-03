@@ -8,14 +8,14 @@ export default function AuthLayout({
 }) {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-neutral-50">
-      {/* Panel lateral (sólo desktop) */}
+      {/* Panel lateral — solo desktop */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-500 to-primary-700 text-white p-12 flex-col justify-between">
         <Link
           href="/"
           className="inline-block w-fit rounded-lg bg-white px-3 py-2 shadow-sm"
         >
           <Image
-            src="/logo-vadelivery.png"
+            src="/logo-vadelivery.jpg"
             alt="Vadelivery"
             width={180}
             height={56}
@@ -36,16 +36,13 @@ export default function AuthLayout({
         </p>
       </div>
 
-      {/* Form */}
+      {/* Formulario */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-sm">
-          {/* Logo móvil */}
-          <Link
-            href="/"
-            className="lg:hidden flex justify-center mb-8"
-          >
+          {/* Logo mobile */}
+          <Link href="/" className="lg:hidden flex justify-center mb-8">
             <Image
-              src="/logo-vadelivery.png"
+              src="/logo-vadelivery.jpg"
               alt="Vadelivery"
               width={200}
               height={64}

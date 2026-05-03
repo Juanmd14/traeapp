@@ -9,7 +9,7 @@ function BrandLogo() {
   return (
     <Link
       href="/"
-      className="flex items-center shrink-0 pr-4 mr-2 border-r border-neutral-200"
+      className="flex items-center shrink-0 pr-3 sm:pr-4 mr-2 border-r border-neutral-200"
       aria-label="Vadelivery — inicio"
     >
       <Image
@@ -17,7 +17,7 @@ function BrandLogo() {
         alt="Vadelivery"
         width={400}
         height={128}
-        className="h-16 w-auto max-w-[130px] object-contain object-left"
+        className="h-8 sm:h-16 w-auto max-w-[80px] sm:max-w-[130px] object-contain object-left"
         priority
       />
     </Link>
@@ -56,10 +56,10 @@ export async function ShopHeader() {
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-neutral-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
 
-        {/* Fila única — altura fija 64px */}
-        <div className="flex items-center gap-3 h-16">
+        {/* Fila única */}
+        <div className="flex items-center h-14 sm:h-16 gap-2 sm:gap-3">
 
           {/* Logo */}
           <BrandLogo />
@@ -70,10 +70,7 @@ export async function ShopHeader() {
               href="/direcciones"
               className="hidden lg:flex items-center gap-1.5 shrink-0 group"
             >
-              <MapPin
-                className="size-4 text-primary-600 shrink-0"
-                strokeWidth={2.5}
-              />
+              <MapPin className="size-4 text-primary-600 shrink-0" strokeWidth={2.5} />
               <div className="min-w-0 max-w-[150px]">
                 <p className="text-[10px] text-neutral-400 leading-none uppercase tracking-wider">
                   Enviar a
@@ -89,62 +86,51 @@ export async function ShopHeader() {
             <div className="hidden lg:block w-px h-6 bg-neutral-200 shrink-0" />
           )}
 
-          {/* Buscador central */}
-          <div className="flex-1">
-            <SearchBar />
+          {/* Buscador — pequeño en mobile, centrado en desktop */}
+          <div className="flex-1 flex justify-center min-w-0">
+            {/* Mobile: ancho limitado para que no ocupe toda la pantalla */}
+            <div className="w-full max-w-[180px] sm:max-w-md lg:max-w-lg">
+              <SearchBar />
+            </div>
           </div>
 
           {/* Acciones derecha */}
           {session ? (
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0">
 
-              {/* Mis pedidos */}
               <Link
                 href="/pedidos"
                 className="hidden md:inline-flex items-center gap-1.5 text-body-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 px-3 py-2 rounded-lg transition"
-                aria-label="Mis pedidos"
               >
                 <ClipboardList className="size-4" />
                 <span className="hidden lg:inline">Mis pedidos</span>
               </Link>
 
-              {/* Mi comercio */}
               {(session.role === "store_owner" ||
                 session.role === "store_staff" ||
                 session.role === "admin") && (
                 <Link
                   href="/comercio/pedidos"
                   className="inline-flex items-center gap-1.5 text-body-sm font-semibold bg-primary-600 text-white hover:bg-primary-700 px-3 py-2 rounded-lg transition shadow-sm"
-                  aria-label="Mi comercio"
                 >
                   <Store className="size-4" />
                   <span className="hidden sm:inline">Mi comercio</span>
                 </Link>
               )}
 
-              {/* Avatar + nombre */}
               <Link
                 href="/perfil"
-                className="group flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg hover:bg-neutral-100 transition"
-                aria-label="Mi perfil"
+                className="group flex items-center gap-2 pl-1 sm:pl-2 pr-1 py-1 rounded-lg hover:bg-neutral-100 transition"
               >
                 <div className="hidden md:block text-right">
-                  <p className="text-[10px] text-neutral-500 leading-tight">
-                    Hola
-                  </p>
+                  <p className="text-[10px] text-neutral-500 leading-tight">Hola</p>
                   <p className="text-body-sm font-semibold text-neutral-900 leading-tight group-hover:text-primary-600 transition">
                     {session.fullName.split(" ")[0]}
                   </p>
                 </div>
                 <div className="size-8 rounded-full overflow-hidden bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-body-sm relative ring-2 ring-primary-400 ring-offset-1 ring-offset-white group-hover:ring-primary-600 transition">
                   {session.avatarUrl ? (
-                    <Image
-                      src={session.avatarUrl}
-                      alt=""
-                      fill
-                      sizes="32px"
-                      className="object-cover"
-                    />
+                    <Image src={session.avatarUrl} alt="" fill sizes="32px" className="object-cover" />
                   ) : (
                     <span>{session.fullName.charAt(0).toUpperCase()}</span>
                   )}
@@ -152,42 +138,32 @@ export async function ShopHeader() {
               </Link>
             </div>
           ) : (
+            /* Sin sesión — solo ícono en mobile, texto en desktop */
             <Link
               href="/login?next=/"
-              className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2 rounded-lg transition shadow-sm shrink-0"
+              className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-3 sm:px-4 py-2 rounded-lg transition shadow-sm shrink-0"
             >
               <User className="size-4" />
-              Ingresar
+              <span className="hidden sm:inline">Ingresar</span>
             </Link>
           )}
         </div>
 
-        {/* Fila mobile — dirección debajo */}
+        {/* Fila mobile — dirección debajo cuando está logeado */}
         {session && (
           <div className="lg:hidden flex items-center justify-between pb-2 gap-2">
-            <Link
-              href="/direcciones"
-              className="flex items-center gap-1.5 min-w-0 group"
-            >
-              <MapPin
-                className="size-3.5 text-primary-600 shrink-0"
-                strokeWidth={2.5}
-              />
+            <Link href="/direcciones" className="flex items-center gap-1.5 min-w-0 group">
+              <MapPin className="size-3.5 text-primary-600 shrink-0" strokeWidth={2.5} />
               <span className="text-body-sm font-medium text-neutral-700 group-hover:text-primary-600 transition truncate">
                 {defaultAddressLine ?? "Agregar dirección"}
               </span>
             </Link>
-
-            {/* Mis pedidos en mobile — solo ícono */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              <Link
-                href="/pedidos"
-                className="md:hidden size-8 rounded-lg bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-600 transition"
-                aria-label="Mis pedidos"
-              >
-                <ClipboardList className="size-4" />
-              </Link>
-            </div>
+            <Link
+              href="/pedidos"
+              className="md:hidden size-8 rounded-lg bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-600 transition shrink-0"
+            >
+              <ClipboardList className="size-4" />
+            </Link>
           </div>
         )}
       </div>

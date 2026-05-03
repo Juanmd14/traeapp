@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { LoginForm } from "@/components/shared/login-form";
 import { getSession } from "@/server/auth/session";
 
@@ -9,11 +10,21 @@ export default async function LoginPage({
 }: {
   searchParams: { next?: string };
 }) {
-  // Si ya hay sesión, redirigimos
   const session = await getSession();
-  if (session) {
-    redirect(searchParams.next ?? "/");
-  }
+  if (session) redirect(searchParams.next ?? "/");
 
-  return <LoginForm />;
+  return (
+    <div className="space-y-6">
+      <LoginForm />
+      <p className="text-body-sm text-neutral-500 text-center">
+        ¿No tenés cuenta?{" "}
+        <Link
+          href="/registro"
+          className="text-primary-600 font-medium hover:underline"
+        >
+          Crear cuenta
+        </Link>
+      </p>
+    </div>
+  );
 }

@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
+import { HeroBanner } from "@/components/shop/hero-banner";
 import { CategoryPill, type Category } from "@/components/shop/category-pill";
 import { StoreCard, type StoreCardData } from "@/components/shop/store-card";
-import { PromoBanner } from "@/components/shop/promo-banner";
 
 export const revalidate = 60;
 
@@ -9,7 +9,7 @@ type StoreQuery = {
   id: string;
   slug: string;
   name: string;
-  cover_url: string |null;
+  cover_url: string | null;
   rating_avg: number | null;
   rating_count: number | null;
   avg_prep_minutes: number;
@@ -83,17 +83,12 @@ export default async function HomePage() {
 
   return (
     <div className="container-shop py-4 space-y-6">
-      <PromoBanner
-        subtitle="Promo del día"
-        title="Pedí tus comercios favoritos"
-        variant="primary"
-      />
+      {/* HERO BANNER CON ICONOS INTERCALADOS */}
+      <HeroBanner />
 
+      {/* CATEGORÍAS */}
       <section>
-        <h2 className="text-heading-md font-semibold mb-3">
-          Categorías
-        </h2>
-
+        <h2 className="text-heading-md font-semibold mb-3">Categorías</h2>
         <div className="scroll-snap-x">
           {mappedCategories.map((c) => (
             <CategoryPill key={c.slug} category={c} />
@@ -101,6 +96,7 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* COMERCIOS DESTACADOS */}
       {featured.length > 0 && (
         <section>
           <div className="flex items-baseline justify-between mb-3">
@@ -108,7 +104,6 @@ export default async function HomePage() {
               Comercios destacados
             </h2>
           </div>
-
           <div className="grid gap-3">
             {featured.map((store) => (
               <StoreCard key={store.slug} store={store} />

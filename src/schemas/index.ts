@@ -14,12 +14,20 @@ export const emailSchema = z.string().email("Email inválido").toLowerCase();
 
 export const loginSchema = z.object({
   email: emailSchema,
+  password: z.string().min(6, "Mínimo 6 caracteres"),
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 
+export const registerSchema = z.object({
+  email: emailSchema,
+  password: z.string().min(6, "Mínimo 6 caracteres"),
+  fullName: z.string().min(2, "Ingresá tu nombre").max(80),
+});
+export type RegisterInput = z.infer<typeof registerSchema>;
+
 export const otpSchema = z.object({
   email: emailSchema,
-  token: z.string().min(6, "Código inválido").max(8, "Código inválido"),
+  token: z.string().length(8, "El código tiene 8 dígitos"),
 });
 export type OtpInput = z.infer<typeof otpSchema>;
 
@@ -60,7 +68,6 @@ export const storeOperationSchema = z.object({
 });
 export type StoreOperationInput = z.infer<typeof storeOperationSchema>;
 
-/** Edición de datos públicos y contacto (panel comercio). */
 export const storeProfileSchema = z.object({
   name: z.string().min(2, "El nombre es muy corto").max(80),
   description: z.string().max(280, "Máximo 280 caracteres").optional().or(z.literal("")),
