@@ -45,7 +45,7 @@ function getBase64Placeholder(src: string): string {
 export function useImageLoader() {
   const preloadImage = (src: string) => {
     if (typeof window !== "undefined" && src) {
-      const img = new Image();
+      const img = document.createElement("img");
       img.src = src;
     }
   };
