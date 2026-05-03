@@ -86,90 +86,126 @@ export function ProductCard({
     setTimeout(() => setJustAdded(false), 1500);
   };
 
-  const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
+  const hasDiscount =
+    product.compareAtPrice && product.compareAtPrice > product.price;
   const discountPct = hasDiscount
-    ? Math.round(((product.compareAtPrice! - product.price) / product.compareAtPrice!) * 100)
+    ? Math.round(
+        ((product.compareAtPrice! - product.price) / product.compareAtPrice!) *
+          100
+      )
     : 0;
 
   return (
     <>
       <div
         className={cn(
-          "bg-white border border-neutral-200 rounded-lg p-3 flex gap-3 relative",
-          !product.isAvailable && "opacity-50",
+          "bg-white border border-neutral-200 rounded-xl overflow-hidden flex gap-0 relative hover:shadow-md transition-shadow",
+          !product.isAvailable && "opacity-50"
         )}
       >
-        <div className="shrink-0 size-20 sm:size-24 bg-neutral-100 rounded-md overflow-hidden relative">
+        {/* Info — izquierda */}
+        <div className="flex-1 min-w-0 p-3 sm:p-4 flex flex-col justify-between">
+          <div>
+            <h3 className="text-body-md font-semibold text-neutral-900 line-clamp-2 leading-snug">
+              {product.name}
+            </h3>
+            {product.description && (
+              <p className="text-body-sm text-neutral-400 line-clamp-2 mt-1 leading-snug">
+                {product.description}
+              </p>
+            )}
+          </div>
+
+          {/* Precio + botón abajo */}
+          <div className="flex items-end justify-between mt-3 gap-2">
+            <div className="flex flex-col">
+              {hasDiscount && (
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <span className="text-body-xs text-neutral-400 line-through">
+                    {formatPrice(product.compareAtPrice!)}
+                  </span>
+                  <span className="bg-warning-100 text-warning-800 text-body-xs font-semibold px-1.5 py-0.5 rounded-full">
+                    {discountPct}% off
+                  </span>
+                </div>
+              )}
+              <span className="text-body-lg font-bold text-neutral-900">
+                {formatPrice(product.price)}
+              </span>
+            </div>
+
+            {/* Botón agregar */}
+            <button
+              onClick={handleAdd}
+              disabled={!product.isAvailable}
+              className={cn(
+                "size-9 rounded-full flex items-center justify-center transition shadow-sm flex-shrink-0",
+                justAdded
+                  ? "bg-accent-600 text-white"
+                  : "bg-primary-600 text-white hover:bg-primary-700 active:scale-95"
+              )}
+              aria-label="Agregar al carrito"
+            >
+              {justAdded ? (
+                <Check className="size-5" strokeWidth={3} />
+              ) : (
+                <Plus className="size-5" strokeWidth={2.5} />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Imagen — derecha, más grande */}
+        <div className="relative w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0">
           {product.imageUrl ? (
             <Image
               src={product.imageUrl}
               alt={product.name}
               fill
-              sizes="96px"
+              sizes="(max-width: 640px) 128px, 160px"
               className="object-cover"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-200 to-primary-400" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-300 flex items-center justify-center">
+              <span className="text-4xl opacity-40">🍽️</span>
+            </div>
+          )}
+
+          {/* Badge descuento sobre imagen */}
+          {hasDiscount && (
+            <div className="absolute top-2 left-2 bg-warning-500 text-white text-body-xs font-bold px-1.5 py-0.5 rounded-md">
+              -{discountPct}%
+            </div>
+          )}
+
+          {/* No disponible overlay */}
+          {!product.isAvailable && (
+            <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+              <span className="text-body-xs font-medium text-neutral-500">
+                No disponible
+              </span>
+            </div>
           )}
         </div>
-
-        <div className="flex-1 min-w-0">
-          <h3 className="text-body-md font-medium text-neutral-900 line-clamp-1">
-            {product.name}
-          </h3>
-          {product.description && (
-            <p className="text-body-sm text-neutral-500 line-clamp-2 mt-0.5">
-              {product.description}
-            </p>
-          )}
-
-          <div className="flex items-center gap-2 mt-1.5">
-            <span className="text-body-md font-semibold text-neutral-900">
-              {formatPrice(product.price)}
-            </span>
-            {hasDiscount && (
-              <>
-                <span className="text-body-xs text-neutral-400 line-through">
-                  {formatPrice(product.compareAtPrice!)}
-                </span>
-                <span className="bg-warning-100 text-warning-800 text-body-xs font-semibold px-1.5 py-0.5 rounded-full">
-                  {discountPct}% off
-                </span>
-              </>
-            )}
-          </div>
-        </div>
-
-        <button
-          onClick={handleAdd}
-          disabled={!product.isAvailable}
-          className={cn(
-            "absolute bottom-3 right-3 size-9 rounded-full flex items-center justify-center transition shadow-primary-sm",
-            justAdded
-              ? "bg-accent-600 text-white"
-              : "bg-primary-600 text-white hover:bg-primary-700 active:scale-95",
-          )}
-          aria-label="Agregar al carrito"
-        >
-          {justAdded ? <Check className="size-5" strokeWidth={3} /> : <Plus className="size-5" strokeWidth={2.5} />}
-        </button>
       </div>
 
+      {/* Modal cambio de comercio */}
       {showSwitchModal && (
         <div
-          className="fixed inset-0 z-50 bg-neutral-900/60 flex items-end sm:items-center justify-center p-4 animate-fade-in"
+          className="fixed inset-0 z-50 bg-neutral-900/60 flex items-end sm:items-center justify-center p-4"
           onClick={() => setShowSwitchModal(false)}
         >
           <div
-            className="bg-white rounded-t-xl sm:rounded-xl w-full max-w-sm p-5 animate-slide-up"
+            className="bg-white rounded-t-xl sm:rounded-xl w-full max-w-sm p-5"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-heading-md font-semibold text-neutral-900 mb-2">
               ¿Empezar un carrito nuevo?
             </h3>
             <p className="text-body-md text-neutral-600 mb-5">
-              Tu carrito tiene productos de <strong>{currentStoreName}</strong>. Si seguís,
-              vamos a vaciarlo y agregar este producto de <strong>{storeName}</strong>.
+              Tu carrito tiene productos de{" "}
+              <strong>{currentStoreName}</strong>. Si seguís, vamos a vaciarlo
+              y agregar este producto de <strong>{storeName}</strong>.
             </p>
             <div className="flex gap-2">
               <button

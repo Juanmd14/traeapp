@@ -12,12 +12,11 @@ export type Category = {
   bgClass: string;
 };
 
-// Mapeo de slug → nombre de archivo real en public/icons/
 const SLUG_TO_FILE: Record<string, string> = {
   comida:       "pizza",
   supermercado: "supermercado",
   farmacia:     "farmacia",
-  bebidas:      "hamburguesa", // no tenés bebidas.png, usá emoji fallback
+  bebidas:      "hamburguesa",
   heladeria:    "helado",
   mascotas:     "mascotas",
 };
@@ -35,9 +34,11 @@ export function CategoryPill({ category }: { category: Category }) {
     >
       <div
         className={cn(
-          "size-12 sm:size-14 rounded-full flex items-center justify-center transition",
+          "size-12 sm:size-14 rounded-full flex items-center justify-center transition border",
           "hover:scale-105 active:scale-95",
           category.bgClass,
+          // En dark, círculo blanco siempre para que las imágenes con fondo no choquen
+          "dark:bg-white dark:border-neutral-200",
         )}
       >
         {!iconSrc || imgError ? (
@@ -53,7 +54,7 @@ export function CategoryPill({ category }: { category: Category }) {
           />
         )}
       </div>
-      <span className="text-[10px] sm:text-body-xs font-medium text-neutral-700 text-center leading-tight">
+      <span className="text-[10px] sm:text-body-xs font-medium text-neutral-700 dark:text-neutral-300 text-center leading-tight">
         {category.name}
       </span>
     </Link>

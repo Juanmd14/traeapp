@@ -9,7 +9,7 @@ function BrandLogo() {
   return (
     <Link
       href="/"
-      className="flex items-center shrink-0 pr-3 sm:pr-4 mr-2 border-r border-neutral-200"
+      className="flex items-center shrink-0 pr-4 mr-2 border-r border-neutral-200"
       aria-label="Vadelivery — inicio"
     >
       <Image
@@ -17,7 +17,7 @@ function BrandLogo() {
         alt="Vadelivery"
         width={400}
         height={128}
-        className="h-8 sm:h-16 w-auto max-w-[80px] sm:max-w-[130px] object-contain object-left"
+        className="h-16 w-auto max-w-[130px] object-contain object-left"
         priority
       />
     </Link>
@@ -54,14 +54,17 @@ export async function ShopHeader() {
     }
   }
 
+  const isStoreOwner =
+    session?.role === "store_owner" ||
+    session?.role === "store_staff" ||
+    session?.role === "admin";
+
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-neutral-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
 
-        {/* Fila única */}
-        <div className="flex items-center h-14 sm:h-16 gap-2 sm:gap-3">
+        <div className="flex items-center h-16 gap-2 sm:gap-3">
 
-          {/* Logo */}
           <BrandLogo />
 
           {/* Dirección — solo desktop */}
@@ -86,17 +89,16 @@ export async function ShopHeader() {
             <div className="hidden lg:block w-px h-6 bg-neutral-200 shrink-0" />
           )}
 
-          {/* Buscador — pequeño en mobile, centrado en desktop */}
+          {/* Buscador */}
           <div className="flex-1 flex justify-center min-w-0">
-            {/* Mobile: ancho limitado para que no ocupe toda la pantalla */}
-            <div className="w-full max-w-[180px] sm:max-w-md lg:max-w-lg">
+            <div className="w-full max-w-md">
               <SearchBar />
             </div>
           </div>
 
           {/* Acciones derecha */}
           {session ? (
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
 
               <Link
                 href="/pedidos"
@@ -106,15 +108,15 @@ export async function ShopHeader() {
                 <span className="hidden lg:inline">Mis pedidos</span>
               </Link>
 
-              {(session.role === "store_owner" ||
-                session.role === "store_staff" ||
-                session.role === "admin") && (
+              {/* Mi comercio — solo ícono en mobile */}
+              {isStoreOwner && (
                 <Link
                   href="/comercio/pedidos"
-                  className="inline-flex items-center gap-1.5 text-body-sm font-semibold bg-primary-600 text-white hover:bg-primary-700 px-3 py-2 rounded-lg transition shadow-sm"
+                  className="inline-flex items-center justify-center sm:gap-1.5 size-9 sm:size-auto sm:px-3 sm:py-2 text-body-sm font-semibold bg-primary-600 text-white hover:bg-primary-700 rounded-lg transition shadow-sm"
+                  aria-label="Mi comercio"
                 >
                   <Store className="size-4" />
-                  <span className="hidden sm:inline">Mi comercio</span>
+                  <span className="hidden md:inline">Mi comercio</span>
                 </Link>
               )}
 
@@ -122,7 +124,7 @@ export async function ShopHeader() {
                 href="/perfil"
                 className="group flex items-center gap-2 pl-1 sm:pl-2 pr-1 py-1 rounded-lg hover:bg-neutral-100 transition"
               >
-                <div className="hidden md:block text-right">
+                <div className="hidden lg:block text-right">
                   <p className="text-[10px] text-neutral-500 leading-tight">Hola</p>
                   <p className="text-body-sm font-semibold text-neutral-900 leading-tight group-hover:text-primary-600 transition">
                     {session.fullName.split(" ")[0]}
@@ -138,7 +140,6 @@ export async function ShopHeader() {
               </Link>
             </div>
           ) : (
-            /* Sin sesión — solo ícono en mobile, texto en desktop */
             <Link
               href="/login?next=/"
               className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-3 sm:px-4 py-2 rounded-lg transition shadow-sm shrink-0"
@@ -149,7 +150,7 @@ export async function ShopHeader() {
           )}
         </div>
 
-        {/* Fila mobile — dirección debajo cuando está logeado */}
+        {/* Fila mobile — dirección debajo */}
         {session && (
           <div className="lg:hidden flex items-center justify-between pb-2 gap-2">
             <Link href="/direcciones" className="flex items-center gap-1.5 min-w-0 group">
@@ -161,6 +162,7 @@ export async function ShopHeader() {
             <Link
               href="/pedidos"
               className="md:hidden size-8 rounded-lg bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-600 transition shrink-0"
+              aria-label="Mis pedidos"
             >
               <ClipboardList className="size-4" />
             </Link>

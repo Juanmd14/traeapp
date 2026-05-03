@@ -43,13 +43,16 @@ export function BottomNav({ isLogged }: Props) {
             const isActive = (item as any).exact
               ? pathname === item.href
               : pathname.startsWith(matchPath);
+
             return (
               <Link
                 key={item.label}
                 href={item.href}
                 className={cn(
                   "flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-md transition",
-                  isActive ? "text-primary-600" : "text-neutral-400 hover:text-neutral-600",
+                  isActive
+                    ? "text-primary-600"
+                    : "text-neutral-400 hover:text-neutral-600",
                 )}
               >
                 <Icon className="size-5" strokeWidth={isActive ? 2.5 : 2} />
