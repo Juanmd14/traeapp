@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, User, Store, ClipboardList } from "lucide-react";
+import { MapPin, User, Store, ClipboardList, Bike } from "lucide-react";
 import { getSession } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { SearchBar } from "@/components/shared/search-bar";
@@ -57,6 +57,10 @@ export async function ShopHeader() {
   const isStoreOwner =
     session?.role === "store_owner" ||
     session?.role === "store_staff" ||
+    session?.role === "admin";
+
+  const isDriver =
+    session?.role === "delivery_driver" ||
     session?.role === "admin";
 
   return (
@@ -117,6 +121,18 @@ export async function ShopHeader() {
                 >
                   <Store className="size-4" />
                   <span className="hidden md:inline">Mi comercio</span>
+                </Link>
+              )}
+
+              {/* Panel repartidor */}
+              {isDriver && (
+                <Link
+                  href="/driver/disponibles"
+                  className="inline-flex items-center justify-center sm:gap-1.5 size-9 sm:size-auto sm:px-3 sm:py-2 text-body-sm font-semibold bg-green-600 text-white hover:bg-green-700 rounded-lg transition shadow-sm"
+                  aria-label="Panel repartidor"
+                >
+                  <Bike className="size-4" />
+                  <span className="hidden md:inline">Repartidor</span>
                 </Link>
               )}
 
