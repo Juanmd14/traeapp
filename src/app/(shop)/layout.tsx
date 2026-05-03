@@ -14,7 +14,7 @@ export default async function ShopLayout({
       <ShopHeader />
       <main className="flex-1 pb-20">{children}</main>
       <CartFloatingButton />
-      <BottomNav isLogged={!!session} />
+      <BottomNav isLogged={!!session} role={session?.role ?? null} />
     </div>
   );
 }
