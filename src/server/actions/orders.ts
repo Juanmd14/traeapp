@@ -379,3 +379,41 @@ export const rejectOrderAction = authAction
     revalidatePath("/comercio", "layout");
     return { ok: true };
   });
+export const validatePromoAction = authAction
+  .schema(z.object({
+    storeId: z.string().uuid(),
+    promoCode: z.string().min(1),
+    subtotal: z.number(),
+  }))
+  .action(async ({ parsedInput }) => {
+    const { data: p } = await (supabaseAdmin.from("promotions") as any)
+      .select("id, type, value, min_order_amount, ends_at, starts_at, max_uses, uses_count")
+      .eq("code", parsedInput.promoCode.toUpperCase())
+      .eq("is_active", true)
+      .or(`store_id.is.null,store_id.eq.${parsedInput.storeId}`)
+      .maybeSingle();
+
+    if (!p) throw new Error("Código inválido o no disponible");
+    if (p.ends_at && new Date(p.ends_at) < new Date()) throw new Error("Este código ya expiró");
+    if (p.starts_at && new Date(p.starts_at) > new Date()) throw new Error("Este código aún no está activo");
+    if (p.max_uses !== null && p.uses_count >= p.max_uses) throw new Error("Este código ya no tiene usos disponibles");
+    if (p.min_order_amount && parsedInput.subtotal < Number(p.min_order_amount)) {
+      throw new Error("Pedido mínimo para este código: $" + Number(p.min_order_amount));
+    }
+
+    let discountAmount = 0;
+    const type = p.type as "percent" | "amount" | "free_delivery" | "bxgy";
+    if (type === "percent" && p.value) {
+      discountAmount = Math.round((parsedInput.subtotal * Number(p.value)) / 100);
+    } else if (type === "amount" && p.value) {
+      discountAmount = Math.min(Number(p.value), parsedInput.subtotal);
+    }
+
+    return {
+      ok: true,
+      code: parsedInput.promoCode.toUpperCase(),
+      type,
+      value: p.value ? Number(p.value) : null,
+      discountAmount,
+    };
+  });

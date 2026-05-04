@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Plus, Check } from "lucide-react";
+import { Plus, Check, ChevronDown } from "lucide-react";
 import { useCart } from "@/stores/cart";
 import { formatPrice, cn } from "@/lib/utils";
+import { ProductModifierModal } from "./product-modifier-modal";
+import type { ModifierGroup } from "./product-modifier-modal";
 
 export type ProductCardData = {
   id: string;
@@ -18,6 +20,7 @@ export type ProductCardData = {
 
 type Props = {
   product: ProductCardData;
+  modifiers?: ModifierGroup[];
   storeId: string;
   storeName: string;
   storeSlug: string;
@@ -27,6 +30,7 @@ type Props = {
 
 export function ProductCard({
   product,
+  modifiers = [],
   storeId,
   storeName,
   storeSlug,
@@ -35,12 +39,15 @@ export function ProductCard({
 }: Props) {
   const [justAdded, setJustAdded] = useState(false);
   const [showSwitchModal, setShowSwitchModal] = useState(false);
+  const [showModifierModal, setShowModifierModal] = useState(false);
   const add = useCart((s) => s.add);
   const replaceWithStore = useCart((s) => s.replaceWithStore);
   const currentStoreId = useCart((s) => s.storeId);
   const currentStoreName = useCart((s) => s.storeName);
 
-  const handleAdd = () => {
+  const hasModifiers = modifiers.length > 0;
+
+  const doAdd = (selectedModifiers: Array<{ optionId: string; name: string; priceDelta: number }>, quantity: number) => {
     const result = add({
       storeId,
       storeName,
@@ -53,16 +60,18 @@ export function ProductCard({
         description: product.description,
         imageUrl: product.imageUrl,
         unitPrice: Number(product.price),
-        quantity: 1,
+        quantity,
+        modifiers: selectedModifiers,
       },
     });
-
-    if (result === "different-store") {
-      setShowSwitchModal(true);
-      return;
-    }
+    if (result === "different-store") { setShowSwitchModal(true); return; }
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1500);
+  };
+
+  const handleAdd = () => {
+    if (hasModifiers) { setShowModifierModal(true); return; }
+    doAdd([], 1);
   };
 
   const handleSwitch = () => {
@@ -139,7 +148,8 @@ export function ProductCard({
               onClick={handleAdd}
               disabled={!product.isAvailable}
               className={cn(
-                "size-9 rounded-full flex items-center justify-center transition shadow-sm flex-shrink-0",
+                "rounded-full flex items-center justify-center transition shadow-sm flex-shrink-0",
+                hasModifiers ? "px-3 py-2 gap-1 text-body-xs font-medium" : "size-9",
                 justAdded
                   ? "bg-accent-600 text-white"
                   : "bg-primary-600 text-white hover:bg-primary-700 active:scale-95"
@@ -148,6 +158,11 @@ export function ProductCard({
             >
               {justAdded ? (
                 <Check className="size-5" strokeWidth={3} />
+              ) : hasModifiers ? (
+                <>
+                  <Plus className="size-4" strokeWidth={2.5} />
+                  <span>Elegir</span>
+                </>
               ) : (
                 <Plus className="size-5" strokeWidth={2.5} />
               )}
@@ -188,6 +203,19 @@ export function ProductCard({
           )}
         </div>
       </div>
+
+      {/* Modal de modificadores */}
+      {showModifierModal && (
+        <ProductModifierModal
+          product={{ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl }}
+          modifiers={modifiers}
+          onConfirm={(selectedModifiers, quantity) => {
+            setShowModifierModal(false);
+            doAdd(selectedModifiers, quantity);
+          }}
+          onClose={() => setShowModifierModal(false)}
+        />
+      )}
 
       {/* Modal cambio de comercio */}
       {showSwitchModal && (

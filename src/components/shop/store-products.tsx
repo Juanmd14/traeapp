@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { ProductCard } from "@/components/shop/product-card";
+import type { ModifierGroup } from "@/components/shop/product-modifier-modal";
 
 type ProductData = {
   id: string;
@@ -12,6 +13,7 @@ type ProductData = {
   is_available: boolean;
   product_category_id: string | null;
   sort_order: number;
+  product_modifiers: ModifierGroup[];
 };
 
 type ProductCategoryData = {
@@ -54,7 +56,10 @@ async function ProductCategories({ storeId, storeName, storeSlug, deliveryFee, m
 
     supabase
       .from("products")
-      .select("id, name, description, image_url, price, compare_at_price, is_available, product_category_id, sort_order")
+      .select(`id, name, description, image_url, price, compare_at_price, is_available, product_category_id, sort_order,
+        product_modifiers ( id, name, is_required, type, sort_order,
+          product_modifier_options ( id, name, price_delta, sort_order )
+        )`)
       .eq("store_id", storeId)
       .eq("is_active", true)
       .order("sort_order"),
@@ -108,6 +113,7 @@ async function ProductCategories({ storeId, storeName, storeSlug, deliveryFee, m
                     compareAtPrice: p.compare_at_price ? Number(p.compare_at_price) : null,
                     isAvailable: p.is_available,
                   }}
+                  modifiers={p.product_modifiers ?? []}
                   storeId={storeId}
                   storeName={storeName}
                   storeSlug={storeSlug}

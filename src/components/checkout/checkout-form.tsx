@@ -3,14 +3,14 @@
 import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, MapPin, Banknote, CreditCard, Check } from "lucide-react";
+import { ChevronLeft, MapPin, Banknote, CreditCard, Check, Tag, X } from "lucide-react";
 
 import { useCart } from "@/stores/cart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormField } from "@/components/ui/form-field";
 import { formatPrice, cn } from "@/lib/utils";
-import { createOrderAction } from "@/server/actions/orders";
+import { createOrderAction, validatePromoAction } from "@/server/actions/orders";
 import { OrderConfirmedOverlay } from "./order-confirmed-overlay";
 
 type Address = {
@@ -45,6 +45,16 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  // Promo code
+  const [promoInput, setPromoInput] = useState("");
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoValidating, setPromoValidating] = useState(false);
+  const [appliedPromo, setAppliedPromo] = useState<{
+    code: string;
+    type: string;
+    discountAmount: number;
+  } | null>(null);
+
   // Estado del overlay de confirmación
   const [confirmed, setConfirmed] = useState<{
     orderNumber: number;
@@ -67,7 +77,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
       } else {
         router.push(confirmed.redirectTo);
       }
-    }, 1800);
+    }, 3500);
     return () => clearTimeout(t);
   }, [confirmed, router]);
 
@@ -82,6 +92,19 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
     }
     return null;
   }
+
+  const handleApplyPromo = async () => {
+    if (!promoInput.trim() || !storeId) return;
+    setPromoError(null);
+    setPromoValidating(true);
+    const result = await validatePromoAction({ storeId, promoCode: promoInput.trim(), subtotal });
+    setPromoValidating(false);
+    if (result?.serverError) { setPromoError(result.serverError); return; }
+    if (result?.data?.ok) {
+      setAppliedPromo({ code: result.data.code, type: result.data.type, discountAmount: result.data.discountAmount });
+      setPromoInput("");
+    }
+  };
 
   const selectedAddress = addresses.find((a) => a.id === addressId);
   const addressText = newAddressMode
@@ -105,6 +128,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
         deliveryAddressText: addressText,
         paymentMethod,
         customerNotes: notes || undefined,
+        promoCode: appliedPromo?.code,
         items: items.map((it) => ({
           productId: it.productId,
           quantity: it.quantity,
@@ -307,25 +331,76 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
           </FormField>
         </section>
 
+        {/* Código de descuento */}
+        <section className="mb-5">
+          {appliedPromo ? (
+            <div className="flex items-center justify-between bg-accent-50 border border-accent-200 rounded-md px-3 py-2.5">
+              <div className="flex items-center gap-2">
+                <Tag className="size-4 text-accent-600" />
+                <span className="text-body-sm font-medium text-accent-800">
+                  {appliedPromo.code}
+                  {appliedPromo.type === "free_delivery" ? " — Envío gratis" : ` — ${formatPrice(appliedPromo.discountAmount)} de descuento`}
+                </span>
+              </div>
+              <button onClick={() => setAppliedPromo(null)} className="text-neutral-400 hover:text-neutral-700 transition">
+                <X className="size-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Código de descuento"
+                  value={promoInput}
+                  onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError(null); }}
+                  onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
+                  className="flex-1"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyPromo}
+                  disabled={promoValidating || !promoInput.trim()}
+                  className="px-4 py-2 text-body-sm font-medium bg-neutral-900 text-white rounded-md hover:bg-neutral-700 disabled:opacity-50 transition whitespace-nowrap"
+                >
+                  {promoValidating ? "..." : "Aplicar"}
+                </button>
+              </div>
+              {promoError && <p className="text-body-xs text-destructive">{promoError}</p>}
+            </div>
+          )}
+        </section>
+
         {/* Resumen */}
         <section className="bg-white rounded-md border border-neutral-200 p-4 space-y-2 mb-5">
           <div className="flex justify-between text-body-md">
             <span className="text-neutral-600">Subtotal</span>
             <span className="text-neutral-900">{formatPrice(subtotal)}</span>
           </div>
+          {appliedPromo && appliedPromo.discountAmount > 0 && (
+            <div className="flex justify-between text-body-md">
+              <span className="text-accent-700">Descuento ({appliedPromo.code})</span>
+              <span className="text-accent-700 font-medium">- {formatPrice(appliedPromo.discountAmount)}</span>
+            </div>
+          )}
           <div className="flex justify-between text-body-md">
             <span className="text-neutral-600">Envío</span>
-            <span
-              className={
-                deliveryFee === 0 ? "text-accent-600 font-medium" : "text-neutral-900"
-              }
-            >
-              {deliveryFee === 0 ? "Gratis" : formatPrice(deliveryFee)}
+            <span className={
+              deliveryFee === 0 || appliedPromo?.type === "free_delivery"
+                ? "text-accent-600 font-medium"
+                : "text-neutral-900"
+            }>
+              {deliveryFee === 0 || appliedPromo?.type === "free_delivery" ? "Gratis" : formatPrice(deliveryFee)}
             </span>
           </div>
           <div className="border-t border-neutral-200 pt-2 flex justify-between text-heading-md font-semibold">
             <span>Total</span>
-            <span>{formatPrice(total)}</span>
+            <span>
+              {formatPrice(
+                subtotal
+                - (appliedPromo?.discountAmount ?? 0)
+                + (appliedPromo?.type === "free_delivery" ? 0 : deliveryFee)
+              )}
+            </span>
           </div>
         </section>
 
