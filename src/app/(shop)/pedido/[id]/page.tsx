@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, MapPin, Phone } from "lucide-react";
+import { ChevronLeft, MapPin, Phone, Truck } from "lucide-react";
 
 import { requireAuth } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { OrderTrackerLive } from "@/components/order/order-tracker-live";
+import { DeliveryMapLive } from "@/components/map/delivery-map-live";
 import { formatPrice } from "@/lib/utils";
 
 export const metadata = { title: "Seguimiento del pedido" };
@@ -27,6 +29,8 @@ type OrderData = {
   discount: number;
   total: number;
   delivery_address_text: string;
+  delivery_lat: number | null;
+  delivery_lng: number | null;
   customer_notes: string | null;
   estimated_delivery_at: string | null;
   confirmed_at: string | null;
@@ -69,6 +73,8 @@ export default async function OrderPage({
       discount,
       total,
       delivery_address_text,
+      delivery_lat,
+      delivery_lng,
       customer_notes,
       estimated_delivery_at,
       confirmed_at,
@@ -86,7 +92,6 @@ export default async function OrderPage({
 
   if (!order) notFound();
 
-  // Sólo el cliente o admin pueden ver
   if (order.customer_id !== session.id && session.role !== "admin") {
     notFound();
   }
@@ -99,6 +104,24 @@ export default async function OrderPage({
   const items = (itemsData ?? []) as OrderItemData[];
 
   const store = order.stores;
+
+  // Fetch driver position server-side for initial map render
+  let driverLat: number | null = null;
+  let driverLng: number | null = null;
+  const showMap =
+    order.driver_id !== null &&
+    ["ready", "picked_up"].includes(order.status);
+
+  if (showMap && order.driver_id) {
+    const { data: ds } = await (supabaseAdmin.from("driver_status") as any)
+      .select("current_lat, current_lng")
+      .eq("driver_id", order.driver_id)
+      .maybeSingle();
+    driverLat = ds?.current_lat ? Number(ds.current_lat) : null;
+    driverLng = ds?.current_lng ? Number(ds.current_lng) : null;
+  }
+
+  const hasMapCoords = showMap && driverLat !== null && driverLng !== null;
 
   return (
     <div className="container-shop py-4 pb-24">
@@ -159,6 +182,28 @@ export default async function OrderPage({
           }}
         />
       </section>
+
+      {/* Mapa en tiempo real — visible cuando hay repartidor en camino */}
+      {hasMapCoords && order.driver_id && (
+        <section className="mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Truck className="size-4 text-primary" />
+            <p className="text-body-sm font-medium text-neutral-700">
+              {order.status === "picked_up"
+                ? "Tu repartidor está en camino"
+                : "Repartidor asignado"}
+            </p>
+            <span className="size-1.5 rounded-full bg-green-500 animate-pulse" />
+          </div>
+          <DeliveryMapLive
+            driverId={order.driver_id}
+            initialLat={driverLat!}
+            initialLng={driverLng!}
+            destLat={order.delivery_lat}
+            destLng={order.delivery_lng}
+          />
+        </section>
+      )}
 
       {/* Dirección */}
       <section className="bg-white rounded-md border border-neutral-200 p-4 mb-3">
