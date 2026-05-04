@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { requireRole } from "@/server/auth/session";
-import { ExternalLink, Settings } from "lucide-react";
+import { ExternalLink, Plus, Settings } from "lucide-react";
 import { StoreStatusSelect } from "@/components/admin/store-status-select";
 
 export const dynamic = "force-dynamic";
@@ -60,6 +60,13 @@ export default async function AdminComerciosPage() {
             {" · "}{all.length} en total
           </p>
         </div>
+        <Link
+          href="/admin/comercios/nueva"
+          className="inline-flex items-center gap-2 bg-primary text-white text-body-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary/90 transition"
+        >
+          <Plus className="size-4" />
+          Nuevo comercio
+        </Link>
       </div>
 
       {all.length === 0 ? (

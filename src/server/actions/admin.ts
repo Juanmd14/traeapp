@@ -2,8 +2,10 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { adminAction } from "./safe-action";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { slugify } from "@/lib/utils";
 
 export const updateUserRoleAction = adminAction
   .schema(z.object({
@@ -121,4 +123,58 @@ export const removeDriverAction = adminAction
     if (error) throw new Error(error.message);
     revalidatePath("/admin/repartidores");
     return { ok: true };
+  });
+
+export const adminCreateStoreAction = adminAction
+  .schema(z.object({
+    name: z.string().min(2, "Mínimo 2 caracteres"),
+    address: z.string().min(3, "Dirección requerida"),
+    description: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.string().email("Email inválido").optional().or(z.literal("")),
+    deliveryFee: z.coerce.number().min(0).default(0),
+    minOrderAmount: z.coerce.number().min(0).default(0),
+    avgPrepMinutes: z.coerce.number().min(5).max(180).default(30),
+    acceptsCash: z.boolean().default(true),
+    acceptsMp: z.boolean().default(false),
+  }))
+  .action(async ({ parsedInput }) => {
+    const baseSlug = slugify(parsedInput.name);
+    let slug = baseSlug;
+    let counter = 1;
+
+    while (true) {
+      const { data: existing } = await (supabaseAdmin.from("stores") as any)
+        .select("id").eq("slug", slug).maybeSingle();
+      if (!existing) break;
+      slug = `${baseSlug}-${counter++}`;
+      if (counter > 50) throw new Error("No se pudo generar un slug único");
+    }
+
+    const { data: store, error } = await (supabaseAdmin.from("stores") as any)
+      .insert({
+        slug,
+        name: parsedInput.name,
+        address: parsedInput.address,
+        description: parsedInput.description || null,
+        phone: parsedInput.phone || null,
+        email: parsedInput.email || null,
+        status: "active",
+        delivery_fee: parsedInput.deliveryFee,
+        min_order_amount: parsedInput.minOrderAmount,
+        avg_prep_minutes: parsedInput.avgPrepMinutes,
+        delivery_radius_km: 5,
+        accepts_cash: parsedInput.acceptsCash,
+        accepts_mp: parsedInput.acceptsMp,
+        commission_pct: 0,
+        is_featured: false,
+        rating_avg: 0,
+        rating_count: 0,
+      })
+      .select("id")
+      .single();
+
+    if (error) throw new Error(error.message);
+    revalidatePath("/admin/comercios");
+    redirect(`/admin/comercios/${store.id}`);
   });
