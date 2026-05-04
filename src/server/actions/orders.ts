@@ -280,10 +280,21 @@ export const acceptOrderAction = authAction
       throw new Error("El pedido ya no puede aceptarse");
     }
 
+    const { data: store } = await (supabaseAdmin.from("stores") as any)
+      .select("avg_prep_minutes")
+      .eq("id", order.store_id)
+      .single();
+
+    const prepMinutes = store?.avg_prep_minutes ?? 30;
+    const estimatedDeliveryAt = new Date(
+      Date.now() + (prepMinutes + 30) * 60 * 1000,
+    ).toISOString();
+
     const { error } = await (supabaseAdmin.from("orders") as any)
       .update({
         status: "preparing",
         confirmed_at: new Date().toISOString(),
+        estimated_delivery_at: estimatedDeliveryAt,
       })
       .eq("id", parsedInput.orderId);
 

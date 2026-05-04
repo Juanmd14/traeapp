@@ -1,12 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, MapPin, Phone, Truck } from "lucide-react";
+import { ChevronLeft, MapPin, Phone } from "lucide-react";
 
 import { requireAuth } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 import { OrderTrackerLive } from "@/components/order/order-tracker-live";
-import { DeliveryMapLive } from "@/components/map/delivery-map-live";
+import { OrderMapSection } from "@/components/order/order-map-section";
 import { formatPrice } from "@/lib/utils";
 
 export const metadata = { title: "Seguimiento del pedido" };
@@ -105,23 +104,13 @@ export default async function OrderPage({
 
   const store = order.stores;
 
-  // Fetch driver position server-side for initial map render
-  let driverLat: number | null = null;
-  let driverLng: number | null = null;
-  const showMap =
-    order.driver_id !== null &&
-    ["ready", "picked_up"].includes(order.status);
+  const { data: existingReview } = await supabase
+    .from("reviews")
+    .select("id")
+    .eq("order_id", order.id)
+    .maybeSingle();
 
-  if (showMap && order.driver_id) {
-    const { data: ds } = await (supabaseAdmin.from("driver_status") as any)
-      .select("current_lat, current_lng")
-      .eq("driver_id", order.driver_id)
-      .maybeSingle();
-    driverLat = ds?.current_lat ? Number(ds.current_lat) : null;
-    driverLng = ds?.current_lng ? Number(ds.current_lng) : null;
-  }
-
-  const hasMapCoords = showMap && driverLat !== null && driverLng !== null;
+  const hasReview = existingReview !== null;
 
   return (
     <div className="container-shop py-4 pb-24">
@@ -170,6 +159,8 @@ export default async function OrderPage({
       <section className="mb-6">
         <OrderTrackerLive
           orderId={order.id}
+          storeId={store?.id ?? ""}
+          initialHasReview={hasReview}
           initial={{
             status: order.status,
             payment_status: order.payment_status,
@@ -183,27 +174,22 @@ export default async function OrderPage({
         />
       </section>
 
-      {/* Mapa en tiempo real — visible cuando hay repartidor en camino */}
-      {hasMapCoords && order.driver_id && (
-        <section className="mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Truck className="size-4 text-primary" />
-            <p className="text-body-sm font-medium text-neutral-700">
-              {order.status === "picked_up"
-                ? "Tu repartidor está en camino"
-                : "Repartidor asignado"}
-            </p>
-            <span className="size-1.5 rounded-full bg-green-500 animate-pulse" />
-          </div>
-          <DeliveryMapLive
-            driverId={order.driver_id}
-            initialLat={driverLat!}
-            initialLng={driverLng!}
-            destLat={order.delivery_lat}
-            destLng={order.delivery_lng}
-          />
-        </section>
-      )}
+      {/* Mapa en tiempo real — aparece cuando el repartidor es asignado */}
+      <OrderMapSection
+        orderId={order.id}
+        initial={{
+          status: order.status,
+          payment_status: order.payment_status,
+          estimated_delivery_at: order.estimated_delivery_at,
+          driver_id: order.driver_id,
+          confirmed_at: order.confirmed_at,
+          ready_at: order.ready_at,
+          picked_up_at: order.picked_up_at,
+          delivered_at: order.delivered_at,
+        }}
+        destLat={order.delivery_lat}
+        destLng={order.delivery_lng}
+      />
 
       {/* Dirección */}
       <section className="bg-white rounded-md border border-neutral-200 p-4 mb-3">

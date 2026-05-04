@@ -5,7 +5,7 @@ import {
   ClipboardList,
   Bike,
   Building2,
-  LayoutDashboard,
+  Users,
   LogOut,
 } from "lucide-react";
 import { requireRole } from "@/server/auth/session";
@@ -15,6 +15,7 @@ const navItems = [
   { href: "/admin/pedidos", label: "Pedidos", icon: ClipboardList },
   { href: "/admin/repartidores", label: "Repartidores", icon: Bike },
   { href: "/admin/comercios", label: "Comercios", icon: Building2 },
+  { href: "/admin/usuarios", label: "Usuarios", icon: Users },
 ];
 
 export default async function AdminLayout({

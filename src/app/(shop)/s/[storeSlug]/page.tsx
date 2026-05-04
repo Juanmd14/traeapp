@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ChevronLeft, Star, Clock, Truck } from "lucide-react";
+import { ChevronLeft, Star, Clock, Truck, Tag } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { StoreProducts } from "@/components/shop/store-products";
@@ -27,6 +27,26 @@ type StoreData = {
   status: string;
   categories: { name: string } | null;
 };
+
+type PromoData = {
+  id: string;
+  code: string | null;
+  type: "percent" | "amount" | "free_delivery" | "bxgy";
+  value: number | null;
+};
+
+function promoLabel(promo: PromoData): string {
+  switch (promo.type) {
+    case "percent":
+      return `${promo.value}% OFF`;
+    case "amount":
+      return `$${promo.value} OFF`;
+    case "free_delivery":
+      return "Envío gratis";
+    case "bxgy":
+      return "Promoción especial";
+  }
+}
 
 export const revalidate = 30;
 
@@ -87,6 +107,19 @@ export default async function StorePage({ params }: Props) {
   if (!store) {
     notFound();
   }
+
+  const now = new Date().toISOString();
+  const { data: promosData } = await supabase
+    .from("promotions")
+    .select("id, code, type, value")
+    .eq("store_id", store.id)
+    .eq("is_active", true)
+    .not("code", "is", null)
+    .or(`ends_at.is.null,ends_at.gt.${now}`)
+    .or(`starts_at.is.null,starts_at.lte.${now}`)
+    .limit(4);
+
+  const promos = (promosData ?? []) as PromoData[];
 
   const minMin = Math.max(
     15,
@@ -149,6 +182,23 @@ export default async function StorePage({ params }: Props) {
               )}
             </div>
           </div>
+
+          {promos.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-neutral-100">
+              {promos.map((promo) => (
+                <span
+                  key={promo.id}
+                  className="flex items-center gap-1.5 bg-accent-50 text-accent-800 border border-accent-200 text-body-xs font-medium px-2.5 py-1 rounded-full"
+                >
+                  <Tag className="size-3" />
+                  {promo.code && (
+                    <span className="font-bold">{promo.code}</span>
+                  )}
+                  <span>— {promoLabel(promo)}</span>
+                </span>
+              ))}
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-2 mt-3">
             {store.rating_count > 0 && (
