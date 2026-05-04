@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { requireRole } from "@/server/auth/session";
+import { AddDriverForm, RemoveDriverButton } from "@/components/admin/driver-actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Repartidores · Admin" };
@@ -32,32 +33,39 @@ export default async function AdminRepartidoresPage() {
     .eq("role", "delivery_driver")
     .order("full_name");
 
-  const online = (drivers ?? []).filter(
-    (d: Driver) => d.driver_status?.is_online
-  ).length;
+  const all = (drivers ?? []) as Driver[];
+  const online = all.filter((d) => d.driver_status?.is_online).length;
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-heading-xl font-bold text-neutral-900">Repartidores</h1>
-        <p className="text-body-sm text-neutral-500 mt-0.5">
-          {online} online · {(drivers ?? []).length} en total
-        </p>
+      <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
+        <div>
+          <h1 className="text-heading-xl font-bold text-neutral-900">Repartidores</h1>
+          <p className="text-body-sm text-neutral-500 mt-0.5">
+            {online} online · {all.length} en total
+          </p>
+        </div>
       </div>
 
-      {!drivers || drivers.length === 0 ? (
+      {/* Agregar repartidor */}
+      <div className="bg-white rounded-xl border border-neutral-200 p-4 mb-6">
+        <p className="text-body-sm font-medium text-neutral-700 mb-3">
+          Asignar repartidor por email
+        </p>
+        <AddDriverForm />
+      </div>
+
+      {all.length === 0 ? (
         <div className="bg-white rounded-xl border border-neutral-200 py-16 text-center text-neutral-500 text-body-md">
           No hay repartidores registrados
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {(drivers as Driver[]).map((driver) => {
+          {all.map((driver) => {
             const status = driver.driver_status;
             const isOnline = status?.is_online ?? false;
             const hasActiveOrder = !!status?.active_order_id;
-            const lastSeen = status?.last_seen_at
-              ? new Date(status.last_seen_at)
-              : null;
+            const lastSeen = status?.last_seen_at ? new Date(status.last_seen_at) : null;
 
             return (
               <div
@@ -96,9 +104,7 @@ export default async function AdminRepartidoresPage() {
 
                 <div className="space-y-1.5">
                   {driver.phone && (
-                    <p className="text-body-xs text-neutral-500">
-                      Tel: {driver.phone}
-                    </p>
+                    <p className="text-body-xs text-neutral-500">Tel: {driver.phone}</p>
                   )}
                   {hasActiveOrder && (
                     <p className="text-body-xs font-medium text-primary">
@@ -121,6 +127,10 @@ export default async function AdminRepartidoresPage() {
                       })}
                     </p>
                   )}
+                </div>
+
+                <div className="mt-3 pt-3 border-t border-neutral-100">
+                  <RemoveDriverButton userId={driver.id} name={driver.full_name} />
                 </div>
               </div>
             );

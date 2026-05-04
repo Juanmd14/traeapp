@@ -92,3 +92,33 @@ export const removeStoreOwnerAction = adminAction
     revalidatePath(`/admin/comercios/${parsedInput.storeId}`);
     return { ok: true };
   });
+
+export const addDriverAction = adminAction
+  .schema(z.object({ email: z.string().email("Email inválido") }))
+  .action(async ({ parsedInput }) => {
+    const { data: profile } = await (supabaseAdmin.from("profiles") as any)
+      .select("id, role")
+      .eq("email", parsedInput.email.toLowerCase())
+      .maybeSingle();
+    if (!profile) throw new Error("No existe una cuenta con ese email");
+    if (profile.role === "delivery_driver") throw new Error("Ese usuario ya es repartidor");
+
+    const { error } = await (supabaseAdmin.from("profiles") as any)
+      .update({ role: "delivery_driver" })
+      .eq("id", profile.id);
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/admin/repartidores");
+    return { ok: true };
+  });
+
+export const removeDriverAction = adminAction
+  .schema(z.object({ userId: z.string().uuid() }))
+  .action(async ({ parsedInput }) => {
+    const { error } = await (supabaseAdmin.from("profiles") as any)
+      .update({ role: "customer" })
+      .eq("id", parsedInput.userId);
+    if (error) throw new Error(error.message);
+    revalidatePath("/admin/repartidores");
+    return { ok: true };
+  });
