@@ -57,7 +57,7 @@ async function ProductCategories({ storeId, storeName, storeSlug, deliveryFee, m
     supabase
       .from("products")
       .select(`id, name, description, image_url, price, compare_at_price, is_available, product_category_id, sort_order,
-        product_modifiers ( id, name, is_required, type, sort_order,
+        product_modifiers ( id, name, is_required, max_select, sort_order,
           product_modifier_options ( id, name, price_delta, sort_order )
         )`)
       .eq("store_id", storeId)

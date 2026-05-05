@@ -15,7 +15,7 @@ export type ModifierGroup = {
   id: string;
   name: string;
   is_required: boolean;
-  type: string; // "single" | "multiple"
+  max_select: number; // 1 = single, >1 = multiple
   sort_order: number;
   product_modifier_options: ModifierOption[];
 };
@@ -42,7 +42,7 @@ export function ProductModifierModal({ product, modifiers, onConfirm, onClose }:
   const toggleOption = (group: ModifierGroup, optionId: string) => {
     setSelected((prev) => {
       const current = prev[group.id] ?? [];
-      if (group.type === "single") {
+      if (group.max_select === 1) {
         return { ...prev, [group.id]: [optionId] };
       }
       const already = current.includes(optionId);
@@ -102,7 +102,7 @@ export function ProductModifierModal({ product, modifiers, onConfirm, onClose }:
         {/* Modifier groups */}
         <div className="overflow-y-auto flex-1 p-4 space-y-5">
           {modifiers.map((group) => {
-            const sorted = [...group.product_modifier_options].sort((a, b) => a.sort_order - b.sort_order);
+            const sortedOptions = [...group.product_modifier_options].sort((a, b) => a.sort_order - b.sort_order);
             return (
               <div key={group.id}>
                 <div className="flex items-center gap-2 mb-2">
@@ -112,12 +112,12 @@ export function ProductModifierModal({ product, modifiers, onConfirm, onClose }:
                       Obligatorio
                     </span>
                   )}
-                  {group.type === "multiple" && (
+                  {group.max_select !== 1 && (
                     <span className="text-[10px] text-neutral-400">Varios</span>
                   )}
                 </div>
                 <div className="space-y-1.5">
-                  {sorted.map((option) => {
+                  {sortedOptions.map((option) => {
                     const active = isSelected(group.id, option.id);
                     return (
                       <button
