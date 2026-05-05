@@ -1,6 +1,7 @@
 "use client";
 
 import { useAction } from "next-safe-action/hooks";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { updateStoreStatusAction } from "@/server/actions/admin";
 
@@ -21,8 +22,9 @@ export function StoreStatusSelect({
   storeId: string;
   currentStatus: string;
 }) {
+  const router = useRouter();
   const { execute, isPending } = useAction(updateStoreStatusAction, {
-    onSuccess: () => toast.success("Estado actualizado"),
+    onSuccess: () => { toast.success("Estado actualizado"); router.refresh(); },
     onError: ({ error }) => toast.error(error.serverError ?? "Error al actualizar"),
   });
 

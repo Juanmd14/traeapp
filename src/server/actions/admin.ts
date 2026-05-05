@@ -46,6 +46,7 @@ export const updateStoreStatusAction = adminAction
       .eq("id", parsedInput.storeId);
     if (error) throw new Error(error.message);
     revalidatePath("/admin/comercios");
+    revalidatePath("/", "layout");
     return { ok: true };
   });
 
