@@ -22,8 +22,9 @@ export function StoreCard({ store }: { store: StoreCardData }) {
     <Link
       href={`/s/${store.slug}`}
       className={cn(
-        "block bg-white rounded-xl overflow-hidden shadow-card transition",
-        "hover:shadow-elevated active:scale-[0.99]",
+        "block bg-white rounded-xl overflow-hidden transition-all duration-300 active:scale-[0.99]",
+        "shadow-[0_0_0_1px_rgba(255,77,58,0.15),0_2px_8px_rgba(28,25,23,0.06),0_0_20px_rgba(255,77,58,0.08)]",
+        "hover:shadow-[0_0_0_1.5px_rgba(255,77,58,0.35),0_4px_16px_rgba(28,25,23,0.08),0_0_32px_rgba(255,77,58,0.18)]",
         !store.isOpen && "opacity-60",
       )}
     >

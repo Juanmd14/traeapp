@@ -108,25 +108,24 @@ export function ProductCard({
     <>
       <div
         className={cn(
-          "bg-white border border-neutral-200 rounded-xl overflow-hidden flex gap-0 relative hover:shadow-md transition-shadow",
+          "bg-white rounded-2xl flex items-stretch relative",
+          "border border-neutral-100 shadow-sm hover:shadow-md hover:border-neutral-200 transition-all duration-200",
           !product.isAvailable && "opacity-50"
         )}
       >
         {/* Info — izquierda */}
-        <div className="flex-1 min-w-0 p-3 sm:p-4 flex flex-col justify-between">
-          <div>
-            <h3 className="text-body-md font-semibold text-neutral-900 line-clamp-2 leading-snug">
-              {product.name}
-            </h3>
-            {product.description && (
-              <p className="text-body-sm text-neutral-400 line-clamp-2 mt-1 leading-snug">
-                {product.description}
-              </p>
-            )}
-          </div>
+        <div className="flex-1 min-w-0 p-3.5 sm:p-4 flex flex-col">
+          <h3 className="text-[15px] font-semibold text-neutral-900 line-clamp-2 leading-snug">
+            {product.name}
+          </h3>
+          {product.description && (
+            <p className="text-[13px] text-neutral-400 line-clamp-2 mt-1 leading-relaxed">
+              {product.description}
+            </p>
+          )}
 
-          {/* Precio + botón abajo */}
-          <div className="flex items-end justify-between mt-3 gap-2">
+          {/* Precio + botón — pegado abajo */}
+          <div className="flex items-end justify-between mt-auto pt-3 gap-2">
             <div className="flex flex-col">
               {hasDiscount && (
                 <div className="flex items-center gap-1.5 mb-0.5">
@@ -170,37 +169,39 @@ export function ProductCard({
           </div>
         </div>
 
-        {/* Imagen — derecha, más grande */}
-        <div className="relative w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0">
-          {product.imageUrl ? (
-            <Image
-              src={product.imageUrl}
-              alt={product.name}
-              fill
-              sizes="(max-width: 640px) 128px, 160px"
-              className="object-cover"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-300 flex items-center justify-center">
-              <span className="text-4xl opacity-40">🍽️</span>
-            </div>
-          )}
+        {/* Imagen — inset con bordes redondeados propios */}
+        <div className="self-center pr-3 py-3 flex-shrink-0">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden">
+            {product.imageUrl ? (
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                sizes="(max-width: 640px) 96px, 112px"
+                className="object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-300 flex items-center justify-center">
+                <span className="text-3xl opacity-40">🍽️</span>
+              </div>
+            )}
 
-          {/* Badge descuento sobre imagen */}
-          {hasDiscount && (
-            <div className="absolute top-2 left-2 bg-warning-500 text-white text-body-xs font-bold px-1.5 py-0.5 rounded-md">
-              -{discountPct}%
-            </div>
-          )}
+            {/* Badge descuento sobre imagen */}
+            {hasDiscount && (
+              <div className="absolute top-1.5 left-1.5 bg-warning-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">
+                -{discountPct}%
+              </div>
+            )}
 
-          {/* No disponible overlay */}
-          {!product.isAvailable && (
-            <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-              <span className="text-body-xs font-medium text-neutral-500">
-                No disponible
-              </span>
-            </div>
-          )}
+            {/* No disponible overlay */}
+            {!product.isAvailable && (
+              <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                <span className="text-[11px] font-medium text-neutral-500 text-center px-1">
+                  No disponible
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
