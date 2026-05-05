@@ -97,10 +97,10 @@ async function ProductCategories({ storeId, storeName, storeSlug, deliveryFee, m
         .filter((c) => c.products.length > 0)
         .map((cat) => (
           <section key={cat.id}>
-            <h2 className="text-heading-md font-semibold text-neutral-900 mb-3">
+            <h2 className="text-[13px] font-bold uppercase tracking-widest text-neutral-400 mb-3 pl-1">
               {cat.name}
             </h2>
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               {cat.products.map((p) => (
                 <ProductCard
                   key={p.id}

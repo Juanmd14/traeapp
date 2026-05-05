@@ -108,100 +108,94 @@ export function ProductCard({
     <>
       <div
         className={cn(
-          "bg-white rounded-2xl flex items-stretch relative",
-          "border border-neutral-100 shadow-sm hover:shadow-md hover:border-neutral-200 transition-all duration-200",
-          !product.isAvailable && "opacity-50"
+          "bg-white rounded-2xl flex items-stretch relative overflow-hidden",
+          "shadow-[0_1px_3px_rgba(28,25,23,0.07),0_4px_14px_rgba(28,25,23,0.05)]",
+          "hover:shadow-[0_4px_16px_rgba(28,25,23,0.1),0_8px_24px_rgba(28,25,23,0.06)]",
+          "transition-shadow duration-200",
+          !product.isAvailable && "opacity-55"
         )}
       >
         {/* Info — izquierda */}
-        <div className="flex-1 min-w-0 p-3.5 sm:p-4 flex flex-col">
-          <h3 className="text-[15px] font-semibold text-neutral-900 line-clamp-2 leading-snug">
+        <div className="flex-1 min-w-0 px-4 py-3.5 flex flex-col min-h-[100px]">
+          <h3 className="font-semibold text-neutral-900 text-[15px] leading-snug line-clamp-2">
             {product.name}
           </h3>
           {product.description && (
-            <p className="text-[13px] text-neutral-400 line-clamp-2 mt-1 leading-relaxed">
+            <p className="text-[12.5px] text-neutral-400 line-clamp-2 mt-1 leading-relaxed">
               {product.description}
             </p>
           )}
 
-          {/* Precio + botón — pegado abajo */}
-          <div className="flex items-end justify-between mt-auto pt-3 gap-2">
-            <div className="flex flex-col">
-              {hasDiscount && (
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <span className="text-body-xs text-neutral-400 line-through">
-                    {formatPrice(product.compareAtPrice!)}
-                  </span>
-                  <span className="bg-warning-100 text-warning-800 text-body-xs font-semibold px-1.5 py-0.5 rounded-full">
-                    {discountPct}% off
-                  </span>
-                </div>
-              )}
-              <span className="text-body-lg font-bold text-neutral-900">
+          {/* Precio + botón */}
+          <div className="flex items-center justify-between mt-auto pt-2.5 gap-3">
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-[17px] font-bold text-neutral-900 tracking-tight">
                 {formatPrice(product.price)}
               </span>
+              {hasDiscount && (
+                <span className="text-[12px] text-neutral-400 line-through">
+                  {formatPrice(product.compareAtPrice!)}
+                </span>
+              )}
             </div>
 
-            {/* Botón agregar */}
             <button
               onClick={handleAdd}
               disabled={!product.isAvailable}
               className={cn(
-                "rounded-full flex items-center justify-center transition shadow-sm flex-shrink-0",
-                hasModifiers ? "px-3 py-2 gap-1 text-body-xs font-medium" : "size-9",
+                "flex items-center justify-center flex-shrink-0 transition-all duration-150 active:scale-90",
+                hasModifiers
+                  ? "h-8 px-3 rounded-full gap-1 text-[12px] font-semibold"
+                  : "size-8 rounded-full",
                 justAdded
-                  ? "bg-accent-600 text-white"
-                  : "bg-primary-600 text-white hover:bg-primary-700 active:scale-95"
+                  ? "bg-accent-500 text-white shadow-none"
+                  : "bg-primary-600 text-white hover:bg-primary-700 shadow-[0_2px_8px_rgba(230,56,35,0.35)]"
               )}
               aria-label="Agregar al carrito"
             >
               {justAdded ? (
-                <Check className="size-5" strokeWidth={3} />
+                <Check className="size-4" strokeWidth={3} />
               ) : hasModifiers ? (
                 <>
-                  <Plus className="size-4" strokeWidth={2.5} />
+                  <Plus className="size-3.5" strokeWidth={2.5} />
                   <span>Elegir</span>
                 </>
               ) : (
-                <Plus className="size-5" strokeWidth={2.5} />
+                <Plus className="size-4" strokeWidth={2.5} />
               )}
             </button>
           </div>
         </div>
 
-        {/* Imagen — inset con bordes redondeados propios */}
-        <div className="self-center pr-3 py-3 flex-shrink-0">
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden">
-            {product.imageUrl ? (
-              <Image
-                src={product.imageUrl}
-                alt={product.name}
-                fill
-                sizes="(max-width: 640px) 96px, 112px"
-                className="object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-300 flex items-center justify-center">
-                <span className="text-3xl opacity-40">🍽️</span>
-              </div>
-            )}
+        {/* Imagen — derecha, flush */}
+        <div className="relative w-[100px] sm:w-[120px] flex-shrink-0 self-stretch">
+          {product.imageUrl ? (
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 100px, 120px"
+              className="object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-neutral-100 to-neutral-200 flex items-center justify-center">
+              <span className="text-3xl opacity-30">🍽️</span>
+            </div>
+          )}
 
-            {/* Badge descuento sobre imagen */}
-            {hasDiscount && (
-              <div className="absolute top-1.5 left-1.5 bg-warning-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">
-                -{discountPct}%
-              </div>
-            )}
+          {hasDiscount && (
+            <div className="absolute top-2 left-0 bg-warning-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-r-md">
+              -{discountPct}%
+            </div>
+          )}
 
-            {/* No disponible overlay */}
-            {!product.isAvailable && (
-              <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-                <span className="text-[11px] font-medium text-neutral-500 text-center px-1">
-                  No disponible
-                </span>
-              </div>
-            )}
-          </div>
+          {!product.isAvailable && (
+            <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center">
+              <span className="text-[11px] font-semibold text-neutral-600 text-center px-1">
+                No disponible
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
