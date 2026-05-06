@@ -85,7 +85,7 @@ export function NotificationsBell({ notifications: initial, unreadCount: initial
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-elevated z-50 overflow-hidden animate-scale-in">
+        <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-h-[70vh] bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-elevated z-50 overflow-hidden animate-scale-in">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
             <span className="text-heading-sm font-semibold text-neutral-900 dark:text-neutral-100">
@@ -103,7 +103,7 @@ export function NotificationsBell({ notifications: initial, unreadCount: initial
           </div>
 
           {/* Lista */}
-          <div className="max-h-80 overflow-y-auto divide-y divide-neutral-50 dark:divide-neutral-800">
+          <div className="max-h-[50vh] overflow-y-auto divide-y divide-neutral-50 dark:divide-neutral-800">
             {notifs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <Bell className="size-8 text-neutral-200 mb-2" />
@@ -118,7 +118,7 @@ export function NotificationsBell({ notifications: initial, unreadCount: initial
                 const link = notif.data?.link;
 
                 const inner = (
-                  <div className={`flex items-start gap-2.5 px-4 py-3 ${isUnread ? "bg-primary-50/50" : ""}`}>
+                  <div className={`flex items-start gap-2.5 px-4 py-3 ${isUnread ? "bg-primary-50/50 dark:bg-primary-900/20" : ""}`}>
                     <div className="mt-1.5 shrink-0">
                       {isUnread
                         ? <span className="size-2 block bg-primary-500 rounded-full" />
@@ -126,15 +126,15 @@ export function NotificationsBell({ notifications: initial, unreadCount: initial
                       }
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-body-sm leading-snug ${isUnread ? "font-semibold text-neutral-900 dark:text-neutral-100" : "font-medium text-neutral-700 dark:text-neutral-300"}`}>
+                      <p className={`text-body-sm leading-snug ${isUnread ? "font-semibold" : "font-medium"} ${isUnread ? "text-primary-600 dark:text-primary-400" : "text-neutral-700 dark:text-neutral-200"}`}>
                         {notif.title}
                       </p>
                       {notif.body && (
-                        <p className="text-body-xs text-neutral-500 mt-0.5 line-clamp-2">
+                        <p className="text-body-xs text-neutral-600 dark:text-neutral-300 mt-0.5 line-clamp-3">
                           {notif.body}
                         </p>
                       )}
-                      <p className="text-body-xs text-neutral-400 mt-1">
+                      <p className="text-body-xs text-neutral-400 dark:text-neutral-500 mt-1">
                         {relativeTime(notif.created_at)}
                       </p>
                     </div>

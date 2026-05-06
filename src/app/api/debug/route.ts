@@ -6,6 +6,11 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const slug = searchParams.get('slug')
 
+  // Only allow in development
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not available in production' }, { status: 403 })
+  }
+
   if (!slug) {
     return NextResponse.json({ error: 'Pasá ?slug=el-slug-del-local' }, { status: 400 })
   }
