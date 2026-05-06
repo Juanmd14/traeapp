@@ -12,7 +12,7 @@ import { createNotification } from "@/server/services/notifications.service";
 
 const cartItemInputSchema = z.object({
   productId: z.string().uuid(),
-  quantity: z.number().int().min(1).max(20),
+  quantity: z.number().int().min(1).max(100),
   modifiers: z.array(z.object({
     optionId: z.string().uuid(),
     name: z.string(),
