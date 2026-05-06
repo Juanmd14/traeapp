@@ -985,18 +985,21 @@ export type Database = {
           modifier_id: string
           name: string
           price_delta: number
+          is_absolute_price: boolean
         }
         Insert: {
           id?: string
           modifier_id: string
           name: string
           price_delta?: number
+          is_absolute_price?: boolean
         }
         Update: {
           id?: string
           modifier_id?: string
           name?: string
           price_delta?: number
+          is_absolute_price?: boolean
         }
         Relationships: [
           {

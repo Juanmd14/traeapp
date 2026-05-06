@@ -59,7 +59,7 @@ export function UserMenuDropdown({ user, isStoreOwner, isDriver }: Props) {
         className="group flex items-center gap-1.5 pl-1 sm:pl-2 pr-1 py-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
       >
         <div className="hidden lg:block text-right">
-          <p className="text-[10px] text-neutral-500 leading-tight">Hola</p>
+          <p className="text-[10px] text-neutral-500 dark:text-neutral-400 leading-tight">Hola</p>
           <p className="text-body-sm font-semibold text-neutral-900 dark:text-neutral-100 leading-tight group-hover:text-primary-600 transition">
             {user.fullName.split(" ")[0]}
           </p>

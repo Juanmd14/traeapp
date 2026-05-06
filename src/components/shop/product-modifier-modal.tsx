@@ -8,6 +8,7 @@ export type ModifierOption = {
   id: string;
   name: string;
   price_delta: number;
+  is_absolute_price: boolean;
   sort_order: number;
 };
 
@@ -29,7 +30,7 @@ type Props = {
   };
   modifiers: ModifierGroup[];
   onConfirm: (
-    selectedModifiers: Array<{ optionId: string; name: string; priceDelta: number }>,
+    selectedModifiers: Array<{ optionId: string; name: string; priceDelta: number; isAbsolute: boolean }>,
     quantity: number
   ) => void;
   onClose: () => void;
@@ -60,18 +61,22 @@ export function ProductModifierModal({ product, modifiers, onConfirm, onClose }:
     .filter((g) => g.is_required)
     .every((g) => (selected[g.id] ?? []).length > 0);
 
-  const extraTotal = modifiers.flatMap((g) =>
+  const selectedOptions = modifiers.flatMap((g) =>
     g.product_modifier_options.filter((o) => isSelected(g.id, o.id))
-  ).reduce((acc, o) => acc + Number(o.price_delta), 0);
-
-  const unitPrice = product.price + extraTotal;
+  );
+  const absoluteOptions = selectedOptions.filter((o) => o.is_absolute_price);
+  const deltaOptions = selectedOptions.filter((o) => !o.is_absolute_price);
+  const deltaTotal = deltaOptions.reduce((acc, o) => acc + Number(o.price_delta), 0);
+  const unitPrice = absoluteOptions.length > 0
+    ? absoluteOptions.reduce((acc, o) => acc + Number(o.price_delta), 0) + deltaTotal
+    : product.price + deltaTotal;
   const totalPrice = unitPrice * quantity;
 
   const handleConfirm = () => {
     const selectedModifiers = modifiers.flatMap((g) =>
       g.product_modifier_options
         .filter((o) => isSelected(g.id, o.id))
-        .map((o) => ({ optionId: o.id, name: o.name, priceDelta: Number(o.price_delta) }))
+        .map((o) => ({ optionId: o.id, name: o.name, priceDelta: Number(o.price_delta), isAbsolute: o.is_absolute_price }))
     );
     onConfirm(selectedModifiers, quantity);
   };
@@ -88,8 +93,10 @@ export function ProductModifierModal({ product, modifiers, onConfirm, onClose }:
         {/* Header */}
         <div className="flex items-start justify-between p-4 border-b border-neutral-100 dark:border-neutral-800">
           <div>
-            <h3 className="text-heading-md font-semibold text-neutral-900">{product.name}</h3>
-            <p className="text-body-sm text-neutral-500 mt-0.5">{formatPrice(product.price)} base</p>
+            <h3 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100">{product.name}</h3>
+            <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+              {absoluteOptions.length > 0 ? formatPrice(unitPrice) : `${formatPrice(product.price)} base`}
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -136,11 +143,13 @@ export function ProductModifierModal({ product, modifiers, onConfirm, onClose }:
                           }`}>
                             {active && <div className="size-1.5 rounded-full bg-white" />}
                           </div>
-                          <span className="text-body-md text-neutral-900">{option.name}</span>
+                          <span className="text-body-md text-neutral-900 dark:text-neutral-100">{option.name}</span>
                         </div>
                         {Number(option.price_delta) > 0 && (
-                          <span className="text-body-sm text-neutral-500">
-                            + {formatPrice(Number(option.price_delta))}
+                          <span className="text-body-sm text-neutral-500 dark:text-neutral-400">
+                            {option.is_absolute_price
+                              ? formatPrice(Number(option.price_delta))
+                              : `+ ${formatPrice(Number(option.price_delta))}`}
                           </span>
                         )}
                       </button>
@@ -155,7 +164,7 @@ export function ProductModifierModal({ product, modifiers, onConfirm, onClose }:
         {/* Footer — quantity + confirm */}
         <div className="p-4 border-t border-neutral-100 dark:border-neutral-800">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-body-sm text-neutral-500">Cantidad</p>
+            <p className="text-body-sm text-neutral-500 dark:text-neutral-400">Cantidad</p>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}

@@ -74,9 +74,13 @@ export default function CarritoPage() {
 
       <ul className="space-y-2.5 mb-6">
         {items.map((item) => {
-          const lineSubtotal =
-            (item.unitPrice + (item.modifiers?.reduce((a, m) => a + m.priceDelta, 0) ?? 0)) *
-            item.quantity;
+          const mods = item.modifiers ?? [];
+          const absoluteMods = mods.filter((m) => m.isAbsolute);
+          const deltaMods = mods.filter((m) => !m.isAbsolute);
+          const deltaTotal = deltaMods.reduce((a, m) => a + m.priceDelta, 0);
+          const lineSubtotal = absoluteMods.length > 0
+            ? (absoluteMods.reduce((a, m) => a + m.priceDelta, 0) + deltaTotal) * item.quantity
+            : (item.unitPrice + deltaTotal) * item.quantity;
 
           return (
             <li
@@ -92,7 +96,7 @@ export default function CarritoPage() {
               </div>
 
               <div className="flex-1 min-w-0">
-                <h3 className="text-body-md font-medium text-neutral-900 truncate">
+                <h3 className="text-body-md font-medium text-neutral-900 dark:text-neutral-100 truncate">
                   {item.name}
                 </h3>
                 {item.modifiers && item.modifiers.length > 0 && (

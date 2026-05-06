@@ -11,7 +11,7 @@ export type CartItem = {
   unitPrice: number;
   quantity: number;
   /** Modificadores opcionales seleccionados */
-  modifiers?: Array<{ optionId: string; name: string; priceDelta: number }>;
+  modifiers?: Array<{ optionId: string; name: string; priceDelta: number; isAbsolute?: boolean }>;
   notes?: string;
   /** Para identificar variantes con distintos modificadores */
   lineId: string;
@@ -64,11 +64,14 @@ const buildLineId = (productId: string, modifiers?: CartItem["modifiers"]) => {
 };
 
 const lineTotal = (item: CartItem): number => {
-  const modifiersTotal = (item.modifiers ?? []).reduce(
-    (acc, m) => acc + Number(m.priceDelta),
-    0,
-  );
-  return (Number(item.unitPrice) + modifiersTotal) * item.quantity;
+  const mods = item.modifiers ?? [];
+  const absoluteMods = mods.filter((m) => m.isAbsolute);
+  const deltaMods = mods.filter((m) => !m.isAbsolute);
+  const deltaTotal = deltaMods.reduce((acc, m) => acc + Number(m.priceDelta), 0);
+  const unitPrice = absoluteMods.length > 0
+    ? absoluteMods.reduce((acc, m) => acc + Number(m.priceDelta), 0) + deltaTotal
+    : Number(item.unitPrice) + deltaTotal;
+  return unitPrice * item.quantity;
 };
 
 export const useCart = create<CartStore>()(

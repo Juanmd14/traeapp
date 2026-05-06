@@ -17,6 +17,7 @@ const cartItemInputSchema = z.object({
     optionId: z.string().uuid(),
     name: z.string(),
     priceDelta: z.number(),
+    isAbsolute: z.boolean().default(false),
   })).default([]),
   notes: z.string().max(200).optional(),
 });
@@ -94,12 +95,17 @@ export const createOrderAction = authAction
     // 4. Calcular pricing
     const itemsForPricing = parsedInput.items.map((it) => {
       const product = products.find((p: any) => p.id === it.productId)!;
-      const modifiersTotal = it.modifiers.reduce((acc, m) => acc + m.priceDelta, 0);
+      const absoluteMods = it.modifiers.filter((m) => m.isAbsolute);
+      const deltaMods = it.modifiers.filter((m) => !m.isAbsolute);
+      const deltaTotal = deltaMods.reduce((acc, m) => acc + m.priceDelta, 0);
+      const effectiveUnitPrice = absoluteMods.length > 0
+        ? absoluteMods.reduce((acc, m) => acc + m.priceDelta, 0) + deltaTotal
+        : Number(product.price) + deltaTotal;
       return {
         productId: it.productId,
-        unitPrice: Number(product.price),
+        unitPrice: effectiveUnitPrice,
         quantity: it.quantity,
-        modifiersTotal,
+        modifiersTotal: 0,
       };
     });
 
@@ -142,8 +148,12 @@ export const createOrderAction = authAction
     // Items
     const orderItems = parsedInput.items.map((it) => {
       const product = products.find((p: any) => p.id === it.productId)!;
-      const modifiersTotal = it.modifiers.reduce((acc, m) => acc + m.priceDelta, 0);
-      const unitTotal = Number(product.price) + modifiersTotal;
+      const absoluteMods = it.modifiers.filter((m) => m.isAbsolute);
+      const deltaMods = it.modifiers.filter((m) => !m.isAbsolute);
+      const deltaTotal = deltaMods.reduce((acc, m) => acc + m.priceDelta, 0);
+      const effectiveUnitPrice = absoluteMods.length > 0
+        ? absoluteMods.reduce((acc, m) => acc + m.priceDelta, 0) + deltaTotal
+        : Number(product.price) + deltaTotal;
       return {
         order_id: order.id,
         product_id: product.id,
@@ -151,7 +161,7 @@ export const createOrderAction = authAction
         quantity: it.quantity,
         unit_price: Number(product.price),
         modifiers_json: it.modifiers,
-        total: unitTotal * it.quantity,
+        total: effectiveUnitPrice * it.quantity,
         notes: it.notes ?? null,
       };
     });
@@ -182,10 +192,7 @@ export const createOrderAction = authAction
               id: i.product_id,
               title: i.product_name,
               quantity: i.quantity,
-              unit_price: Number(i.unit_price) +
-                (i.modifiers_json as Array<{ priceDelta: number }>).reduce(
-                  (acc, m) => acc + m.priceDelta, 0,
-                ),
+              unit_price: i.total / i.quantity,
             })),
             ...(pricing.deliveryFee > 0
               ? [{ id: "delivery", title: "Envío", quantity: 1, unit_price: pricing.deliveryFee }]

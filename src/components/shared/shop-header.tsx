@@ -96,7 +96,7 @@ export async function ShopHeader() {
             >
               <MapPin className="size-4 text-primary-600 shrink-0" strokeWidth={2.5} />
               <div className="min-w-0 max-w-[150px]">
-                <p className="text-[10px] text-neutral-400 dark:text-neutral-500 leading-none uppercase tracking-wider">
+                <p className="text-[10px] text-neutral-400 dark:text-neutral-400 leading-none uppercase tracking-wider">
                   Enviar a
                 </p>
                 <p className="text-body-sm font-semibold text-neutral-900 dark:text-neutral-100 leading-tight truncate group-hover:text-primary-600 transition">
@@ -124,7 +124,7 @@ export async function ShopHeader() {
 
               <Link
                 href="/pedidos"
-                className="hidden md:inline-flex items-center gap-1.5 text-body-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 px-3 py-2 rounded-lg transition"
+                className="hidden md:inline-flex items-center gap-1.5 text-body-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800 px-3 py-2 rounded-lg transition"
               >
                 <ClipboardList className="size-4" />
                 <span className="hidden lg:inline">Mis pedidos</span>
@@ -168,7 +168,7 @@ export async function ShopHeader() {
             </Link>
             <Link
               href="/pedidos"
-              className="md:hidden size-8 rounded-lg bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-600 transition shrink-0"
+              className="md:hidden size-8 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 flex items-center justify-center text-neutral-600 dark:text-neutral-300 transition shrink-0"
               aria-label="Mis pedidos"
             >
               <ClipboardList className="size-4" />

@@ -47,7 +47,7 @@ export function ProductCard({
 
   const hasModifiers = modifiers.length > 0;
 
-  const doAdd = (selectedModifiers: Array<{ optionId: string; name: string; priceDelta: number }>, quantity: number) => {
+  const doAdd = (selectedModifiers: Array<{ optionId: string; name: string; priceDelta: number; isAbsolute: boolean }>, quantity: number) => {
     const result = add({
       storeId,
       storeName,
@@ -117,7 +117,7 @@ export function ProductCard({
       >
         {/* Info — izquierda */}
         <div className="flex-1 min-w-0 px-4 py-3.5 flex flex-col min-h-[100px]">
-          <h3 className="font-semibold text-neutral-900 text-[15px] leading-snug line-clamp-2">
+          <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 text-[15px] leading-snug line-clamp-2">
             {product.name}
           </h3>
           {product.description && (
@@ -129,7 +129,7 @@ export function ProductCard({
           {/* Precio + botón */}
           <div className="flex items-center justify-between mt-auto pt-2.5 gap-3">
             <div className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-[17px] font-bold text-neutral-900 tracking-tight">
+              <span className="text-[17px] font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
                 {formatPrice(product.price)}
               </span>
               {hasDiscount && (
