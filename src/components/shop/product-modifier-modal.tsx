@@ -105,11 +105,12 @@ export function ProductModifierModal({
     : deltaTotal;
 
   const selectedQtyOption = quantityOptions.find(q => q.id === selectedQuantityOption);
+  const effectiveQuantity = selectedQtyOption ? selectedQtyOption.quantity : quantity;
   const unitPrice = selectedQtyOption 
-    ? Number(selectedQtyOption.price) 
+    ? Number(selectedQtyOption.price) / selectedQtyOption.quantity
     : baseUnitPrice + modifierTotal;
   
-  const totalPrice = unitPrice * quantity;
+  const totalPrice = unitPrice * effectiveQuantity;
 
   const handleConfirm = () => {
     const selectedModifiers = modifiers.flatMap((g) =>
@@ -123,7 +124,7 @@ export function ProductModifierModal({
           isRemoval: o.is_removal 
         }))
     );
-    onConfirm(selectedModifiers, quantity, unitPrice);
+    onConfirm(selectedModifiers, effectiveQuantity, unitPrice);
   };
 
   return (
