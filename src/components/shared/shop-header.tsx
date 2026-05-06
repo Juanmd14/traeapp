@@ -4,6 +4,7 @@ import { MapPin, User, Store, ClipboardList, Bike } from "lucide-react";
 import { getSession } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { SearchBar } from "@/components/shared/search-bar";
+import { NotificationsBell, type Notification } from "@/components/shared/notifications-bell";
 
 function BrandLogo() {
   return (
@@ -34,6 +35,8 @@ export async function ShopHeader() {
   const session = await getSession();
 
   let defaultAddressLine: string | null = null;
+  let notifications: Notification[] = [];
+  let unreadCount = 0;
 
   if (session) {
     const supabase = await createClient();
@@ -52,6 +55,18 @@ export async function ShopHeader() {
         ? addr.label
         : `${addr.street ?? ""}${addr.number ? " " + addr.number : ""}`;
     }
+
+    // Notificaciones (best-effort)
+    const { data: notifData } = await supabase
+      .from("notifications")
+      .select("id, title, body, data, read_at, created_at")
+      .eq("user_id", session.id)
+      .eq("channel", "in_app")
+      .order("created_at", { ascending: false })
+      .limit(15);
+
+    notifications = (notifData ?? []) as Notification[];
+    unreadCount = notifications.filter(n => !n.read_at).length;
   }
 
   const isStoreOwner =
@@ -111,6 +126,11 @@ export async function ShopHeader() {
                 <ClipboardList className="size-4" />
                 <span className="hidden lg:inline">Mis pedidos</span>
               </Link>
+
+              <NotificationsBell
+                notifications={notifications}
+                unreadCount={unreadCount}
+              />
 
               {/* Mi comercio — solo ícono en mobile */}
               {isStoreOwner && (

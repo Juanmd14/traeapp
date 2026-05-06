@@ -8,6 +8,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { calculatePricing } from "@/server/services/pricing.service";
 import { createPreference } from "@/server/services/mercadopago.service";
+import { createNotification } from "@/server/services/notifications.service";
 
 const cartItemInputSchema = z.object({
   productId: z.string().uuid(),
@@ -216,7 +217,25 @@ export const createOrderAction = authAction
       }
     }
 
-    // 7. Efectivo
+    // 7. Notificar al comercio (best-effort, no bloquea)
+    const totalStr = "$" + Number(pricing.total).toLocaleString("es-AR", { maximumFractionDigits: 0 });
+    const payLabel = parsedInput.paymentMethod === "cash" ? "Efectivo" : "Mercado Pago";
+    ;(supabaseAdmin.from("store_users") as any)
+      .select("user_id")
+      .eq("store_id", store.id)
+      .then(({ data: owners }: { data: { user_id: string }[] | null }) => {
+        for (const o of owners ?? []) {
+          createNotification({
+            userId: o.user_id,
+            title: `Nuevo pedido #${order.order_number}`,
+            body: `${totalStr} · ${payLabel}`,
+            data: { link: "/comercio/pedidos", orderId: order.id, orderNumber: order.order_number },
+          }).catch(() => {});
+        }
+      })
+      .catch(() => {});
+
+    // 8. Efectivo
     revalidatePath("/pedidos");
     return {
       ok: true,
@@ -259,7 +278,7 @@ export const acceptOrderAction = authAction
   .schema(z.object({ orderId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
     const { data: order } = await (supabaseAdmin.from("orders") as any)
-      .select("id, store_id, status")
+      .select("id, store_id, status, customer_id, order_number")
       .eq("id", parsedInput.orderId)
       .single();
 
@@ -281,7 +300,7 @@ export const acceptOrderAction = authAction
     }
 
     const { data: store } = await (supabaseAdmin.from("stores") as any)
-      .select("avg_prep_minutes")
+      .select("avg_prep_minutes, name")
       .eq("id", order.store_id)
       .single();
 
@@ -300,6 +319,13 @@ export const acceptOrderAction = authAction
 
     if (error) throw new Error(error.message);
 
+    createNotification({
+      userId: order.customer_id,
+      title: `¡Tu pedido fue confirmado!`,
+      body: `${store?.name ?? "El comercio"} está preparando tu pedido #${order.order_number}.`,
+      data: { link: `/pedido/${order.id}`, orderId: order.id, orderNumber: order.order_number },
+    }).catch(() => {});
+
     revalidatePath("/comercio", "layout");
     return { ok: true };
   });
@@ -308,7 +334,7 @@ export const markOrderReadyAction = authAction
   .schema(z.object({ orderId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
     const { data: order } = await (supabaseAdmin.from("orders") as any)
-      .select("id, store_id, status")
+      .select("id, store_id, status, customer_id, order_number")
       .eq("id", parsedInput.orderId)
       .single();
 
@@ -338,6 +364,13 @@ export const markOrderReadyAction = authAction
 
     if (error) throw new Error(error.message);
 
+    createNotification({
+      userId: order.customer_id,
+      title: `Tu pedido está listo 🎉`,
+      body: `El pedido #${order.order_number} está en camino hacia vos.`,
+      data: { link: `/pedido/${order.id}`, orderId: order.id, orderNumber: order.order_number },
+    }).catch(() => {});
+
     revalidatePath("/comercio", "layout");
     return { ok: true };
   });
@@ -349,7 +382,7 @@ export const rejectOrderAction = authAction
   }))
   .action(async ({ parsedInput, ctx }) => {
     const { data: order } = await (supabaseAdmin.from("orders") as any)
-      .select("id, store_id, status, payment_method, payment_status")
+      .select("id, store_id, status, customer_id, order_number, payment_method, payment_status")
       .eq("id", parsedInput.orderId)
       .single();
 
@@ -376,9 +409,17 @@ export const rejectOrderAction = authAction
 
     if (error) throw new Error(error.message);
 
+    createNotification({
+      userId: order.customer_id,
+      title: `Pedido rechazado`,
+      body: parsedInput.reason,
+      data: { link: `/pedido/${order.id}`, orderId: order.id, orderNumber: order.order_number },
+    }).catch(() => {});
+
     revalidatePath("/comercio", "layout");
     return { ok: true };
   });
+
 export const validatePromoAction = authAction
   .schema(z.object({
     storeId: z.string().uuid(),
