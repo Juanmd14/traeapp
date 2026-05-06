@@ -48,8 +48,8 @@ export function HeroBanner() {
   return (
     <section className="
       rounded-2xl overflow-hidden
-      bg-white dark:bg-neutral-900
-      border border-neutral-200 dark:border-neutral-800
+      bg-white
+      border border-neutral-200
       shadow-sm
     ">
       <div className="flex items-center gap-4 sm:gap-6 px-4 sm:px-6 py-4 sm:py-6">
@@ -87,10 +87,10 @@ export function HeroBanner() {
 
         {/* Eslogan — coral en ambos modos */}
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl sm:text-3xl font-extrabold text-primary-600 dark:text-primary-400 leading-tight mb-1">
+          <h1 className="text-xl sm:text-3xl font-extrabold text-primary-600 leading-tight mb-1">
             Vadelivery
           </h1>
-          <p className="text-xs sm:text-base text-neutral-700 dark:text-neutral-300 leading-snug font-medium">
+          <p className="text-xs sm:text-base text-neutral-700 leading-snug font-medium">
             Pedí lo que quieras, llega rápido a tu puerta
           </p>
         </div>

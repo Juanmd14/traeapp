@@ -17,7 +17,7 @@ export function OrderConfirmedOverlay({ orderNumber, paymentMethod }: Props) {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 z-[100] bg-white/95 dark:bg-neutral-950/95 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
       <div className="text-center max-w-sm animate-slide-up">
         <div className="relative inline-flex mb-6">
           <div className="size-24 rounded-full bg-accent-100 flex items-center justify-center">

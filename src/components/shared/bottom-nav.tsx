@@ -40,7 +40,7 @@ export function BottomNav({ isLogged, role }: Props) {
   ];
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-neutral-200 sm:hidden">
+    <nav className="fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 sm:hidden">
       <div className="container-shop">
         <div className="flex justify-between py-2">
           {items.map((item) => {

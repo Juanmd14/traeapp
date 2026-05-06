@@ -73,7 +73,7 @@ export function NotificationsBell({ notifications: initial, unreadCount: initial
     <div ref={panelRef} className="relative">
       <button
         onClick={() => setOpen(v => !v)}
-        className="relative size-9 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition text-neutral-600"
+        className="relative size-9 flex items-center justify-center rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition text-neutral-600 dark:text-neutral-400"
         aria-label={`Notificaciones${unread > 0 ? ` · ${unread} sin leer` : ""}`}
       >
         <Bell className="size-[18px]" />
@@ -85,10 +85,10 @@ export function NotificationsBell({ notifications: initial, unreadCount: initial
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-xl border border-neutral-200 shadow-elevated z-50 overflow-hidden animate-scale-in">
+        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-elevated z-50 overflow-hidden animate-scale-in">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100">
-            <span className="text-heading-sm font-semibold text-neutral-900">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
+            <span className="text-heading-sm font-semibold text-neutral-900 dark:text-neutral-100">
               Notificaciones
             </span>
             {unread > 0 && (
@@ -103,7 +103,7 @@ export function NotificationsBell({ notifications: initial, unreadCount: initial
           </div>
 
           {/* Lista */}
-          <div className="max-h-80 overflow-y-auto divide-y divide-neutral-50">
+          <div className="max-h-80 overflow-y-auto divide-y divide-neutral-50 dark:divide-neutral-800">
             {notifs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <Bell className="size-8 text-neutral-200 mb-2" />
@@ -126,7 +126,7 @@ export function NotificationsBell({ notifications: initial, unreadCount: initial
                       }
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-body-sm leading-snug ${isUnread ? "font-semibold text-neutral-900" : "font-medium text-neutral-700"}`}>
+                      <p className={`text-body-sm leading-snug ${isUnread ? "font-semibold text-neutral-900 dark:text-neutral-100" : "font-medium text-neutral-700 dark:text-neutral-300"}`}>
                         {notif.title}
                       </p>
                       {notif.body && (
@@ -146,7 +146,7 @@ export function NotificationsBell({ notifications: initial, unreadCount: initial
                     <Link
                       key={notif.id}
                       href={link}
-                      className="block hover:bg-neutral-50 transition"
+                      className="block hover:bg-neutral-50 dark:hover:bg-neutral-800 transition"
                       onClick={() => { markRead(notif.id); setOpen(false); }}
                     >
                       {inner}
@@ -157,7 +157,7 @@ export function NotificationsBell({ notifications: initial, unreadCount: initial
                 return (
                   <div
                     key={notif.id}
-                    className="hover:bg-neutral-50 transition cursor-default"
+                    className="hover:bg-neutral-50 dark:hover:bg-neutral-800 transition cursor-default"
                     onClick={() => markRead(notif.id)}
                   >
                     {inner}

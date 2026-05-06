@@ -10,7 +10,7 @@ function BrandLogo() {
   return (
     <Link
       href="/"
-      className="flex items-center shrink-0 pr-4 mr-2 border-r border-neutral-200"
+      className="flex items-center shrink-0 pr-4 mr-2 border-r border-neutral-200 dark:border-neutral-700"
       aria-label="Vadelivery — inicio"
     >
 <Image
@@ -79,7 +79,7 @@ export async function ShopHeader() {
     session?.role === "admin";
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-neutral-200 shadow-sm">
+    <header className="sticky top-0 z-40 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 shadow-sm">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
 
         <div className="flex items-center h-16 gap-2 sm:gap-3">
@@ -105,7 +105,7 @@ export async function ShopHeader() {
           )}
 
           {session && (
-            <div className="hidden lg:block w-px h-6 bg-neutral-200 shrink-0" />
+            <div className="hidden lg:block w-px h-6 bg-neutral-200 dark:bg-neutral-700 shrink-0" />
           )}
 
           {/* Buscador */}
@@ -158,7 +158,7 @@ export async function ShopHeader() {
 
               <Link
                 href="/perfil"
-                className="group flex items-center gap-2 pl-1 sm:pl-2 pr-1 py-1 rounded-lg hover:bg-neutral-100 transition"
+                className="group flex items-center gap-2 pl-1 sm:pl-2 pr-1 py-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
               >
                 <div className="hidden lg:block text-right">
                   <p className="text-[10px] text-neutral-500 leading-tight">Hola</p>
@@ -166,7 +166,7 @@ export async function ShopHeader() {
                     {session.fullName.split(" ")[0]}
                   </p>
                 </div>
-                <div className="size-8 rounded-full overflow-hidden bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-body-sm relative ring-2 ring-primary-400 ring-offset-1 ring-offset-white group-hover:ring-primary-600 transition">
+                <div className="size-8 rounded-full overflow-hidden bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-body-sm relative ring-2 ring-primary-400 ring-offset-1 ring-offset-white dark:ring-offset-neutral-900 group-hover:ring-primary-600 transition">
                   {session.avatarUrl ? (
                     <Image src={session.avatarUrl} alt="" fill sizes="32px" className="object-cover" />
                   ) : (

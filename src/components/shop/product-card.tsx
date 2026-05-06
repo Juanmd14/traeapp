@@ -108,7 +108,7 @@ export function ProductCard({
     <>
       <div
         className={cn(
-          "bg-white rounded-2xl flex items-stretch relative overflow-hidden",
+          "bg-white dark:bg-neutral-900 rounded-2xl flex items-stretch relative overflow-hidden",
           "shadow-[0_1px_3px_rgba(28,25,23,0.07),0_4px_14px_rgba(28,25,23,0.05)]",
           "hover:shadow-[0_4px_16px_rgba(28,25,23,0.1),0_8px_24px_rgba(28,25,23,0.06)]",
           "transition-shadow duration-200",
@@ -178,7 +178,7 @@ export function ProductCard({
               className="object-cover"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-neutral-100 to-neutral-200 flex items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-br from-neutral-100 dark:from-neutral-800 to-neutral-200 dark:to-neutral-700 flex items-center justify-center">
               <span className="text-3xl opacity-30">🍽️</span>
             </div>
           )}
@@ -219,7 +219,7 @@ export function ProductCard({
           onClick={() => setShowSwitchModal(false)}
         >
           <div
-            className="bg-white rounded-t-xl sm:rounded-xl w-full max-w-sm p-5"
+            className="bg-white dark:bg-neutral-900 rounded-t-xl sm:rounded-xl w-full max-w-sm p-5"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-heading-md font-semibold text-neutral-900 mb-2">
@@ -233,7 +233,7 @@ export function ProductCard({
             <div className="flex gap-2">
               <button
                 onClick={() => setShowSwitchModal(false)}
-                className="flex-1 h-11 rounded-md border border-neutral-200 text-body-md font-medium text-neutral-700 hover:bg-neutral-100 transition"
+                className="flex-1 h-11 rounded-md border border-neutral-200 dark:border-neutral-700 text-body-md font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
               >
                 Cancelar
               </button>

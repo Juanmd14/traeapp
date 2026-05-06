@@ -22,13 +22,13 @@ export function StoreCard({ store }: { store: StoreCardData }) {
     <Link
       href={`/s/${store.slug}`}
       className={cn(
-        "block bg-white rounded-xl overflow-hidden transition-all duration-300 active:scale-[0.99]",
+        "block bg-white dark:bg-neutral-900 rounded-xl overflow-hidden transition-all duration-300 active:scale-[0.99]",
         "shadow-[0_0_0_1px_rgba(255,77,58,0.15),0_2px_8px_rgba(28,25,23,0.06),0_0_20px_rgba(255,77,58,0.08)]",
         "hover:shadow-[0_0_0_1.5px_rgba(255,77,58,0.35),0_4px_16px_rgba(28,25,23,0.08),0_0_32px_rgba(255,77,58,0.18)]",
         !store.isOpen && "opacity-60",
       )}
     >
-      <div className="relative h-32 bg-neutral-100">
+      <div className="relative h-32 bg-neutral-100 dark:bg-neutral-800">
         {store.coverUrl ? (
           <Image
             src={store.coverUrl}
@@ -78,7 +78,7 @@ export function StoreCard({ store }: { store: StoreCardData }) {
               Envío gratis
             </span>
           ) : (
-            <span className="bg-neutral-100 text-neutral-700 text-body-xs font-medium px-2 py-0.5 rounded-full">
+            <span className="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-body-xs font-medium px-2 py-0.5 rounded-full">
               Envío {formatPrice(store.deliveryFee)}
             </span>
           )}

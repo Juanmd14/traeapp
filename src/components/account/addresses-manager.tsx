@@ -101,8 +101,8 @@ export function AddressesManager({ initial }: Props) {
 
       {/* Lista */}
       {addresses.length === 0 && editingId !== "new" ? (
-        <div className="bg-white border border-neutral-200 rounded-xl p-10 text-center">
-          <div className="size-14 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-3">
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-10 text-center">
+          <div className="size-14 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-3">
             <MapPin className="size-6 text-neutral-400" />
           </div>
           <h2 className="text-heading-sm font-medium text-neutral-900 mb-1">
@@ -173,7 +173,7 @@ function AddressCard({
   const Icon = address.label?.toLowerCase().includes("trabajo") ? Briefcase : Home;
 
   return (
-    <div className="bg-white border border-neutral-200 rounded-md p-4">
+    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-md p-4">
       <div className="flex items-start gap-3">
         <div
           className={cn(
@@ -325,7 +325,7 @@ function AddressForm({
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="bg-white border-2 border-primary-200 rounded-md p-4 space-y-4"
+      className="bg-white dark:bg-neutral-900 border-2 border-primary-200 dark:border-primary-900 rounded-md p-4 space-y-4"
     >
       <h2 className="text-heading-sm font-semibold text-neutral-900">
         {isEditing ? "Editar dirección" : "Nueva dirección"}
@@ -388,7 +388,7 @@ function AddressForm({
       </label>
 
       {serverError && (
-        <p className="text-body-sm text-destructive bg-red-50 px-3 py-2 rounded-md">
+        <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">
           {serverError}
         </p>
       )}

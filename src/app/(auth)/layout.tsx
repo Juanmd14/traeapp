@@ -7,7 +7,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-neutral-50">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-neutral-50 dark:bg-neutral-950">
       {/* Panel lateral — solo desktop */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-500 to-primary-700 text-white p-12 flex-col justify-between">
         <Link
@@ -37,7 +37,7 @@ export default function AuthLayout({
       </div>
 
       {/* Formulario */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 dark:bg-neutral-950">
         <div className="w-full max-w-sm">
           {/* Logo mobile */}
           <Link href="/" className="lg:hidden flex justify-center mb-8">

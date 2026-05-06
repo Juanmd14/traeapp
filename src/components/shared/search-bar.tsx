@@ -60,8 +60,8 @@ export function SearchBar() {
         className={cn(
           "flex items-center gap-2.5 rounded-xl px-4 py-2.5 transition-all",
           focused
-            ? "bg-white ring-2 ring-primary-500 ring-offset-0"
-            : "bg-neutral-100 hover:bg-neutral-200/70",
+            ? "bg-white dark:bg-neutral-800 ring-2 ring-primary-500 ring-offset-0"
+            : "bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200/70 dark:hover:bg-neutral-700",
         )}
       >
         {isPending ? (
@@ -83,7 +83,7 @@ export function SearchBar() {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder="Buscá comercios o productos..."
-          className="flex-1 bg-transparent text-body-md text-neutral-900 placeholder:text-neutral-400 outline-none min-w-0"
+          className="flex-1 bg-transparent text-body-md text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 outline-none min-w-0"
           autoComplete="off"
           autoCorrect="off"
           spellCheck={false}
@@ -93,7 +93,7 @@ export function SearchBar() {
           <button
             type="button"
             onClick={handleClear}
-            className="size-5 rounded-full bg-neutral-300 hover:bg-neutral-400 flex items-center justify-center transition shrink-0"
+            className="size-5 rounded-full bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500 flex items-center justify-center transition shrink-0"
             aria-label="Limpiar búsqueda"
           >
             <X className="size-3 text-neutral-600" />

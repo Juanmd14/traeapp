@@ -6,7 +6,7 @@ type SkeletonProps = {
 };
 
 export function Skeleton({ className, variant = "default" }: SkeletonProps) {
-  const baseClasses = "relative overflow-hidden bg-neutral-200";
+  const baseClasses = "relative overflow-hidden bg-neutral-200 dark:bg-neutral-700";
 
   const variantClasses = {
     default: "rounded-md",
@@ -23,7 +23,7 @@ export function Skeleton({ className, variant = "default" }: SkeletonProps) {
         variantClasses[variant],
         "before:absolute before:inset-0",
         "before:-translate-x-full before:animate-[shimmer_2s_infinite]",
-        "before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent",
+        "before:bg-gradient-to-r before:from-transparent before:via-white/60 dark:before:via-neutral-600/60 before:to-transparent",
         className
       )}
     />
@@ -32,7 +32,7 @@ export function Skeleton({ className, variant = "default" }: SkeletonProps) {
 
 export function SkeletonCard({ className }: { className?: string }) {
   return (
-    <div className={cn("rounded-xl bg-white p-4 shadow-sm border border-neutral-100", className)}>
+    <div className={cn("rounded-xl bg-white dark:bg-neutral-900 p-4 shadow-sm border border-neutral-100 dark:border-neutral-800", className)}>
       <div className="flex gap-3">
         <Skeleton variant="rectangular" className="h-20 w-20 shrink-0" />
         <div className="flex-1 space-y-2">
@@ -47,7 +47,7 @@ export function SkeletonCard({ className }: { className?: string }) {
 
 export function SkeletonProductCard({ className }: { className?: string }) {
   return (
-    <div className={cn("rounded-xl bg-white border border-neutral-100 overflow-hidden", className)}>
+    <div className={cn("rounded-xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 overflow-hidden", className)}>
       <Skeleton variant="rectangular" className="h-32 w-full" />
       <div className="p-3 space-y-2">
         <Skeleton variant="text" className="w-3/4 h-4" />
@@ -60,7 +60,7 @@ export function SkeletonProductCard({ className }: { className?: string }) {
 
 export function SkeletonCategoryPill({ className }: { className?: string }) {
   return (
-    <div className={cn("flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-100", className)}>
+    <div className={cn("flex items-center gap-2 px-3 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800", className)}>
       <Skeleton variant="circular" className="h-8 w-8" />
       <Skeleton variant="text" className="w-16 h-4" />
     </div>
@@ -69,7 +69,7 @@ export function SkeletonCategoryPill({ className }: { className?: string }) {
 
 export function SkeletonStoreCard({ className }: { className?: string }) {
   return (
-    <div className={cn("rounded-xl bg-white border border-neutral-100 overflow-hidden", className)}>
+    <div className={cn("rounded-xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 overflow-hidden", className)}>
       <Skeleton variant="rectangular" className="h-32 w-full" />
       <div className="p-4 space-y-3">
         <div className="flex items-center gap-3">

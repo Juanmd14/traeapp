@@ -82,18 +82,18 @@ export function ProductModifierModal({ product, modifiers, onConfirm, onClose }:
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-t-2xl sm:rounded-xl w-full max-w-md max-h-[90vh] flex flex-col"
+        className="bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-xl w-full max-w-md max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-4 border-b border-neutral-100">
+        <div className="flex items-start justify-between p-4 border-b border-neutral-100 dark:border-neutral-800">
           <div>
             <h3 className="text-heading-md font-semibold text-neutral-900">{product.name}</h3>
             <p className="text-body-sm text-neutral-500 mt-0.5">{formatPrice(product.price)} base</p>
           </div>
           <button
             onClick={onClose}
-            className="size-8 flex items-center justify-center rounded-md text-neutral-400 hover:bg-neutral-100 transition"
+            className="size-8 flex items-center justify-center rounded-md text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
           >
             <X className="size-4" />
           </button>
@@ -127,7 +127,7 @@ export function ProductModifierModal({ product, modifiers, onConfirm, onClose }:
                         className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border-2 transition ${
                           active
                             ? "border-primary-500 bg-primary-50"
-                            : "border-neutral-200 hover:border-neutral-300"
+                            : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
@@ -153,20 +153,20 @@ export function ProductModifierModal({ product, modifiers, onConfirm, onClose }:
         </div>
 
         {/* Footer — quantity + confirm */}
-        <div className="p-4 border-t border-neutral-100">
+        <div className="p-4 border-t border-neutral-100 dark:border-neutral-800">
           <div className="flex items-center justify-between mb-3">
             <p className="text-body-sm text-neutral-500">Cantidad</p>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="size-8 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 transition"
+                className="size-8 rounded-full border border-neutral-200 dark:border-neutral-700 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
               >
                 <Minus className="size-3.5" />
               </button>
               <span className="text-body-md font-semibold w-6 text-center">{quantity}</span>
               <button
                 onClick={() => setQuantity((q) => q + 1)}
-                className="size-8 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 transition"
+                className="size-8 rounded-full border border-neutral-200 dark:border-neutral-700 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
               >
                 <Plus className="size-3.5" />
               </button>

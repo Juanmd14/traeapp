@@ -176,7 +176,7 @@ export function ProfileForm({ initial }: Props) {
             type="email"
             disabled
             value={initial.email ?? ""}
-            className="bg-neutral-100"
+            className="bg-neutral-100 dark:bg-neutral-800"
           />
         </FormField>
 
@@ -196,13 +196,13 @@ export function ProfileForm({ initial }: Props) {
         </FormField>
 
         {serverError && (
-          <p className="text-body-sm text-destructive bg-red-50 px-3 py-2 rounded-md">
+          <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">
             {serverError}
           </p>
         )}
 
         {savedFlash && (
-          <p className="text-body-sm text-accent-700 bg-accent-50 px-3 py-2 rounded-md">
+          <p className="text-body-sm text-accent-700 dark:text-accent-400 bg-accent-50 dark:bg-accent-950/30 px-3 py-2 rounded-md">
             ✓ Guardado
           </p>
         )}
@@ -219,7 +219,7 @@ export function ProfileForm({ initial }: Props) {
         </h2>
         <Link
           href="/pedidos"
-          className="flex items-center justify-between bg-white border border-neutral-200 rounded-md p-4 hover:bg-neutral-50 transition"
+          className="flex items-center justify-between bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-md p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition"
         >
           <div className="flex items-center gap-3">
             <div className="size-9 bg-primary-100 text-primary-700 rounded-md flex items-center justify-center">
@@ -235,7 +235,7 @@ export function ProfileForm({ initial }: Props) {
 
         <Link
           href="/direcciones"
-          className="flex items-center justify-between bg-white border border-neutral-200 rounded-md p-4 hover:bg-neutral-50 transition"
+          className="flex items-center justify-between bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-md p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition"
         >
           <div className="flex items-center gap-3">
             <div className="size-9 bg-accent-100 text-accent-700 rounded-md flex items-center justify-center">
@@ -252,7 +252,7 @@ export function ProfileForm({ initial }: Props) {
         {(initial.role === "store_owner" || initial.role === "store_staff" || initial.role === "admin") && (
           <Link
             href="/comercio/pedidos"
-            className="flex items-center justify-between bg-white border border-neutral-200 rounded-md p-4 hover:bg-neutral-50 transition"
+            className="flex items-center justify-between bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-md p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition"
           >
             <div className="flex items-center gap-3">
               <div className="size-9 bg-warning-100 text-warning-700 rounded-md flex items-center justify-center">
@@ -273,7 +273,7 @@ export function ProfileForm({ initial }: Props) {
         <form action={logoutAction}>
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 h-11 px-4 rounded-md border border-neutral-200 bg-white text-body-md font-medium text-destructive hover:bg-red-50 hover:border-red-200 transition"
+            className="w-full flex items-center justify-center gap-2 h-11 px-4 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-body-md font-medium text-destructive hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-200 dark:hover:border-red-900 transition"
           >
             <LogOut className="size-4" />
             Cerrar sesión

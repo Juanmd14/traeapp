@@ -49,7 +49,7 @@ export function OrderListItem({ order }: Props) {
   return (
     <Link
       href={`/pedido/${order.id}`}
-      className="block bg-white border border-neutral-200 rounded-md p-4 hover:bg-neutral-50 active:scale-[0.99] transition"
+      className="block bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-md p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 active:scale-[0.99] transition"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">

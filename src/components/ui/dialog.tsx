@@ -39,7 +39,7 @@ export const DialogContent = React.forwardRef<
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          "relative w-full max-w-md bg-white shadow-elevated",
+          "relative w-full max-w-md bg-white dark:bg-neutral-900 shadow-elevated",
           "rounded-t-2xl sm:rounded-xl",
           "px-4 pb-6 pt-5 sm:p-6",
           "max-h-[90vh] overflow-y-auto",
@@ -51,7 +51,7 @@ export const DialogContent = React.forwardRef<
         {children}
 
         <DialogPrimitive.Close
-          className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-md text-neutral-500 transition hover:bg-neutral-100"
+          className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-md text-neutral-500 dark:text-neutral-400 transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
           aria-label="Cerrar"
         >
           <X className="size-4" />
@@ -76,7 +76,7 @@ export const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("text-heading-md font-semibold text-neutral-900", className)}
+    className={cn("text-heading-md font-semibold text-neutral-900 dark:text-neutral-100", className)}
     {...props}
   />
 ));

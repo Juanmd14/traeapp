@@ -185,7 +185,7 @@ export function LoginForm() {
         </FormField>
 
         {serverError && (
-          <p className="text-body-sm text-destructive bg-red-50 px-3 py-2 rounded-md">
+          <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">
             {serverError}
           </p>
         )}
@@ -267,9 +267,9 @@ export function LoginForm() {
 
       {/* Separador */}
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-neutral-200" />
+        <div className="flex-1 h-px bg-neutral-200 dark:bg-neutral-700" />
         <span className="text-body-xs text-neutral-400">o continuá con</span>
-        <div className="flex-1 h-px bg-neutral-200" />
+        <div className="flex-1 h-px bg-neutral-200 dark:bg-neutral-700" />
       </div>
 
       {/* Google */}
@@ -277,7 +277,7 @@ export function LoginForm() {
         type="button"
         onClick={handleGoogle}
         disabled={isGooglePending || isPending}
-        className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 text-body-sm font-medium text-neutral-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-body-sm font-medium text-neutral-700 dark:text-neutral-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isGooglePending
           ? <span className="size-4 border-2 border-neutral-300 border-t-neutral-600 rounded-full animate-spin" />

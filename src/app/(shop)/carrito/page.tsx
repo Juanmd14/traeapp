@@ -35,7 +35,7 @@ export default function CarritoPage() {
   if (items.length === 0) {
     return (
       <div className="container-shop py-12 text-center">
-        <div className="size-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="size-16 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
           <ShoppingBag className="size-7 text-neutral-400" />
         </div>
         <h1 className="text-heading-lg font-semibold text-neutral-900 mb-2">
@@ -81,9 +81,9 @@ export default function CarritoPage() {
           return (
             <li
               key={item.lineId}
-              className="bg-white rounded-md border border-neutral-200 p-3 flex gap-3"
+              className="bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-800 p-3 flex gap-3"
             >
-              <div className="shrink-0 size-16 bg-neutral-100 rounded-md overflow-hidden relative">
+              <div className="shrink-0 size-16 bg-neutral-100 dark:bg-neutral-800 rounded-md overflow-hidden relative">
                 {item.imageUrl ? (
                   <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
                 ) : (
@@ -105,10 +105,10 @@ export default function CarritoPage() {
                 </p>
 
                 <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center gap-1 bg-neutral-100 rounded-md p-0.5">
+                  <div className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 rounded-md p-0.5">
                     <button
                       onClick={() => decrement(item.lineId)}
-                      className="size-7 rounded-md hover:bg-white text-neutral-700 flex items-center justify-center transition"
+                      className="size-7 rounded-md hover:bg-white dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 flex items-center justify-center transition"
                       aria-label="Restar"
                     >
                       <Minus className="size-3.5" />
@@ -118,7 +118,7 @@ export default function CarritoPage() {
                     </span>
                     <button
                       onClick={() => increment(item.lineId)}
-                      className="size-7 rounded-md hover:bg-white text-neutral-700 flex items-center justify-center transition"
+                      className="size-7 rounded-md hover:bg-white dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 flex items-center justify-center transition"
                       aria-label="Sumar"
                     >
                       <Plus className="size-3.5" />
@@ -139,7 +139,7 @@ export default function CarritoPage() {
       </ul>
 
       {/* Resumen */}
-      <div className="bg-white rounded-md border border-neutral-200 p-4 space-y-2">
+      <div className="bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-800 p-4 space-y-2">
         <div className="flex justify-between text-body-md">
           <span className="text-neutral-600">Subtotal</span>
           <span className="text-neutral-900">{formatPrice(subtotal)}</span>
@@ -157,7 +157,7 @@ export default function CarritoPage() {
       </div>
 
       {!meetsMin && minOrderAmount > 0 && (
-        <p className="mt-3 text-body-sm text-warning-700 bg-warning-50 px-3 py-2 rounded-md">
+        <p className="mt-3 text-body-sm text-warning-700 dark:text-warning-400 bg-warning-50 dark:bg-warning-950/30 px-3 py-2 rounded-md">
           Te faltan <strong>{formatPrice(minOrderAmount - subtotal)}</strong> para alcanzar el mínimo de {formatPrice(minOrderAmount)}.
         </p>
       )}

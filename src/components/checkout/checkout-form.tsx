@@ -201,10 +201,10 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
                       type="button"
                       onClick={() => setAddressId(addr.id)}
                       className={cn(
-                        "w-full text-left bg-white border-2 rounded-md p-3 flex gap-3 items-start transition-all",
+                        "w-full text-left bg-white dark:bg-neutral-900 border-2 rounded-md p-3 flex gap-3 items-start transition-all",
                         isSelected
-                          ? "border-accent-500 bg-accent-50 ring-2 ring-accent-100"
-                          : "border-neutral-200 hover:border-neutral-300",
+                          ? "border-accent-500 bg-accent-50 dark:bg-accent-950/20 ring-2 ring-accent-100"
+                          : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600",
                       )}
                     >
                       <MapPin
@@ -273,10 +273,10 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
               type="button"
               onClick={() => setPaymentMethod("cash")}
               className={cn(
-                "w-full text-left bg-white border-2 rounded-md p-3 flex gap-3 items-center transition-all",
+                "w-full text-left bg-white dark:bg-neutral-900 border-2 rounded-md p-3 flex gap-3 items-center transition-all",
                 paymentMethod === "cash"
-                  ? "border-accent-500 bg-accent-50 ring-2 ring-accent-100"
-                  : "border-neutral-200 hover:border-neutral-300",
+                  ? "border-accent-500 bg-accent-50 dark:bg-accent-950/20 ring-2 ring-accent-100"
+                  : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600",
               )}
             >
               <div className="size-9 bg-accent-100 text-accent-700 rounded-md flex items-center justify-center shrink-0">
@@ -294,10 +294,10 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
               type="button"
               onClick={() => setPaymentMethod("mercadopago")}
               className={cn(
-                "w-full text-left bg-white border-2 rounded-md p-3 flex gap-3 items-center transition-all",
+                "w-full text-left bg-white dark:bg-neutral-900 border-2 rounded-md p-3 flex gap-3 items-center transition-all",
                 paymentMethod === "mercadopago"
-                  ? "border-accent-500 bg-accent-50 ring-2 ring-accent-100"
-                  : "border-neutral-200 hover:border-neutral-300",
+                  ? "border-accent-500 bg-accent-50 dark:bg-accent-950/20 ring-2 ring-accent-100"
+                  : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600",
               )}
             >
               <div className="size-9 bg-blue-100 text-blue-700 rounded-md flex items-center justify-center shrink-0">
@@ -334,7 +334,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
         {/* Código de descuento */}
         <section className="mb-5">
           {appliedPromo ? (
-            <div className="flex items-center justify-between bg-accent-50 border border-accent-200 rounded-md px-3 py-2.5">
+            <div className="flex items-center justify-between bg-accent-50 dark:bg-accent-950/20 border border-accent-200 dark:border-accent-900 rounded-md px-3 py-2.5">
               <div className="flex items-center gap-2">
                 <Tag className="size-4 text-accent-600" />
                 <span className="text-body-sm font-medium text-accent-800">
@@ -371,7 +371,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
         </section>
 
         {/* Resumen */}
-        <section className="bg-white rounded-md border border-neutral-200 p-4 space-y-2 mb-5">
+        <section className="bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-800 p-4 space-y-2 mb-5">
           <div className="flex justify-between text-body-md">
             <span className="text-neutral-600">Subtotal</span>
             <span className="text-neutral-900">{formatPrice(subtotal)}</span>
@@ -405,7 +405,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
         </section>
 
         {serverError && (
-          <p className="text-body-sm text-destructive bg-red-50 px-3 py-2 rounded-md mb-4">
+          <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md mb-4">
             {serverError}
           </p>
         )}
