@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import sharp from "sharp";
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +19,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Faltan parámetros" }, { status: 400 });
     }
 
-    // Obtener store_id del producto
     const { data: product, error: productErr } = await supabase
       .from("products")
       .select("store_id")
@@ -31,7 +31,6 @@ export async function POST(req: Request) {
 
     const storeId = (product as { store_id: string }).store_id;
 
-    // Verificar membresía
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -44,27 +43,33 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No tenés permiso sobre este producto" }, { status: 403 });
     }
 
-    // Parsear base64
     const match = imageBase64.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
     if (!match) {
       return NextResponse.json({ error: "Formato de imagen inválido" }, { status: 400 });
     }
 
     const [, mimeType, base64] = match;
-    const ext = (mimeType ?? "image/jpeg").split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
     const buffer = Buffer.from(base64 ?? "", "base64");
 
     if (buffer.byteLength > 2 * 1024 * 1024) {
       return NextResponse.json({ error: "La imagen es muy grande (máx 2MB)" }, { status: 400 });
     }
 
+    const optimizedBuffer = await sharp(buffer)
+      .resize(800, 800, {
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .webp({ quality: 80 })
+      .toBuffer();
+
     const bucket = "product-images";
-    const path = `${storeId}/${productId}.${ext}`;
+    const path = `${storeId}/${productId}.webp`;
 
     const { error: uploadErr } = await supabaseAdmin.storage
       .from(bucket)
-      .upload(path, buffer, {
-        contentType: mimeType,
+      .upload(path, optimizedBuffer, {
+        contentType: "image/webp",
         upsert: true,
       });
 

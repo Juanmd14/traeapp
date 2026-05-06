@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import Image from "next/image";
 import {
   Plus, Pencil, Trash2, Package,
-  Search, Check, EyeOff, X,
+  Search, Check, EyeOff, X, Upload,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +26,8 @@ import {
   updateProductAction,
   toggleProductAvailabilityAction,
   deleteProductAction,
+  upsertQuantityOptionsAction,
+  upsertModifiersAction,
 } from "@/server/actions/products";
 import { formatPrice, cn } from "@/lib/utils";
 
@@ -33,6 +35,15 @@ type QuantityOptionInput = {
   quantity: number;
   price: number;
   isDefault: boolean;
+};
+
+type ModifierData = {
+  modifier_id: string;
+  modifier_name: string;
+  id: string;
+  name: string;
+  price_delta: number;
+  is_removal: boolean;
 };
 
 export type ProductRow = {
@@ -44,6 +55,10 @@ export type ProductRow = {
   compare_at_price: number | null;
   is_available: boolean;
   product_category_id: string | null;
+  has_quantity_options: boolean;
+  hide_manual_quantity: boolean;
+  quantity_options: QuantityOptionInput[];
+  modifiers_data: ModifierData[];
 };
 
 type Props = {
@@ -381,10 +396,29 @@ function ProductFormDialog({
   const [imagePreview, setImagePreview] = useState<string>(
     initial?.image_url ?? "",
   );
-  const [quantityOptions, setQuantityOptions] = useState<QuantityOptionInput[]>([]);
-  const [hasQuantityOptions, setHasQuantityOptions] = useState(false);
-  const [hideManualQuantity, setHideManualQuantity] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [quantityOptions, setQuantityOptions] = useState<QuantityOptionInput[]>(
+    initial?.quantity_options ?? []
+  );
+  const [hasQuantityOptions, setHasQuantityOptions] = useState(
+    initial?.has_quantity_options ?? false
+  );
+  const [hideManualQuantity, setHideManualQuantity] = useState(
+    initial?.hide_manual_quantity ?? false
+  );
+  const [removableIngredients, setRemovableIngredients] = useState<string[]>(
+    initial?.modifiers_data
+      .filter((m) => m.is_removal)
+      .map((m) => m.name) ?? []
+  );
+  const [extras, setExtras] = useState<{ name: string; price: number }[]>(
+    initial?.modifiers_data
+      .filter((m) => !m.is_removal)
+      .map((m) => ({ name: m.name, price: m.price_delta })) ?? []
+  );
   const isEditing = !!initial;
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ProductInput>({
     resolver: zodResolver(productSchema),
@@ -397,52 +431,175 @@ function ProductFormDialog({
     },
   });
 
-  const onSubmit = (data: ProductInput) => {
+  const handleFileSelect = (file: File) => {
+    if (file.size > 2 * 1024 * 1024) {
+      setServerError("La imagen es muy grande (máx 2MB)");
+      return;
+    }
+    setPendingFile(file);
+    const preview = URL.createObjectURL(file);
+    setImagePreview(preview);
+    setShowUrlInput(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      handleFileSelect(file);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileSelect(file);
+  };
+
+  const uploadPendingFile = async (productId: string): Promise<string | null> => {
+    if (!pendingFile) return null;
+
+    const reader = new FileReader();
+    const base64 = await new Promise<string>((resolve) => {
+      reader.onload = () => resolve(reader.result as string);
+      reader.readAsDataURL(pendingFile);
+    });
+
+    const res = await fetch("/api/upload-product-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId, imageBase64: base64 }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || "Error al subir imagen");
+    }
+
+    const data = await res.json();
+    return data.url;
+  };
+
+  const onSubmit = async (data: ProductInput) => {
     setServerError(null);
+
+    let productId: string;
+    let savedProduct: ProductRow;
+
+    if (isEditing && initial) {
+      const result = await updateProductAction({
+        ...data,
+        storeId,
+        productId: initial.id,
+      });
+
+      if (result?.serverError) {
+        setServerError(result.serverError);
+        return;
+      }
+
+      productId = initial.id;
+      savedProduct = {
+        ...initial,
+        name: data.name,
+        description: data.description ?? null,
+        price: data.price,
+        compare_at_price: data.compareAtPrice ?? null,
+        is_available: data.isAvailable,
+      };
+    } else {
+      const result = await createProductAction({ ...data, storeId });
+
+      if (result?.serverError) {
+        setServerError(result.serverError);
+        return;
+      }
+
+      if (!result?.data?.product) {
+        setServerError("Error al crear producto");
+        return;
+      }
+
+      productId = (result.data.product as { id: string }).id;
+      savedProduct = {
+        id: productId,
+        name: data.name,
+        description: data.description ?? null,
+        image_url: null,
+        price: data.price,
+        compare_at_price: data.compareAtPrice ?? null,
+        is_available: data.isAvailable,
+        product_category_id: null,
+        has_quantity_options: false,
+        hide_manual_quantity: false,
+        quantity_options: [],
+        modifiers_data: [],
+      };
+    }
+
+    if (pendingFile) {
+      try {
+        const url = await uploadPendingFile(productId);
+        if (url) {
+          savedProduct.image_url = url;
+        }
+      } catch (err) {
+        setServerError(err instanceof Error ? err.message : "Error al subir imagen");
+        return;
+      }
+    } else if (imagePreview && !imagePreview.startsWith("blob:")) {
+      savedProduct.image_url = imagePreview;
+    }
+
     startTransition(async () => {
+      await upsertQuantityOptionsAction({
+        storeId,
+        productId,
+        hasQuantityOptions,
+        hideManualQuantity,
+        options: quantityOptions,
+      });
+
+      const validRemovable = removableIngredients.filter((i) => i.trim());
+      const validExtras = extras
+        .filter((e) => e.name.trim() && e.price >= 0)
+        .map((e) => ({ name: e.name, price: e.price, isRemoval: false }));
+
+      await upsertModifiersAction({
+        storeId,
+        productId,
+        removableIngredients: validRemovable,
+        extras: validExtras,
+      });
+
+      const updated: ProductRow = {
+        ...savedProduct,
+        has_quantity_options: hasQuantityOptions,
+        hide_manual_quantity: hideManualQuantity,
+        quantity_options: hasQuantityOptions ? quantityOptions : [],
+        modifiers_data: [
+          ...validRemovable.map((name) => ({
+            modifier_id: "",
+            modifier_name: "Ingredientes",
+            id: "",
+            name,
+            price_delta: 0,
+            is_removal: true,
+          })),
+          ...validExtras.map((e) => ({
+            modifier_id: "",
+            modifier_name: "Extras",
+            id: "",
+            name: e.name,
+            price_delta: e.price,
+            is_removal: false,
+          })),
+        ],
+      };
+
       if (isEditing && initial) {
-        const result = await updateProductAction({
-          ...data,
-          storeId,
-          productId: initial.id,
-        });
-        if (result?.serverError) {
-          setServerError(result.serverError);
-          return;
-        }
-        onSaved(
-          {
-            ...initial,
-            name: data.name,
-            description: data.description ?? null,
-            price: data.price,
-            compare_at_price: data.compareAtPrice ?? null,
-            is_available: data.isAvailable,
-          },
-          false,
-        );
+        onSaved(updated, false);
       } else {
-        const result = await createProductAction({ ...data, storeId });
-        if (result?.serverError) {
-          setServerError(result.serverError);
-          return;
-        }
-        if (result?.data?.product) {
-          const product = result.data.product as { id: string };
-          onSaved(
-            {
-              id: product.id,
-              name: data.name,
-              description: data.description ?? null,
-              image_url: imagePreview || null,
-              price: data.price,
-              compare_at_price: data.compareAtPrice ?? null,
-              is_available: data.isAvailable,
-              product_category_id: null,
-            },
-            true,
-          );
-        }
+        onSaved(updated, true);
       }
     });
   };
@@ -457,38 +614,118 @@ function ProductFormDialog({
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Preview de imagen */}
-          {imagePreview && (
-            <div className="relative w-full h-36 rounded-lg overflow-hidden bg-neutral-100">
-              <Image
-                src={imagePreview}
-                alt="Preview"
-                fill
-                className="object-cover"
-                onError={() => setImagePreview("")}
-              />
-              <button
-                type="button"
-                onClick={() => setImagePreview("")}
-                className="absolute top-2 right-2 size-6 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 hover:text-destructive transition shadow-sm"
-              >
-                <Trash2 className="size-3.5" />
-              </button>
+          {/* Image upload area */}
+          {isEditing && initial ? (
+            <div
+              className={cn(
+                "relative overflow-hidden rounded-lg border-2 border-dashed transition-colors",
+                imagePreview ? "border-neutral-200" : "border-neutral-300 hover:border-neutral-400"
+              )}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handleDrop}
+            >
+              {imagePreview ? (
+                <div className="relative aspect-video w-full">
+                  <Image
+                    src={imagePreview}
+                    alt="Imagen del producto"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                  <button
+                    type="button"
+                    onClick={() => { setImagePreview(""); setPendingFile(null); }}
+                    className="absolute top-2 right-2 size-6 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 hover:text-destructive transition shadow-sm"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => inputRef.current?.click()}
+                  className="w-full aspect-video flex flex-col items-center justify-center gap-2 py-8 text-neutral-500 hover:text-neutral-700 transition-colors"
+                >
+                  <Upload className="size-8" />
+                  <span className="text-body-sm">Subir imagen</span>
+                </button>
+              )}
+            </div>
+          ) : (
+            <div
+              className={cn(
+                "relative overflow-hidden rounded-lg border-2 border-dashed transition-colors",
+                imagePreview ? "border-neutral-200" : "border-neutral-300 hover:border-neutral-400"
+              )}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handleDrop}
+            >
+              {imagePreview ? (
+                <div className="relative aspect-video w-full">
+                  <Image
+                    src={imagePreview}
+                    alt="Preview"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                  <button
+                    type="button"
+                    onClick={() => { setImagePreview(""); setPendingFile(null); }}
+                    className="absolute top-2 right-2 size-6 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 hover:text-destructive transition shadow-sm"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => inputRef.current?.click()}
+                  className="w-full aspect-video flex flex-col items-center justify-center gap-2 py-8 text-neutral-500 hover:text-neutral-700 transition-colors"
+                  disabled={isPending}
+                >
+                  <Upload className="size-8" />
+                  <span className="text-body-sm">
+                    {isPending ? "Subiendo..." : "Subir imagen"}
+                  </span>
+                </button>
+              )}
             </div>
           )}
 
-          <FormField
-            label="URL de imagen"
-            htmlFor="imageUrl"
-            hint="Pegá un link de imagen (opcional)"
-          >
-            <Input
-              id="imageUrl"
-              placeholder="https://ejemplo.com/foto.jpg"
-              value={imagePreview}
-              onChange={(e) => setImagePreview(e.target.value)}
-            />
-          </FormField>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleChange}
+            className="hidden"
+          />
+
+          {!isEditing && !imagePreview && (
+            <button
+              type="button"
+              onClick={() => setShowUrlInput(true)}
+              className="text-body-sm text-primary-600 hover:underline"
+            >
+              ¿Tenés un link? Usar URL en cambio
+            </button>
+          )}
+
+          {showUrlInput && (
+            <FormField
+              label="URL de imagen"
+              htmlFor="imageUrl"
+              hint="Pegá un link de imagen"
+            >
+              <Input
+                id="imageUrl"
+                placeholder="https://ejemplo.com/foto.jpg"
+                value={imagePreview}
+                onChange={(e) => setImagePreview(e.target.value)}
+              />
+            </FormField>
+          )}
 
           <FormField
             label="Nombre"
@@ -563,7 +800,7 @@ function ProductFormDialog({
             </FormField>
           </div>
 
-          {/* Toggle disponibilidad mejorado */}
+          {/* Toggle disponibilidad */}
           <label className="flex items-center gap-3 cursor-pointer select-none bg-neutral-50 rounded-lg px-3 py-3">
             <Switch
               checked={form.watch("isAvailable")}
@@ -581,7 +818,7 @@ function ProductFormDialog({
             </div>
           </label>
 
-          {/* Quantity Options - solo para productos por cantidad */}
+          {/* Quantity Options */}
           <div className="border border-neutral-200 rounded-lg p-4 space-y-4">
             <label className="flex items-center gap-3 cursor-pointer select-none">
               <Switch
@@ -598,7 +835,7 @@ function ProductFormDialog({
               </div>
             </label>
 
-            {hasQuantityOptions && quantityOptions.length > 0 && (
+            {hasQuantityOptions && (
               <div className="space-y-3">
                 <p className="text-body-sm font-medium text-neutral-700">
                   Opciones de cantidad:
@@ -679,22 +916,128 @@ function ProductFormDialog({
                 >
                   + Agregar opción
                 </button>
+
+                <label className="flex items-center gap-2 cursor-pointer pt-2">
+                  <input
+                    type="checkbox"
+                    checked={hideManualQuantity}
+                    onChange={(e) => setHideManualQuantity(e.target.checked)}
+                    className="accent-primary-600"
+                  />
+                  <span className="text-body-sm text-neutral-600">
+                    Ocultar selector manual de cantidad
+                  </span>
+                </label>
               </div>
             )}
+          </div>
 
-            {hasQuantityOptions && (
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={hideManualQuantity}
-                  onChange={(e) => setHideManualQuantity(e.target.checked)}
-                  className="accent-primary-600"
-                />
-                <span className="text-body-sm text-neutral-600">
-                  Ocultar selector manual de cantidad
-                </span>
-              </label>
-            )}
+          {/* Personalización del cliente - Modifiers */}
+          <div className="border border-neutral-200 rounded-lg p-4 space-y-4">
+            <p className="text-body-md font-medium text-neutral-900">
+              Personalización del cliente
+            </p>
+
+            {/* Removable Ingredients */}
+            <div className="space-y-2">
+              <p className="text-body-sm font-medium text-neutral-700">
+                Ingredientes (el cliente puede quitar)
+              </p>
+              <div className="space-y-2">
+                {removableIngredients.map((ingredient, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <Input
+                      value={ingredient}
+                      onChange={(e) => {
+                        const newItems = [...removableIngredients];
+                        newItems[idx] = e.target.value;
+                        setRemovableIngredients(newItems);
+                      }}
+                      className="flex-1"
+                      placeholder="Ej: lechuga"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRemovableIngredients(removableIngredients.filter((_, i) => i !== idx));
+                      }}
+                      className="text-neutral-400 hover:text-destructive"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setRemovableIngredients([...removableIngredients, ""]);
+                }}
+                className="text-body-sm text-primary-600 hover:underline"
+              >
+                + Agregar ingrediente
+              </button>
+            </div>
+
+            {/* Extras */}
+            <div className="space-y-2 pt-3 border-t border-neutral-200">
+              <p className="text-body-sm font-medium text-neutral-700">
+                Extras (el cliente puede agregar)
+              </p>
+              <div className="space-y-2">
+                {extras.map((extra, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <Input
+                      value={extra.name}
+                      onChange={(e) => {
+                        const newExtras = [...extras];
+                        if (newExtras[idx]) {
+                          newExtras[idx] = { ...newExtras[idx], name: e.target.value };
+                          setExtras(newExtras);
+                        }
+                      }}
+                      className="flex-1"
+                      placeholder="Ej: papas extra"
+                    />
+                    <div className="relative w-24">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-neutral-500 text-sm">$</span>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={extra.price}
+                        onChange={(e) => {
+                          const newExtras = [...extras];
+                          if (newExtras[idx]) {
+                            newExtras[idx] = { ...newExtras[idx], price: parseInt(e.target.value) || 0 };
+                            setExtras(newExtras);
+                          }
+                        }}
+                        className="pl-6"
+                        placeholder="Precio"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setExtras(extras.filter((_, i) => i !== idx));
+                      }}
+                      className="text-neutral-400 hover:text-destructive"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setExtras([...extras, { name: "", price: 0 }]);
+                }}
+                className="text-body-sm text-primary-600 hover:underline"
+              >
+                + Agregar extra
+              </button>
+            </div>
           </div>
 
           {serverError && (

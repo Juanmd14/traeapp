@@ -121,3 +121,133 @@ export const deleteProductAction = authAction
     revalidatePath("/comercio", "layout");
     return { ok: true };
   });
+
+const quantityOptionSchema = z.object({
+  quantity: z.number().int().positive(),
+  price: z.number().int().min(0),
+  isDefault: z.boolean(),
+});
+
+export const upsertQuantityOptionsAction = authAction
+  .schema(z.object({
+    storeId: z.string().uuid(),
+    productId: z.string().uuid(),
+    hasQuantityOptions: z.boolean(),
+    hideManualQuantity: z.boolean(),
+    options: z.array(quantityOptionSchema),
+  }))
+  .action(async ({ parsedInput, ctx }) => {
+    await ensureStoreMember(ctx.session.id, parsedInput.storeId, ctx.session.role);
+
+    await supabaseAdmin
+      .from("products")
+      .update({
+        has_quantity_options: parsedInput.hasQuantityOptions,
+        hide_manual_quantity: parsedInput.hideManualQuantity,
+      })
+      .eq("id", parsedInput.productId)
+      .eq("store_id", parsedInput.storeId);
+
+    await supabaseAdmin
+      .from("product_quantity_options")
+      .delete()
+      .eq("product_id", parsedInput.productId);
+
+    if (parsedInput.hasQuantityOptions && parsedInput.options.length > 0) {
+      const optionsToInsert = parsedInput.options.map((opt, idx) => ({
+        product_id: parsedInput.productId,
+        quantity: opt.quantity,
+        price: opt.price,
+        is_default: opt.isDefault,
+        sort_order: idx,
+      }));
+
+      await supabaseAdmin
+        .from("product_quantity_options")
+        .insert(optionsToInsert);
+    }
+
+    revalidatePath("/comercio", "layout");
+    revalidatePath("/s/[storeSlug]", "page");
+    return { ok: true };
+  });
+
+const modifierOptionSchema = z.object({
+  name: z.string().min(1),
+  price: z.number().int().min(0),
+  isRemoval: z.boolean(),
+});
+
+export const upsertModifiersAction = authAction
+  .schema(z.object({
+    storeId: z.string().uuid(),
+    productId: z.string().uuid(),
+    removableIngredients: z.array(z.string()),
+    extras: z.array(modifierOptionSchema),
+  }))
+  .action(async ({ parsedInput, ctx }) => {
+    await ensureStoreMember(ctx.session.id, parsedInput.storeId, ctx.session.role);
+
+    await supabaseAdmin
+      .from("product_modifiers")
+      .delete()
+      .eq("product_id", parsedInput.productId);
+
+    if (parsedInput.removableIngredients.length > 0) {
+      const { data: modifier } = await supabaseAdmin
+        .from("product_modifiers")
+        .insert({
+          product_id: parsedInput.productId,
+          name: "Ingredientes",
+          is_required: false,
+          min_select: 0,
+          max_select: parsedInput.removableIngredients.length,
+        })
+        .select("id")
+        .single();
+
+      if (modifier) {
+        const optionsToInsert = parsedInput.removableIngredients.map((name) => ({
+          modifier_id: modifier.id,
+          name,
+          price_delta: 0,
+          is_removal: true,
+        }));
+
+        await supabaseAdmin
+          .from("product_modifier_options")
+          .insert(optionsToInsert);
+      }
+    }
+
+    if (parsedInput.extras.length > 0) {
+      const { data: modifier } = await supabaseAdmin
+        .from("product_modifiers")
+        .insert({
+          product_id: parsedInput.productId,
+          name: "Extras",
+          is_required: false,
+          min_select: 0,
+          max_select: parsedInput.extras.length,
+        })
+        .select("id")
+        .single();
+
+      if (modifier) {
+        const optionsToInsert = parsedInput.extras.map((extra) => ({
+          modifier_id: modifier.id,
+          name: extra.name,
+          price_delta: extra.price,
+          is_removal: false,
+        }));
+
+        await supabaseAdmin
+          .from("product_modifier_options")
+          .insert(optionsToInsert);
+      }
+    }
+
+    revalidatePath("/comercio", "layout");
+    revalidatePath("/s/[storeSlug]", "page");
+    return { ok: true };
+  });

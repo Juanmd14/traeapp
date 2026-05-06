@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Upload, X, ImageIcon } from "lucide-react";
+import { X, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +13,6 @@ type Props = {
 };
 
 const MAX_SIZE_MB = 2;
-const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export function ProductImageUpload({
   productId,
@@ -28,8 +27,8 @@ export function ProductImageUpload({
   const handleFileSelect = async (file: File) => {
     setError(null);
 
-    if (!ACCEPTED_TYPES.includes(file.type)) {
-      setError("Formato no válido. Usá JPG, PNG o WebP");
+    if (!file.type.startsWith("image/")) {
+      setError("Formato no válido. Usá una imagen");
       return;
     }
 
@@ -133,7 +132,7 @@ export function ProductImageUpload({
       <input
         ref={inputRef}
         type="file"
-        accept={ACCEPTED_TYPES.join(",")}
+        accept="image/*"
         onChange={handleChange}
         className="hidden"
       />
