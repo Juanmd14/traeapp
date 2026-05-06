@@ -4,12 +4,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Tag, X, Percent, DollarSign, Truck } from "lucide-react";
+import { Plus, Tag, X, Percent, DollarSign, Truck, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormField } from "@/components/ui/form-field";
-import { createPromotionAction, togglePromotionAction } from "@/server/actions/stores";
+import { createPromotionAction, togglePromotionAction, deletePromotionAction } from "@/server/actions/stores";
 
 type Promotion = {
   id: string;
@@ -36,6 +36,8 @@ const createSchema = z.object({
   value: z.coerce.number().min(0, "Valor mínimo 0"),
   minOrderAmount: z.coerce.number().min(0).default(0),
   maxUses: z.coerce.number().int().min(1).optional(),
+  startsAt: z.string().optional(),
+  endsAt: z.string().optional(),
 });
 
 export function PromotionsManager({ storeId, initial }: Props) {
@@ -90,6 +92,16 @@ export function PromotionsManager({ storeId, initial }: Props) {
     }
   };
 
+  const deletePromo = async (promo: Promotion) => {
+    if (!confirm(`¿Eliminar la promoción ${promo.code}?`)) return;
+    try {
+      await deletePromotionAction({ storeId, promotionId: promo.id });
+      setPromotions(promotions.filter(p => p.id !== promo.id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al eliminar");
+    }
+  };
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "percent": return <Percent className="size-4" />;
@@ -112,10 +124,10 @@ export function PromotionsManager({ storeId, initial }: Props) {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-heading-md font-semibold text-neutral-900">
+          <h2 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100">
             Promociones activas
           </h2>
-          <p className="text-body-sm text-neutral-500 mt-1">
+          <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mt-1">
             Gestiona los códigos de descuento y ofertas especiales.
           </p>
         </div>
@@ -125,7 +137,7 @@ export function PromotionsManager({ storeId, initial }: Props) {
       </div>
 
       {showForm && (
-        <div className="bg-neutral-50 rounded-lg p-6 border border-neutral-200">
+        <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-6 border border-neutral-200 dark:border-neutral-700">
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
@@ -145,7 +157,7 @@ export function PromotionsManager({ storeId, initial }: Props) {
               <FormField label="Tipo de descuento" htmlFor="promo-type">
                 <select
                   id="promo-type"
-                  className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2"
+                  className="w-full rounded-md border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-neutral-900 dark:text-neutral-100"
                   {...form.register("type")}
                 >
                   <option value="percent">Porcentaje (%)</option>
@@ -181,6 +193,30 @@ export function PromotionsManager({ storeId, initial }: Props) {
                   {...form.register("minOrderAmount")}
                 />
               </FormField>
+
+              <FormField
+                label="Fecha de inicio"
+                htmlFor="promo-start"
+                hint="Opcional"
+              >
+                <Input
+                  id="promo-start"
+                  type="datetime-local"
+                  {...form.register("startsAt")}
+                />
+              </FormField>
+
+              <FormField
+                label="Fecha de expiración"
+                htmlFor="promo-end"
+                hint="Opcional"
+              >
+                <Input
+                  id="promo-end"
+                  type="datetime-local"
+                  {...form.register("endsAt")}
+                />
+              </FormField>
             </div>
 
             {error && (
@@ -206,28 +242,39 @@ export function PromotionsManager({ storeId, initial }: Props) {
             <div
               key={promo.id}
               className={`flex items-center justify-between p-4 rounded-lg border ${
-                promo.is_active ? "bg-white border-neutral-200" : "bg-neutral-50 border-neutral-200 opacity-60"
+                promo.is_active 
+                  ? "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700" 
+                  : "bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 opacity-60"
               }`}
             >
               <div className="flex items-center gap-4">
-                <div className={`p-2 rounded-full ${promo.is_active ? "bg-primary-100 text-primary" : "bg-neutral-200 text-neutral-500"}`}>
+                <div className={`p-2 rounded-full ${promo.is_active ? "bg-primary-100 dark:bg-primary-900 text-primary dark:text-primary-300" : "bg-neutral-200 dark:bg-neutral-700 text-neutral-500"}`}>
                   {getTypeIcon(promo.type)}
                 </div>
                 <div>
-                  <p className="font-medium text-neutral-900">{promo.code}</p>
-                  <p className="text-body-sm text-neutral-500">
+                  <p className="font-medium text-neutral-900 dark:text-neutral-100">{promo.code}</p>
+                  <p className="text-body-sm text-neutral-500 dark:text-neutral-400">
                     {formatValue(promo)}
                     {promo.min_order_amount > 0 && ` • Mín. $${promo.min_order_amount}`}
                     {promo.max_uses && ` • ${promo.uses_count}/${promo.max_uses} usos`}
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => toggleActive(promo)}
-                className={`text-body-sm ${promo.is_active ? "text-green-600" : "text-neutral-400"}`}
-              >
-                {promo.is_active ? "Activa" : "Inactiva"}
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => toggleActive(promo)}
+                  className={`text-body-sm ${promo.is_active ? "text-green-600 dark:text-green-400" : "text-neutral-400 dark:text-neutral-500"}`}
+                >
+                  {promo.is_active ? "Activa" : "Inactiva"}
+                </button>
+                <button
+                  onClick={() => deletePromo(promo)}
+                  className="text-neutral-400 hover:text-destructive dark:text-neutral-500 dark:hover:text-red-400"
+                  title="Eliminar"
+                >
+                  <Trash2 className="size-4" />
+                </button>
+              </div>
             </div>
           ))}
         </div>

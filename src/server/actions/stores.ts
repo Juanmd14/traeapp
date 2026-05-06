@@ -568,3 +568,34 @@ export const togglePromotionAction = authAction
     revalidatePath("/comercio/promociones");
     return { ok: true };
   });
+
+export const deletePromotionAction = authAction
+  .schema(z.object({
+    storeId: z.string().uuid(),
+    promotionId: z.string().uuid(),
+  }))
+  .action(async ({ parsedInput, ctx }) => {
+    const supabase = createClient();
+    const { data: membership } = await supabase
+      .from("store_users")
+      .select("role")
+      .eq("store_id", parsedInput.storeId)
+      .eq("user_id", ctx.session.id)
+      .eq("is_active", true)
+      .single();
+
+    if (!membership && ctx.session.role !== "admin") {
+      throw new Error("No tenés permiso sobre este comercio");
+    }
+
+    const { error } = await supabaseAdmin
+      .from("promotions")
+      .delete()
+      .eq("id", parsedInput.promotionId)
+      .eq("store_id", parsedInput.storeId);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/comercio/promociones");
+    return { ok: true };
+  });
