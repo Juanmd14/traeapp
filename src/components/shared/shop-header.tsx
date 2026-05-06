@@ -1,10 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, User, Store, ClipboardList, Bike } from "lucide-react";
+import { MapPin, User, ClipboardList } from "lucide-react";
 import { getSession } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { SearchBar } from "@/components/shared/search-bar";
 import { NotificationsBell, type Notification } from "@/components/shared/notifications-bell";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { UserMenuDropdown } from "@/components/shared/user-menu-dropdown";
 
 function BrandLogo() {
   return (
@@ -94,10 +96,10 @@ export async function ShopHeader() {
             >
               <MapPin className="size-4 text-primary-600 shrink-0" strokeWidth={2.5} />
               <div className="min-w-0 max-w-[150px]">
-                <p className="text-[10px] text-neutral-400 leading-none uppercase tracking-wider">
+                <p className="text-[10px] text-neutral-400 dark:text-neutral-500 leading-none uppercase tracking-wider">
                   Enviar a
                 </p>
-                <p className="text-body-sm font-semibold text-neutral-900 leading-tight truncate group-hover:text-primary-600 transition">
+                <p className="text-body-sm font-semibold text-neutral-900 dark:text-neutral-100 leading-tight truncate group-hover:text-primary-600 transition">
                   {defaultAddressLine ?? "Agregar dirección"}
                 </p>
               </div>
@@ -116,6 +118,7 @@ export async function ShopHeader() {
           </div>
 
           {/* Acciones derecha */}
+          <ThemeToggle />
           {session ? (
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
 
@@ -132,48 +135,16 @@ export async function ShopHeader() {
                 unreadCount={unreadCount}
               />
 
-              {/* Mi comercio — solo ícono en mobile */}
-              {isStoreOwner && (
-                <Link
-                  href="/comercio/pedidos"
-                  className="inline-flex items-center justify-center sm:gap-1.5 size-9 sm:size-auto sm:px-3 sm:py-2 text-body-sm font-semibold bg-primary-600 text-white hover:bg-primary-700 rounded-lg transition shadow-sm"
-                  aria-label="Mi comercio"
-                >
-                  <Store className="size-4" />
-                  <span className="hidden md:inline">Mi comercio</span>
-                </Link>
-              )}
-
-              {/* Panel repartidor */}
-              {isDriver && (
-                <Link
-                  href="/driver/disponibles"
-                  className="inline-flex items-center justify-center sm:gap-1.5 size-9 sm:size-auto sm:px-3 sm:py-2 text-body-sm font-semibold bg-green-600 text-white hover:bg-green-700 rounded-lg transition shadow-sm"
-                  aria-label="Panel repartidor"
-                >
-                  <Bike className="size-4" />
-                  <span className="hidden md:inline">Repartidor</span>
-                </Link>
-              )}
-
-              <Link
-                href="/perfil"
-                className="group flex items-center gap-2 pl-1 sm:pl-2 pr-1 py-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
-              >
-                <div className="hidden lg:block text-right">
-                  <p className="text-[10px] text-neutral-500 leading-tight">Hola</p>
-                  <p className="text-body-sm font-semibold text-neutral-900 leading-tight group-hover:text-primary-600 transition">
-                    {session.fullName.split(" ")[0]}
-                  </p>
-                </div>
-                <div className="size-8 rounded-full overflow-hidden bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-body-sm relative ring-2 ring-primary-400 ring-offset-1 ring-offset-white dark:ring-offset-neutral-900 group-hover:ring-primary-600 transition">
-                  {session.avatarUrl ? (
-                    <Image src={session.avatarUrl} alt="" fill sizes="32px" className="object-cover" />
-                  ) : (
-                    <span>{session.fullName.charAt(0).toUpperCase()}</span>
-                  )}
-                </div>
-              </Link>
+              <UserMenuDropdown
+                user={{
+                  id: session.id,
+                  fullName: session.fullName,
+                  avatarUrl: session.avatarUrl,
+                  role: session.role,
+                }}
+                isStoreOwner={isStoreOwner}
+                isDriver={isDriver}
+              />
             </div>
           ) : (
             <Link

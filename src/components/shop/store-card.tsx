@@ -54,7 +54,7 @@ export function StoreCard({ store }: { store: StoreCardData }) {
 
         {!store.isOpen && (
           <div className="absolute inset-0 bg-neutral-900/40 flex items-center justify-center">
-            <span className="bg-white text-neutral-900 text-body-sm font-medium px-3 py-1 rounded-full">
+            <span className="bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-body-sm font-medium px-3 py-1 rounded-full">
               Cerrado
             </span>
           </div>
@@ -62,15 +62,15 @@ export function StoreCard({ store }: { store: StoreCardData }) {
       </div>
 
       <div className="p-3">
-        <h3 className="font-medium text-heading-sm text-neutral-900 truncate">
+        <h3 className="font-medium text-heading-sm text-neutral-900 dark:text-neutral-100 truncate">
           {store.name}
         </h3>
-        <p className="text-body-sm text-neutral-500 mb-2 truncate">
+        <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mb-2 truncate">
           {store.category}
         </p>
 
         <div className="flex flex-wrap gap-1.5">
-          <span className="bg-neutral-100 text-neutral-700 text-body-xs font-medium px-2 py-0.5 rounded-full">
+          <span className="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-body-xs font-medium px-2 py-0.5 rounded-full">
             {formatDeliveryTime(store.deliveryMinMin, store.deliveryMaxMin)}
           </span>
           {store.deliveryFee === 0 ? (

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { action } from "./safe-action";
+import { action, authAction } from "./safe-action";
 import { loginSchema, otpSchema, registerSchema, signupSchema } from "@/schemas";
 
 /* ============================================
@@ -227,3 +227,20 @@ export async function logoutAction() {
   await supabase.auth.signOut();
   redirect("/");
 }
+
+/* ============================================
+ * GET DRIVER STATUS
+ * ============================================ */
+
+export const getDriverStatusAction = authAction.action(async ({ ctx }) => {
+  const supabase = createClient();
+
+  const { data, error } = await (supabase.from("driver_status") as any)
+    .select("is_online")
+    .eq("driver_id", ctx.session.id)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+
+  return { isOnline: data?.is_online ?? false };
+});
