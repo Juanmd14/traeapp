@@ -61,16 +61,16 @@ export function StatsDashboard({ initial }: Props) {
     <div className="space-y-5">
       {/* Period Selector */}
       <div className="flex items-center justify-between">
-        <h2 className="text-heading-md font-semibold text-neutral-900">Resumen de ventas</h2>
-        <div className="flex gap-1 bg-neutral-100 p-1 rounded-lg">
+        <h2 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100">Resumen de ventas</h2>
+        <div className="flex gap-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-lg">
           {(["today", "week", "month"] as const).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               className={`px-3 py-1.5 rounded-md text-body-sm transition-all ${
                 period === p
-                  ? "bg-white text-neutral-900 shadow-sm font-medium"
-                  : "text-neutral-500 hover:text-neutral-700"
+                  ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm font-medium"
+                  : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
               }`}
             >
               {p === "today" ? "Hoy" : p === "week" ? "Semana" : "Mes"}
@@ -113,8 +113,8 @@ export function StatsDashboard({ initial }: Props) {
       </div>
 
       {/* Bar Chart */}
-      <div className="bg-white rounded-xl border border-neutral-200 p-5">
-        <h3 className="text-heading-sm font-medium text-neutral-900 mb-4">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5">
+        <h3 className="text-heading-sm font-medium text-neutral-900 dark:text-neutral-100 mb-4">
           Pedidos por día — últimos 7 días
         </h3>
         <ResponsiveContainer width="100%" height={200}>
@@ -162,7 +162,7 @@ export function StatsDashboard({ initial }: Props) {
         <div className="bg-white rounded-xl border border-neutral-200 p-5">
           <div className="flex items-center gap-2 mb-4">
             <Award className="size-4 text-warning" />
-            <h3 className="text-heading-sm font-medium text-neutral-900">
+            <h3 className="text-heading-sm font-medium text-neutral-900 dark:text-neutral-100">
               Más vendidos — este mes
             </h3>
           </div>
@@ -176,14 +176,14 @@ export function StatsDashboard({ initial }: Props) {
                 return (
                   <div key={p.name} className="space-y-1">
                     <div className="flex items-center justify-between text-body-sm">
-                      <span className="text-neutral-700 truncate flex-1 mr-2">
+                      <span className="text-neutral-700 dark:text-neutral-300 truncate flex-1 mr-2">
                         {medal} {p.name}
                       </span>
-                      <span className="font-semibold text-neutral-900 shrink-0 tabular-nums">
+                      <span className="font-semibold text-neutral-900 dark:text-neutral-100 shrink-0 tabular-nums">
                         {p.qty} uds.
                       </span>
                     </div>
-                    <div className="h-1.5 bg-neutral-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full bg-primary-500 transition-all duration-700"
                         style={{ width: `${pct}%` }}
@@ -204,15 +204,15 @@ export function StatsDashboard({ initial }: Props) {
         {/* Right column */}
         <div className="space-y-4">
           {/* Rating */}
-          <div className="bg-white rounded-xl border border-neutral-200 p-5">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5">
             <div className="flex items-center gap-2 mb-3">
               <Star className="size-4 text-warning fill-warning" />
-              <h3 className="text-heading-sm font-medium text-neutral-900">Calificación</h3>
+              <h3 className="text-heading-sm font-medium text-neutral-900 dark:text-neutral-100">Calificación</h3>
             </div>
 
             {initial.avgRating !== null ? (
               <div className="flex items-end gap-3">
-                <span className="text-4xl font-bold text-neutral-900 leading-none">
+                <span className="text-4xl font-bold text-neutral-900 dark:text-neutral-100 leading-none">
                   {initial.avgRating.toFixed(1)}
                 </span>
                 <div className="pb-0.5">
@@ -223,26 +223,26 @@ export function StatsDashboard({ initial }: Props) {
                         className={`size-3.5 ${
                           star <= Math.round(initial.avgRating!)
                             ? "fill-warning text-warning"
-                            : "fill-neutral-200 text-neutral-200"
+                            : "fill-neutral-200 dark:fill-neutral-700 text-neutral-200 dark:text-neutral-700"
                         }`}
                       />
                     ))}
                   </div>
-                  <p className="text-body-xs text-neutral-400">
+                  <p className="text-body-xs text-neutral-400 dark:text-neutral-500">
                     {initial.reviewCount} {initial.reviewCount === 1 ? "reseña" : "reseñas"}
                   </p>
                 </div>
               </div>
             ) : (
-              <p className="text-body-sm text-neutral-400">Sin reseñas todavía</p>
+              <p className="text-body-sm text-neutral-400 dark:text-neutral-500">Sin reseñas todavía</p>
             )}
           </div>
 
           {/* Active Orders Status */}
-          <div className="bg-white rounded-xl border border-neutral-200 p-5">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5">
             <div className="flex items-center gap-2 mb-3">
-              <ChefHat className="size-4 text-neutral-500" />
-              <h3 className="text-heading-sm font-medium text-neutral-900">Estado actual</h3>
+              <ChefHat className="size-4 text-neutral-500 dark:text-neutral-400" />
+              <h3 className="text-heading-sm font-medium text-neutral-900 dark:text-neutral-100">Estado actual</h3>
             </div>
             <div className="space-y-2.5">
               <StatusRow label="Pendientes / Confirmados" value={initial.pendingOrders} color="amber" />

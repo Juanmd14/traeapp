@@ -59,6 +59,7 @@ export function ProductModifierModal({
 }: Props) {
   const [selected, setSelected] = useState<Record<string, string[]>>({});
   const [quantity, setQuantity] = useState(1);
+  const [multiplier, setMultiplier] = useState(1);
   const [selectedQuantityOption, setSelectedQuantityOption] = useState<string | null>(
     quantityOptions.find(q => q.is_default)?.id ?? null
   );
@@ -105,7 +106,9 @@ export function ProductModifierModal({
     : deltaTotal;
 
   const selectedQtyOption = quantityOptions.find(q => q.id === selectedQuantityOption);
-  const effectiveQuantity = selectedQtyOption ? selectedQtyOption.quantity : quantity;
+  const effectiveQuantity = selectedQtyOption 
+    ? selectedQtyOption.quantity * multiplier 
+    : quantity;
   const unitPrice = selectedQtyOption 
     ? Number(selectedQtyOption.price) / selectedQtyOption.quantity
     : baseUnitPrice + modifierTotal;
@@ -160,7 +163,7 @@ export function ProductModifierModal({
               {modifiers.some(g => g.product_modifier_options.some(o => !o.is_removal)) && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <p className="text-body-md font-semibold text-neutral-900">AGREGAR</p>
+                    <p className="text-body-md font-semibold text-neutral-900 dark:text-neutral-100">AGREGAR</p>
                   </div>
                   <div className="space-y-2">
                     {modifiers.flatMap(g => g.product_modifier_options.filter(o => !o.is_removal))
@@ -205,7 +208,7 @@ export function ProductModifierModal({
               {modifiers.some(g => g.product_modifier_options.some(o => o.is_removal)) && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <p className="text-body-md font-semibold text-neutral-900">QUITAR</p>
+                    <p className="text-body-md font-semibold text-neutral-900 dark:text-neutral-100">QUITAR</p>
                     <span className="text-[10px] text-neutral-400">(sin costo)</span>
                   </div>
                   <div className="space-y-2">
@@ -241,8 +244,31 @@ export function ProductModifierModal({
 
           {hasQuantityOptions && (
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <p className="text-body-md font-semibold text-neutral-900">SELECCIONÁ LA CANTIDAD</p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-body-md font-semibold text-neutral-900 dark:text-neutral-100">SELECCIONÁ LA CANTIDAD</p>
+                {selectedQtyOption && multiplier > 1 && (
+                  <span className="text-body-sm text-neutral-500 dark:text-neutral-400">
+                    Total: {selectedQtyOption.quantity * multiplier} unidades
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center justify-center gap-4 mb-4 py-2 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
+                <button
+                  onClick={() => setMultiplier((m) => Math.max(1, m - 1))}
+                  className="size-10 rounded-full border-2 border-neutral-200 dark:border-neutral-600 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-700 transition"
+                  disabled={multiplier <= 1}
+                >
+                  <Minus className="size-4" />
+                </button>
+                <span className="text-heading-md font-bold w-8 text-center dark:text-neutral-100">
+                  {multiplier}
+                </span>
+                <button
+                  onClick={() => setMultiplier((m) => m + 1)}
+                  className="size-10 rounded-full border-2 border-neutral-200 dark:border-neutral-600 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-700 transition"
+                >
+                  <Plus className="size-4" />
+                </button>
               </div>
               <div className="space-y-2">
                 {quantityOptions
@@ -256,11 +282,11 @@ export function ProductModifierModal({
                       key={option.id}
                       type="button"
                       onClick={() => setSelectedQuantityOption(option.id)}
-                      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition ${
-                        isActive
-                          ? "border-primary-500 bg-primary-50"
-                          : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300"
-                      }`}
+className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition ${
+                            isActive
+                              ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
+                              : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
+                          }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`size-5 rounded-full border-2 flex items-center justify-center transition ${
@@ -268,16 +294,16 @@ export function ProductModifierModal({
                         }`}>
                           {isActive && <Check className="size-3 text-white" />}
                         </div>
-                        <span className="text-body-md font-medium text-neutral-900">
+                        <span className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">
                           {option.quantity} {option.quantity === 1 ? 'unidad' : option.quantity <= 6 ? 'unidades' : 'unidades'}
                         </span>
                         {isBetterDeal && (
-                          <span className="text-[10px] bg-accent-100 text-accent-700 px-1.5 py-0.5 rounded-full font-medium">
+                          <span className="text-[10px] bg-accent-100 dark:bg-accent-900 text-accent-700 dark:text-accent-200 px-1.5 py-0.5 rounded-full font-medium">
                             Mejor precio
                           </span>
                         )}
                       </div>
-                      <span className="text-body-md font-bold text-neutral-900">
+                      <span className="text-body-md font-bold text-neutral-900 dark:text-neutral-100">
                         {formatPrice(Number(option.price))}
                       </span>
                     </button>
@@ -290,7 +316,7 @@ export function ProductModifierModal({
           {showManualQuantity && (
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <p className="text-body-md font-semibold text-neutral-900">CANTIDAD</p>
+                <p className="text-body-md font-semibold text-neutral-900 dark:text-neutral-100">CANTIDAD</p>
               </div>
               <div className="flex items-center justify-center gap-4 py-2">
                 <button

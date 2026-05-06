@@ -129,7 +129,7 @@ export default async function StorePage({ params }: Props) {
   const maxMin = store.avg_prep_minutes + 10;
 
   return (
-    <div className="bg-neutral-50 min-h-screen pb-24">
+    <div className="bg-neutral-50 dark:bg-neutral-950 min-h-screen pb-24">
       {/* Cover */}
       <div className="relative h-40 sm:h-56 bg-gradient-to-br from-primary-300 to-primary-600">
         {store.cover_url && (
@@ -154,7 +154,7 @@ export default async function StorePage({ params }: Props) {
 
       {/* Header info */}
       <div className="container-shop -mt-8 relative">
-        <div className="bg-white rounded-xl shadow-card p-4 sm:p-5">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-card p-4 sm:p-5">
           <div className="flex items-start gap-3">
             {store.logo_url ? (
               <Image
@@ -171,12 +171,12 @@ export default async function StorePage({ params }: Props) {
             )}
 
             <div className="min-w-0">
-              <h1 className="text-heading-lg font-semibold text-neutral-900 truncate">
+              <h1 className="text-heading-lg font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                 {store.name}
               </h1>
 
               {store.description && (
-                <p className="text-body-sm text-neutral-500 line-clamp-2 mt-0.5">
+                <p className="text-body-sm text-neutral-500 dark:text-neutral-400 line-clamp-2 mt-0.5">
                   {store.description}
                 </p>
               )}
@@ -184,7 +184,7 @@ export default async function StorePage({ params }: Props) {
           </div>
 
           {promos.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-neutral-100">
+            <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-neutral-100 dark:border-neutral-800">
               {promos.map((promo) => (
                 <span
                   key={promo.id}
@@ -202,17 +202,17 @@ export default async function StorePage({ params }: Props) {
 
           <div className="flex flex-wrap gap-2 mt-3">
             {store.rating_count > 0 && (
-              <span className="flex items-center gap-1 bg-neutral-100 text-neutral-700 text-body-xs font-medium px-2 py-1 rounded-full">
-                <Star className="size-3 fill-current text-warning-500" />
-                {Number(store.rating_avg).toFixed(1)}
+<span className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-body-xs font-medium px-2 py-1 rounded-full">
+              <Star className="size-3 fill-current text-warning-500" />
+              {Number(store.rating_avg).toFixed(1)}
 
-                <span className="text-neutral-500">
+              <span className="text-neutral-500 dark:text-neutral-400">
                   · {store.rating_count}
                 </span>
               </span>
             )}
 
-            <span className="flex items-center gap-1 bg-neutral-100 text-neutral-700 text-body-xs font-medium px-2 py-1 rounded-full">
+            <span className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-body-xs font-medium px-2 py-1 rounded-full">
               <Clock className="size-3" />
               {formatDeliveryTime(minMin, maxMin)}
             </span>
@@ -220,8 +220,8 @@ export default async function StorePage({ params }: Props) {
             <span
               className={
                 store.delivery_fee === 0
-                  ? "flex items-center gap-1 bg-accent-100 text-accent-800 text-body-xs font-medium px-2 py-1 rounded-full"
-                  : "flex items-center gap-1 bg-neutral-100 text-neutral-700 text-body-xs font-medium px-2 py-1 rounded-full"
+                  ? "flex items-center gap-1 bg-accent-100 dark:bg-accent-900 text-accent-800 dark:text-accent-200 text-body-xs font-medium px-2 py-1 rounded-full"
+                  : "flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-body-xs font-medium px-2 py-1 rounded-full"
               }
             >
               <Truck className="size-3" />
@@ -234,7 +234,7 @@ export default async function StorePage({ params }: Props) {
             </span>
 
             {store.min_order_amount > 0 && (
-              <span className="bg-neutral-100 text-neutral-700 text-body-xs font-medium px-2 py-1 rounded-full">
+              <span className="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-body-xs font-medium px-2 py-1 rounded-full">
                 Mín. {formatPrice(store.min_order_amount)}
               </span>
             )}

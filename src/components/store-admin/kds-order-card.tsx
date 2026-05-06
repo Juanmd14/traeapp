@@ -152,7 +152,7 @@ export function KdsOrderCard({ order, items, variant }: Props) {
     <>
       <div
         className={cn(
-          "bg-white rounded-lg border border-neutral-200 border-l-4 shadow-sm",
+          "bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 border-l-4 shadow-sm",
           statusColor[variant],
           isPending && "opacity-50"
         )}
@@ -161,10 +161,10 @@ export function KdsOrderCard({ order, items, variant }: Props) {
           {/* Header */}
           <div className="flex items-start justify-between gap-2 mb-2">
             <div>
-              <p className="text-heading-sm font-bold text-neutral-900">
+              <p className="text-heading-sm font-bold text-neutral-900 dark:text-neutral-100">
                 #{order.order_number}
               </p>
-              <p className="text-body-xs text-neutral-500">
+              <p className="text-body-xs text-neutral-500 dark:text-neutral-400">
                 {new Date(order.created_at).toLocaleTimeString("es-AR", {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -183,14 +183,14 @@ export function KdsOrderCard({ order, items, variant }: Props) {
           </div>
 
           {/* Items summary */}
-          <div className="text-body-sm text-neutral-700 mb-3">
+          <div className="text-body-sm text-neutral-700 dark:text-neutral-300 mb-3">
             {items?.slice(0, 3).map((item) => (
               <div key={item.id} className="flex justify-between">
                 <span className="truncate">{item.quantity}x {item.product_name}</span>
               </div>
             ))}
             {(items?.length ?? 0) > 3 && (
-              <p className="text-neutral-400 text-body-xs">+{items!.length - 3} más</p>
+              <p className="text-neutral-400 dark:text-neutral-500 text-body-xs">+{items!.length - 3} más</p>
             )}
           </div>
 
@@ -270,20 +270,20 @@ export function KdsOrderCard({ order, items, variant }: Props) {
 
         {/* Expanded details */}
         {expanded && items && (
-          <div className="px-3 sm:px-4 pb-3 border-t border-neutral-100 pt-3 space-y-2">
+          <div className="px-3 sm:px-4 pb-3 border-t border-neutral-100 dark:border-neutral-800 pt-3 space-y-2">
             {items.map((item) => (
               <div key={item.id} className="flex justify-between text-body-sm">
                 <div className="flex items-start gap-2">
-                  <span className="font-semibold text-neutral-900">{item.quantity}x</span>
-                  <span className="text-neutral-700">{item.product_name}</span>
+                  <span className="font-semibold text-neutral-900 dark:text-neutral-100">{item.quantity}x</span>
+                  <span className="text-neutral-700 dark:text-neutral-300">{item.product_name}</span>
                 </div>
                 {item.notes && (
-                  <span className="text-body-xs text-amber-600 italic">"{item.notes}"</span>
+                  <span className="text-body-xs text-amber-600 dark:text-amber-400 italic">"{item.notes}"</span>
                 )}
               </div>
             ))}
             {order.customer_notes && (
-              <div className="mt-2 p-2 bg-amber-50 rounded text-body-xs text-amber-800">
+              <div className="mt-2 p-2 bg-amber-50 dark:bg-amber-950 rounded text-body-xs text-amber-800 dark:text-amber-200">
                 <strong>Nota:</strong> {order.customer_notes}
               </div>
             )}

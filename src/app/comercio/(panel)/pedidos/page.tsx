@@ -208,11 +208,11 @@ export default async function PedidosPage() {
     <div className="max-w-7xl mx-auto">
       <header className="mb-5 flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-heading-xl font-semibold text-neutral-900">
+          <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
             Pedidos en vivo
           </h1>
 
-          <p className="text-body-md text-neutral-500 mt-0.5">
+          <p className="text-body-md text-neutral-500 dark:text-neutral-400 mt-0.5">
             {isActive
               ? "Los pedidos nuevos aparecen acá automáticamente"
               : "Tu tienda está pausada. Los clientes no pueden hacer pedidos."}
@@ -227,32 +227,32 @@ export default async function PedidosPage() {
 
       {/* Métricas */}
       <div className="grid grid-cols-3 gap-3 mb-6">
-        <div className="bg-white border border-neutral-200 rounded-md p-3 sm:p-4">
-          <p className="text-body-xs text-neutral-500 uppercase tracking-wider">
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-md p-3 sm:p-4">
+          <p className="text-body-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
             Hoy
           </p>
 
-          <p className="text-heading-lg sm:text-display-md font-bold text-neutral-900 mt-0.5">
+          <p className="text-heading-lg sm:text-display-md font-bold text-neutral-900 dark:text-neutral-100 mt-0.5">
             {todayCount}
           </p>
 
-          <p className="text-body-xs text-neutral-500">
+          <p className="text-body-xs text-neutral-500 dark:text-neutral-400">
             {todayCount === 1
               ? "pedido"
               : "pedidos"}
           </p>
         </div>
 
-        <div className="bg-white border border-neutral-200 rounded-md p-3 sm:p-4">
-          <p className="text-body-xs text-neutral-500 uppercase tracking-wider">
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-md p-3 sm:p-4">
+          <p className="text-body-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
             Ingreso hoy
           </p>
 
-          <p className="text-heading-lg sm:text-display-md font-bold text-neutral-900 mt-0.5">
+          <p className="text-heading-lg sm:text-display-md font-bold text-neutral-900 dark:text-neutral-100 mt-0.5">
             {formatPrice(todayRevenue)}
           </p>
 
-          <p className="text-body-xs text-neutral-500">
+          <p className="text-body-xs text-neutral-500 dark:text-neutral-400">
             facturado
           </p>
         </div>
@@ -261,16 +261,16 @@ export default async function PedidosPage() {
           className={
             "rounded-md p-3 sm:p-4 border " +
             (newCount > 0
-              ? "bg-primary-50 border-primary-200"
-              : "bg-white border-neutral-200")
+              ? "bg-primary-50 dark:bg-primary-950 border-primary-200 dark:border-primary-800"
+              : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800")
           }
         >
           <p
             className={
               "text-body-xs uppercase tracking-wider " +
               (newCount > 0
-                ? "text-primary-700"
-                : "text-neutral-500")
+                ? "text-primary-700 dark:text-primary-300"
+                : "text-neutral-500 dark:text-neutral-400")
             }
           >
             Nuevos
@@ -280,8 +280,8 @@ export default async function PedidosPage() {
             className={
               "text-heading-lg sm:text-display-md font-bold mt-0.5 " +
               (newCount > 0
-                ? "text-primary-700"
-                : "text-neutral-900")
+                ? "text-primary-700 dark:text-primary-300"
+                : "text-neutral-900 dark:text-neutral-100")
             }
           >
             {newCount}
@@ -291,8 +291,8 @@ export default async function PedidosPage() {
             className={
               "text-body-xs " +
               (newCount > 0
-                ? "text-primary-600"
-                : "text-neutral-500")
+                ? "text-primary-600 dark:text-primary-400"
+                : "text-neutral-500 dark:text-neutral-400")
             }
           >
             esperando

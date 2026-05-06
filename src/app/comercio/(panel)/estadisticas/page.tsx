@@ -175,10 +175,10 @@ export default async function EstadisticasPage() {
   return (
     <div className="max-w-4xl">
       <header className="mb-8">
-        <h1 className="text-heading-xl font-semibold text-neutral-900">
+        <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
           Estadísticas
         </h1>
-        <p className="text-body-md text-neutral-500 mt-0.5">
+        <p className="text-body-md text-neutral-500 dark:text-neutral-400 mt-0.5">
           Seguimiento del rendimiento de tu comercio.
         </p>
       </header>

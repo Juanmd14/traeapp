@@ -38,6 +38,7 @@ type Props = {
 
 export function DeliveryMapInner({ driverId, initialLat, initialLng, destLat, destLng }: Props) {
   const [driverPos, setDriverPos] = useState<[number, number]>([initialLat, initialLng]);
+  const [mapError, setMapError] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -54,14 +55,25 @@ export function DeliveryMapInner({ driverId, initialLat, initialLng, destLat, de
     return () => clearInterval(id);
   }, [driverId]);
 
+  if (mapError) {
+    return (
+      <div className="h-[260px] w-full rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
+        <p className="text-neutral-500 dark:text-neutral-400 text-body-sm">Mapa no disponible</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-2xl overflow-hidden border border-neutral-200">
+    <div className="rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-700">
       <MapContainer
         center={driverPos}
         zoom={15}
         style={{ height: "260px", width: "100%" }}
         zoomControl={false}
         scrollWheelZoom={false}
+        whenReady={(map) => {
+          map.on("error", () => setMapError(true));
+        }}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
