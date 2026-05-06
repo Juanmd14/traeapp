@@ -71,9 +71,6 @@ export function DeliveryMapInner({ driverId, initialLat, initialLng, destLat, de
         style={{ height: "260px", width: "100%" }}
         zoomControl={false}
         scrollWheelZoom={false}
-        whenReady={(map) => {
-          map.on("error", () => setMapError(true));
-        }}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
