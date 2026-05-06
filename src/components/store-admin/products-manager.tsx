@@ -302,7 +302,7 @@ function ProductListRow({
       </div>
 
       {/* Acciones */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         <label className="flex items-center gap-1.5 cursor-pointer select-none">
           <Switch
             checked={product.is_available}
@@ -321,26 +321,26 @@ function ProductListRow({
 
         <button
           onClick={onEdit}
-          className="size-8 rounded-md hover:bg-neutral-100 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition"
+          className="size-9 sm:size-8 rounded-md hover:bg-neutral-100 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition"
           aria-label="Editar"
         >
           <Pencil className="size-4" />
         </button>
 
         {confirmDelete ? (
-          <div className="flex items-center gap-1 bg-red-50 rounded-lg px-2 py-1">
+          <div className="flex items-center gap-1.5 sm:gap-1 bg-red-50 rounded-lg px-2.5 py-1.5 sm:px-2 sm:py-1">
             <span className="text-body-xs text-neutral-600">¿Borrar?</span>
             <button
               onClick={onDelete}
               disabled={isPending}
-              className="text-body-xs font-semibold text-destructive hover:underline"
+              className="text-body-xs font-semibold text-destructive hover:underline min-w-fit"
             >
               Sí
             </button>
             <span className="text-neutral-300">|</span>
             <button
               onClick={() => setConfirmDelete(false)}
-              className="text-body-xs font-medium text-neutral-500 hover:underline"
+              className="text-body-xs font-medium text-neutral-500 hover:underline min-w-fit"
             >
               No
             </button>
@@ -348,7 +348,7 @@ function ProductListRow({
         ) : (
           <button
             onClick={() => setConfirmDelete(true)}
-            className="size-8 rounded-md hover:bg-red-50 flex items-center justify-center text-neutral-500 hover:text-destructive transition"
+            className="size-9 sm:size-8 rounded-md hover:bg-red-50 flex items-center justify-center text-neutral-500 hover:text-destructive transition"
             aria-label="Borrar"
           >
             <Trash2 className="size-4" />

@@ -226,8 +226,8 @@ export function ProfileForm({ initial }: Props) {
               <ClipboardList className="size-5" />
             </div>
             <div>
-              <p className="text-body-md font-medium text-neutral-900">Mis pedidos</p>
-              <p className="text-body-xs text-neutral-500">Historial y pedidos en curso</p>
+              <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">Mis pedidos</p>
+              <p className="text-body-xs text-neutral-500 dark:text-neutral-400">Historial y pedidos en curso</p>
             </div>
           </div>
           <ChevronRight className="size-5 text-neutral-400" />
@@ -242,8 +242,8 @@ export function ProfileForm({ initial }: Props) {
               <MapPin className="size-5" />
             </div>
             <div>
-              <p className="text-body-md font-medium text-neutral-900">Mis direcciones</p>
-              <p className="text-body-xs text-neutral-500">Direcciones guardadas</p>
+              <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">Mis direcciones</p>
+              <p className="text-body-xs text-neutral-500 dark:text-neutral-400">Direcciones guardadas</p>
             </div>
           </div>
           <ChevronRight className="size-5 text-neutral-400" />
@@ -259,8 +259,8 @@ export function ProfileForm({ initial }: Props) {
                 <Store className="size-5" />
               </div>
               <div>
-                <p className="text-body-md font-medium text-neutral-900">Panel del comercio</p>
-                <p className="text-body-xs text-neutral-500">Pedidos, productos y más</p>
+                <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">Panel del comercio</p>
+                <p className="text-body-xs text-neutral-500 dark:text-neutral-400">Pedidos, productos y más</p>
               </div>
             </div>
             <ChevronRight className="size-5 text-neutral-400" />

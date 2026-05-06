@@ -145,8 +145,8 @@ export function ProductCard({
               className={cn(
                 "flex items-center justify-center flex-shrink-0 transition-all duration-150 active:scale-90",
                 hasModifiers
-                  ? "h-8 px-3 rounded-full gap-1 text-[12px] font-semibold"
-                  : "size-8 rounded-full",
+                  ? "h-9 sm:h-8 px-3 rounded-full gap-1 text-[12px] font-semibold"
+                  : "size-9 sm:size-8 rounded-full",
                 justAdded
                   ? "bg-accent-500 text-white shadow-none"
                   : "bg-primary-600 text-white hover:bg-primary-700 shadow-[0_2px_8px_rgba(230,56,35,0.35)]"
@@ -154,14 +154,14 @@ export function ProductCard({
               aria-label="Agregar al carrito"
             >
               {justAdded ? (
-                <Check className="size-4" strokeWidth={3} />
+                <Check className="size-4 sm:size-4" strokeWidth={3} />
               ) : hasModifiers ? (
                 <>
-                  <Plus className="size-3.5" strokeWidth={2.5} />
+                  <Plus className="size-4 sm:size-3.5" strokeWidth={2.5} />
                   <span>Elegir</span>
                 </>
               ) : (
-                <Plus className="size-4" strokeWidth={2.5} />
+                <Plus className="size-4 sm:size-4" strokeWidth={2.5} />
               )}
             </button>
           </div>
