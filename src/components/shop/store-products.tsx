@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { ProductCard } from "@/components/shop/product-card";
-import type { ModifierGroup } from "@/components/shop/product-modifier-modal";
+import type { ModifierGroup, QuantityOption } from "@/components/shop/product-modifier-modal";
 
 type ProductData = {
   id: string;
@@ -13,7 +13,10 @@ type ProductData = {
   is_available: boolean;
   product_category_id: string | null;
   sort_order: number;
+  has_quantity_options: boolean;
+  hide_manual_quantity: boolean;
   product_modifiers: ModifierGroup[];
+  product_quantity_options: QuantityOption[];
 };
 
 type ProductCategoryData = {
@@ -56,10 +59,11 @@ async function ProductCategories({ storeId, storeName, storeSlug, deliveryFee, m
 
     supabase
       .from("products")
-      .select(`id, name, description, image_url, price, compare_at_price, is_available, product_category_id, sort_order,
+      .select(`id, name, description, image_url, price, compare_at_price, is_available, product_category_id, sort_order, has_quantity_options, hide_manual_quantity,
         product_modifiers ( id, name, is_required, max_select, sort_order,
-          product_modifier_options ( id, name, price_delta, is_absolute_price, sort_order )
-        )`)
+          product_modifier_options ( id, name, price_delta, is_absolute_price, sort_order, is_removal )
+        ),
+        product_quantity_options ( id, quantity, price, is_default, sort_order )`)
       .eq("store_id", storeId)
       .eq("is_active", true)
       .order("sort_order"),
@@ -114,6 +118,8 @@ async function ProductCategories({ storeId, storeName, storeSlug, deliveryFee, m
                     isAvailable: p.is_available,
                   }}
                   modifiers={p.product_modifiers ?? []}
+                  quantityOptions={p.product_quantity_options ?? []}
+                  hideManualQuantity={p.hide_manual_quantity ?? false}
                   storeId={storeId}
                   storeName={storeName}
                   storeSlug={storeSlug}

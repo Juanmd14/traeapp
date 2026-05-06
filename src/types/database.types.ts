@@ -986,6 +986,7 @@ export type Database = {
           name: string
           price_delta: number
           is_absolute_price: boolean
+          is_removal: boolean
         }
         Insert: {
           id?: string
@@ -993,6 +994,7 @@ export type Database = {
           name: string
           price_delta?: number
           is_absolute_price?: boolean
+          is_removal?: boolean
         }
         Update: {
           id?: string
@@ -1000,6 +1002,7 @@ export type Database = {
           name?: string
           price_delta?: number
           is_absolute_price?: boolean
+          is_removal?: boolean
         }
         Relationships: [
           {
@@ -1007,6 +1010,41 @@ export type Database = {
             columns: ["modifier_id"]
             isOneToOne: false
             referencedRelation: "product_modifiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_quantity_options: {
+        Row: {
+          id: string
+          product_id: string
+          quantity: number
+          price: number
+          is_default: boolean
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          quantity: number
+          price: number
+          is_default?: boolean
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          quantity?: number
+          price?: number
+          is_default?: boolean
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_quantity_options_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
@@ -1106,6 +1144,8 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           description: string | null
+          has_quantity_options: boolean
+          hide_manual_quantity: boolean
           id: string
           image_url: string | null
           is_active: boolean
@@ -1123,6 +1163,8 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           description?: string | null
+          has_quantity_options?: boolean
+          hide_manual_quantity?: boolean
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -1140,6 +1182,8 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           description?: string | null
+          has_quantity_options?: boolean
+          hide_manual_quantity?: boolean
           id?: string
           image_url?: string | null
           is_active?: boolean
