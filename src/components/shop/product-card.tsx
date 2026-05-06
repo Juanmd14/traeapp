@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Plus, Check, ChevronDown } from "lucide-react";
 import { useCart } from "@/stores/cart";
 import { formatPrice, cn } from "@/lib/utils";
@@ -112,11 +113,14 @@ export function ProductCard({
 
   return (
     <>
-      <div
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.15 }}
         className={cn(
           "bg-white dark:bg-neutral-900 rounded-2xl flex items-stretch relative overflow-hidden",
-          "shadow-[0_1px_3px_rgba(28,25,23,0.07),0_4px_14px_rgba(28,25,23,0.05)]",
-          "hover:shadow-[0_4px_16px_rgba(28,25,23,0.1),0_8px_24px_rgba(28,25,23,0.06)]",
+          "shadow-[0_2px_10px_rgba(230,56,35,0.18)]",
+          "hover:shadow-[0_6px_20px_rgba(230,56,35,0.25)]",
           "transition-shadow duration-200",
           !product.isAvailable && "opacity-55"
         )}
@@ -145,11 +149,12 @@ export function ProductCard({
               )}
             </div>
 
-            <button
+            <motion.button
+              whileTap={{ scale: 0.85 }}
               onClick={handleAdd}
               disabled={!product.isAvailable}
               className={cn(
-                "flex items-center justify-center flex-shrink-0 transition-all duration-150 active:scale-90",
+                "flex items-center justify-center flex-shrink-0 transition-all duration-150",
                 needsModal
                   ? "h-9 sm:h-8 px-3 rounded-full gap-1 text-[12px] font-semibold"
                   : "size-9 sm:size-8 rounded-full",
@@ -169,7 +174,7 @@ export function ProductCard({
               ) : (
                 <Plus className="size-4 sm:size-4" strokeWidth={2.5} />
               )}
-            </button>
+            </motion.button>
           </div>
         </div>
 
@@ -203,7 +208,7 @@ export function ProductCard({
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Modal de modificadores */}
       {showModifierModal && (

@@ -159,9 +159,9 @@ export function StatsDashboard({ initial }: Props) {
       {/* Bottom row */}
       <div className="grid md:grid-cols-2 gap-4">
         {/* Top Products */}
-        <div className="bg-white rounded-xl border border-neutral-200 p-5">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Award className="size-4 text-warning" />
+            <Award className="size-4 text-warning fill-warning" />
             <h3 className="text-heading-sm font-medium text-neutral-900 dark:text-neutral-100">
               Más vendidos — este mes
             </h3>
