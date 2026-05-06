@@ -113,15 +113,14 @@ export function ProductCard({
 
   return (
     <>
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ duration: 0.15 }}
+      <div
         className={cn(
           "bg-white dark:bg-neutral-900 rounded-2xl flex items-stretch relative overflow-hidden",
           "shadow-[0_2px_10px_rgba(230,56,35,0.18)]",
           "hover:shadow-[0_6px_20px_rgba(230,56,35,0.25)]",
-          "transition-shadow duration-200",
+          "hover:scale-[1.01]",
+          "active:scale-[0.99]",
+          "transition-all duration-200",
           !product.isAvailable && "opacity-55"
         )}
       >
@@ -149,12 +148,11 @@ export function ProductCard({
               )}
             </div>
 
-            <motion.button
-              whileTap={{ scale: 0.85 }}
+            <button
               onClick={handleAdd}
               disabled={!product.isAvailable}
               className={cn(
-                "flex items-center justify-center flex-shrink-0 transition-all duration-150",
+                "flex items-center justify-center flex-shrink-0 transition-all duration-150 active:scale-90",
                 needsModal
                   ? "h-9 sm:h-8 px-3 rounded-full gap-1 text-[12px] font-semibold"
                   : "size-9 sm:size-8 rounded-full",
@@ -174,7 +172,7 @@ export function ProductCard({
               ) : (
                 <Plus className="size-4 sm:size-4" strokeWidth={2.5} />
               )}
-            </motion.button>
+            </button>
           </div>
         </div>
 
@@ -208,7 +206,7 @@ export function ProductCard({
             </div>
           )}
         </div>
-      </motion.div>
+      </div>
 
       {/* Modal de modificadores */}
       {showModifierModal && (
