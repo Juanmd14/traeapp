@@ -265,6 +265,8 @@ create table public.products (
   sku                 text,
   is_active           boolean not null default true,
   is_available        boolean not null default true,
+  has_quantity_options boolean not null default false,
+  hide_manual_quantity boolean not null default false,
   sort_order          integer not null default 0,
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now(),
@@ -300,6 +302,18 @@ create table public.product_modifier_options (
 
 create index product_modifiers_product_idx on public.product_modifiers(product_id);
 create index pmo_modifier_idx on public.product_modifier_options(modifier_id);
+
+-- ============ PRODUCT QUANTITY OPTIONS ============
+create table public.product_quantity_options (
+  id            uuid primary key default gen_random_uuid(),
+  product_id   uuid not null references public.products(id) on delete cascade,
+  quantity    integer not null check (quantity > 0),
+  price       numeric(12,2) not null check (price >= 0),
+  is_default  boolean not null default false,
+  sort_order  integer not null default 0
+);
+
+create index pqo_product_idx on public.product_quantity_options(product_id);
 
 -- ============ INVENTORY (opcional) ============
 create table public.inventory (

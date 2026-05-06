@@ -63,7 +63,7 @@ async function ProductCategories({ storeId, storeName, storeSlug, deliveryFee, m
         product_modifiers ( id, name, is_required, max_select, sort_order,
           product_modifier_options ( id, name, price_delta, is_absolute_price, sort_order, is_removal )
         ),
-        product_quantity_options ( id, quantity, price, is_default, sort_order )`)
+        product_quantity_options ( id, quantity, price, is_default, sort_order, is_best_deal )`)
       .eq("store_id", storeId)
       .eq("is_active", true)
       .order("sort_order"),

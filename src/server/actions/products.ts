@@ -126,6 +126,7 @@ const quantityOptionSchema = z.object({
   quantity: z.number().int().positive(),
   price: z.number().int().min(0),
   isDefault: z.boolean(),
+  isBestDeal: z.boolean(),
 });
 
 export const upsertQuantityOptionsAction = authAction
@@ -159,6 +160,7 @@ export const upsertQuantityOptionsAction = authAction
         quantity: opt.quantity,
         price: opt.price,
         is_default: opt.isDefault,
+        is_best_deal: opt.isBestDeal,
         sort_order: idx,
       }));
 

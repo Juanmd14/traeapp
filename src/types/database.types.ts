@@ -1022,6 +1022,7 @@ export type Database = {
           price: number
           is_default: boolean
           sort_order: number
+          is_best_deal: boolean
         }
         Insert: {
           id?: string
@@ -1030,6 +1031,7 @@ export type Database = {
           price: number
           is_default?: boolean
           sort_order?: number
+          is_best_deal?: boolean
         }
         Update: {
           id?: string
@@ -1038,6 +1040,7 @@ export type Database = {
           price?: number
           is_default?: boolean
           sort_order?: number
+          is_best_deal?: boolean
         }
         Relationships: [
           {

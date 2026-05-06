@@ -35,6 +35,7 @@ type QuantityOptionInput = {
   quantity: number;
   price: number;
   isDefault: boolean;
+  isBestDeal: boolean;
 };
 
 type ModifierData = {
@@ -892,6 +893,22 @@ function ProductFormDialog({
                         />
                         <span className="text-body-xs text-neutral-500">Por defecto</span>
                       </label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="bestDeal"
+                          checked={opt.isBestDeal}
+                          onChange={() => {
+                            const newOpts = quantityOptions.map((o: QuantityOptionInput, i: number) => ({
+                              ...o,
+                              isBestDeal: i === idx,
+                            }));
+                            setQuantityOptions(newOpts);
+                          }}
+                          className="accent-primary-600"
+                        />
+                        <span className="text-body-xs text-neutral-500">Mejor precio</span>
+                      </label>
                       <button
                         type="button"
                         onClick={() => {
@@ -909,7 +926,7 @@ function ProductFormDialog({
                   onClick={() => {
                     setQuantityOptions([
                       ...quantityOptions,
-                      { quantity: 1, price: 0, isDefault: quantityOptions.length === 0 },
+                      { quantity: 1, price: 0, isDefault: quantityOptions.length === 0, isBestDeal: false },
                     ]);
                   }}
                   className="text-body-sm text-primary-600 hover:underline"

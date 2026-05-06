@@ -10,6 +10,7 @@ export type QuantityOption = {
   price: number;
   is_default: boolean;
   sort_order: number;
+  is_best_deal: boolean;
 };
 
 export type ModifierOption = {
@@ -247,7 +248,7 @@ export function ProductModifierModal({
                   .sort((a, b) => a.quantity - b.quantity)
                   .map((option) => {
                   const isActive = selectedQuantityOption === option.id;
-                  const isBetterDeal = option.price < (option.quantity * baseUnitPrice);
+                  const isBetterDeal = option.is_best_deal;
                   
                   return (
                     <button
