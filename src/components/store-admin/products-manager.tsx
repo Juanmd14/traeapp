@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import Image from "next/image";
 import {
   Plus, Pencil, Trash2, Package,
-  Search, Check, EyeOff,
+  Search, Check, EyeOff, X,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +28,12 @@ import {
   deleteProductAction,
 } from "@/server/actions/products";
 import { formatPrice, cn } from "@/lib/utils";
+
+type QuantityOptionInput = {
+  quantity: number;
+  price: number;
+  isDefault: boolean;
+};
 
 export type ProductRow = {
   id: string;
@@ -375,6 +381,9 @@ function ProductFormDialog({
   const [imagePreview, setImagePreview] = useState<string>(
     initial?.image_url ?? "",
   );
+  const [quantityOptions, setQuantityOptions] = useState<QuantityOptionInput[]>([]);
+  const [hasQuantityOptions, setHasQuantityOptions] = useState(false);
+  const [hideManualQuantity, setHideManualQuantity] = useState(false);
   const isEditing = !!initial;
 
   const form = useForm<ProductInput>({
@@ -571,6 +580,122 @@ function ProductFormDialog({
               </p>
             </div>
           </label>
+
+          {/* Quantity Options - solo para productos por cantidad */}
+          <div className="border border-neutral-200 rounded-lg p-4 space-y-4">
+            <label className="flex items-center gap-3 cursor-pointer select-none">
+              <Switch
+                checked={hasQuantityOptions}
+                onCheckedChange={(v) => setHasQuantityOptions(v)}
+              />
+              <div>
+                <p className="text-body-md font-medium text-neutral-900">
+                  Tiene cantidades predefinidas
+                </p>
+                <p className="text-body-xs text-neutral-500">
+                  Ej: media docena (6), docena (12). No usa selector manual
+                </p>
+              </div>
+            </label>
+
+            {hasQuantityOptions && quantityOptions.length > 0 && (
+              <div className="space-y-3">
+                <p className="text-body-sm font-medium text-neutral-700">
+                  Opciones de cantidad:
+                </p>
+                <div className="space-y-2">
+                  {quantityOptions.map((opt: QuantityOptionInput, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="1"
+                        value={opt.quantity}
+                        onChange={(e) => {
+                          const newOpts = [...quantityOptions];
+                          if (newOpts[idx]) {
+                            newOpts[idx].quantity = parseInt(e.target.value) || 1;
+                            setQuantityOptions(newOpts);
+                          }
+                        }}
+                        className="w-20 px-2 py-1.5 border border-neutral-200 rounded-md text-body-sm"
+                        placeholder="Cant."
+                      />
+                      <span className="text-neutral-400">unidades</span>
+                      <span className="text-neutral-500">x</span>
+                      <div className="relative flex-1 max-w-32">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-neutral-500 text-sm">$</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={opt.price}
+                          onChange={(e) => {
+                            const newOpts = [...quantityOptions];
+                            if (newOpts[idx]) {
+                              newOpts[idx].price = parseInt(e.target.value) || 0;
+                              setQuantityOptions(newOpts);
+                            }
+                          }}
+                          className="w-full pl-6 py-1.5 border border-neutral-200 rounded-md text-body-sm"
+                          placeholder="Precio"
+                        />
+                      </div>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="defaultQty"
+                          checked={opt.isDefault}
+                          onChange={() => {
+                            const newOpts = quantityOptions.map((o: QuantityOptionInput, i: number) => ({
+                              ...o,
+                              isDefault: i === idx,
+                            }));
+                            setQuantityOptions(newOpts);
+                          }}
+                          className="accent-primary-600"
+                        />
+                        <span className="text-body-xs text-neutral-500">Por defecto</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuantityOptions(quantityOptions.filter((_: QuantityOptionInput, i: number) => i !== idx));
+                        }}
+                        className="text-neutral-400 hover:text-destructive"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuantityOptions([
+                      ...quantityOptions,
+                      { quantity: 1, price: 0, isDefault: quantityOptions.length === 0 },
+                    ]);
+                  }}
+                  className="text-body-sm text-primary-600 hover:underline"
+                >
+                  + Agregar opción
+                </button>
+              </div>
+            )}
+
+            {hasQuantityOptions && (
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={hideManualQuantity}
+                  onChange={(e) => setHideManualQuantity(e.target.checked)}
+                  className="accent-primary-600"
+                />
+                <span className="text-body-sm text-neutral-600">
+                  Ocultar selector manual de cantidad
+                </span>
+              </label>
+            )}
+          </div>
 
           {serverError && (
             <p className="text-body-sm text-destructive bg-red-50 px-3 py-2 rounded-md">

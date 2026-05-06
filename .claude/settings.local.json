@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\OneDrive\\\\Escritorio\\\\Juan cosas\\\\Prog\\\\PedidoAmerica\\\\delivery-platform\\\\src\" -Recurse | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"C:\\\\Users\\\\User\\\\OneDrive\\\\Escritorio\\\\Juan cosas\\\\Prog\\\\PedidoAmerica\\\\delivery-platform\\\\src\", \"src\"\\) } | Sort-Object)",
+      "Bash(npx tsc *)",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\User\\\\OneDrive\\\\Escritorio\\\\Juan cosas\\\\Prog\\\\PedidoAmerica\\\\delivery-platform\\\\src\\\\app\\\\\\(admin\\)\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object FullName)",
+      "Bash(xargs grep *)",
+      "Bash(xargs wc *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(npm run *)"
+    ]
+  }
+}
