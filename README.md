@@ -1,5 +1,14 @@
 # Vadelivery
 
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20RLS-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Mercado Pago](https://img.shields.io/badge/Mercado%20Pago-checkout-009EE3?logo=mercadopago&logoColor=white)](https://www.mercadopago.com.ar/developers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
+🇪🇸 **Español** · [🇺🇸 English](./README.en.md)
+
 Plataforma de delivery local tipo PedidosYa/Rappi para una ciudad pequeña.
 Stack: **Next.js 14 (App Router) · Supabase · PostgreSQL · TailwindCSS · TypeScript · Vercel**.
 
@@ -51,7 +60,7 @@ pnpm dev
 ### Bloque 1 — Base + diseño
 - Estructura completa de carpetas, route groups
 - Sistema de diseño: paleta coral + acento verde + neutros stone, tipografía Geist
-- Schema SQL completo (8 migraciones, RLS por rol, RPC idempotente)
+- Schema SQL completo (13 migraciones, RLS por rol, RPC idempotente)
 - Seed con 5 comercios + 25 productos demo
 - Home, ficha comercio (catálogo SSR + ISR), 404, error boundary
 - Componentes shop: StoreCard, ProductCard, CategoryPill, PromoBanner
@@ -148,7 +157,7 @@ src/
 └── middleware.ts
 
 supabase/
-├── migrations/                    8 archivos
+├── migrations/                    13 archivos
 ├── schema.sql                     concatenado
 ├── seed/seed.sql                  5 comercios + 25 productos
 └── config.toml
@@ -236,6 +245,7 @@ pnpm db:seed      # corre seed.sql
 
 ```
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=Vadelivery
 NEXT_PUBLIC_SUPABASE_URL=https://XXX.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
@@ -243,3 +253,19 @@ MP_ACCESS_TOKEN=TEST-...
 MP_PUBLIC_KEY=TEST-...
 MP_WEBHOOK_SECRET=tu_secret
 ```
+
+---
+
+## 👤 Autor
+
+**Juan M.** — Desarrollador full-stack enfocado en producto.
+
+- GitHub: [@Juanmd14](https://github.com/Juanmd14)
+
+Proyecto construido como caso end-to-end: arquitectura, datos, auth, pagos, realtime y UX, manteniendo el stack acotado a herramientas de producción reales.
+
+---
+
+## 📄 Licencia
+
+[MIT](./LICENSE) © 2026 Juan M.
