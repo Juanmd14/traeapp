@@ -159,7 +159,7 @@ export const verifyOtpAction = action
  * ============================================ */
 
 export const resendOtpAction = action
-  .schema(otpSchema.pick({ email: true }))
+  .schema(otpSchema.pick({ email: true, type: true }))
   .action(async ({ parsedInput }) => {
     if (isRateLimited(`resend:${parsedInput.email}`, 3, 15 * 60 * 1000)) {
       throw new Error("Ya enviamos varios códigos. Esperá unos minutos.");
@@ -167,10 +167,18 @@ export const resendOtpAction = action
 
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email: parsedInput.email,
-      options: { shouldCreateUser: false },
-    });
+    // Para signup pendiente (email no confirmado) hay que usar resend({ type: "signup" }).
+    // Para login (email ya confirmado) sirve signInWithOtp.
+    const { error } =
+      parsedInput.type === "signup"
+        ? await supabase.auth.resend({
+            type: "signup",
+            email: parsedInput.email,
+          })
+        : await supabase.auth.signInWithOtp({
+            email: parsedInput.email,
+            options: { shouldCreateUser: false },
+          });
 
     if (error) throw new Error("No se pudo reenviar el código");
 

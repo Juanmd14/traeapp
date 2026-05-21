@@ -82,7 +82,7 @@ export function RegisterForm() {
     if (resendCooldown > 0 || isPending) return;
     setServerError(null);
     startTransition(async () => {
-      const result = await resendOtpAction({ email: pendingEmail });
+      const result = await resendOtpAction({ email: pendingEmail, type: "signup" });
       if (result?.serverError) {
         setServerError(result.serverError);
         return;

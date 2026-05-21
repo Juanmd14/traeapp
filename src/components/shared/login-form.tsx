@@ -121,7 +121,7 @@ export function LoginForm() {
     if (resendCooldown > 0 || isPending) return;
     setServerError(null);
     startTransition(async () => {
-      const result = await resendOtpAction({ email: pendingEmail });
+      const result = await resendOtpAction({ email: pendingEmail, type: "email" });
       if (result?.serverError) {
         setServerError(result.serverError);
         return;
