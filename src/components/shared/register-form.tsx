@@ -105,12 +105,12 @@ export function RegisterForm() {
         </button>
 
         <div>
-          <h1 className="text-heading-xl font-semibold text-neutral-900">
+          <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
             Verificá tu email
           </h1>
-          <p className="text-body-md text-neutral-500 mt-1">
+          <p className="text-body-md text-neutral-500 dark:text-neutral-400 mt-1">
             Mandamos un código de 6 dígitos a{" "}
-            <span className="font-medium text-neutral-900">{pendingEmail}</span>
+            <span className="font-medium text-neutral-900 dark:text-neutral-100">{pendingEmail}</span>
           </p>
         </div>
 
@@ -161,10 +161,10 @@ export function RegisterForm() {
   return (
     <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
       <div>
-        <h1 className="text-heading-xl font-semibold text-neutral-900">
+        <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
           Creá tu cuenta
         </h1>
-        <p className="text-body-md text-neutral-500 mt-1">
+        <p className="text-body-md text-neutral-500 dark:text-neutral-400 mt-1">
           Completá tus datos para registrarte.
         </p>
       </div>
@@ -230,7 +230,7 @@ export function RegisterForm() {
         Crear cuenta
       </Button>
 
-      <p className="text-body-xs text-neutral-500 text-center">
+      <p className="text-body-xs text-neutral-500 dark:text-neutral-400 text-center">
         Al registrarte aceptás los términos y la política de privacidad.
       </p>
     </form>

@@ -156,12 +156,12 @@ export function LoginForm() {
         </button>
 
         <div>
-          <h1 className="text-heading-xl font-semibold text-neutral-900">
+          <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
             Verificá tu email
           </h1>
-          <p className="text-body-md text-neutral-500 mt-1">
+          <p className="text-body-md text-neutral-500 dark:text-neutral-400 mt-1">
             Mandamos un código de 6 dígitos a{" "}
-            <span className="font-medium text-neutral-900">{pendingEmail}</span>
+            <span className="font-medium text-neutral-900 dark:text-neutral-100">{pendingEmail}</span>
           </p>
         </div>
 
