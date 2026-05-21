@@ -180,7 +180,7 @@ export function RegisterForm() {
           type="text"
           autoComplete="name"
           autoFocus
-          placeholder="Juan García"
+          placeholder="Nombre y apellido"
           invalid={!!registerForm.formState.errors.fullName}
           {...registerForm.register("fullName")}
         />
