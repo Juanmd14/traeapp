@@ -15,6 +15,13 @@
 Local delivery marketplace (à la PedidosYa / Rappi) built for a small city.
 Stack: **Next.js 14 (App Router) · Supabase · PostgreSQL · TailwindCSS · TypeScript · Vercel**.
 
+## 🖼️ Screenshots
+
+<p align="center">
+  <img src="./public/home.webp" alt="Home — store listing" width="49%" />
+  <img src="./public/checkout.webp" alt="Checkout — address + payment" width="49%" />
+</p>
+
 ---
 
 ## 🚀 Quick start (15 minutes)
@@ -55,6 +62,12 @@ Then run `supabase/seed/seed.sql` for demo data.
 pnpm db:types
 pnpm dev
 ```
+
+---
+
+## 🧠 Architecture
+
+Design decisions (stack, security, webhook idempotency, realtime, known trade-offs) are documented in [**docs/ARCHITECTURE.md**](./docs/ARCHITECTURE.md).
 
 ---
 
