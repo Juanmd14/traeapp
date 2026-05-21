@@ -32,7 +32,7 @@ export function RegisterForm() {
 
   const otpForm = useForm<OtpInput>({
     resolver: zodResolver(otpSchema),
-    defaultValues: { email: "", token: "" },
+    defaultValues: { email: "", token: "", type: "signup" },
   });
 
   useEffect(() => {

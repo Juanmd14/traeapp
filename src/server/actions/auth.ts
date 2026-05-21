@@ -120,13 +120,8 @@ export const registerAction = action
     if (!data.user) throw new Error("No se pudo crear la cuenta");
 
     // signUp() crea sesión automática cuando "Confirm email" está desactivado
-    // en Supabase. Cerramos sesión y disparamos OTP para forzar verificación.
+    // en Supabase. La cerramos para forzar verificación por OTP siempre.
     await supabase.auth.signOut();
-
-    await supabase.auth.signInWithOtp({
-      email: parsedInput.email,
-      options: { shouldCreateUser: false },
-    });
 
     return { ok: true, email: parsedInput.email };
   });
@@ -148,7 +143,7 @@ export const verifyOtpAction = action
     const { data, error } = await supabase.auth.verifyOtp({
       email: parsedInput.email,
       token: parsedInput.token,
-      type: "email",
+      type: parsedInput.type,
     });
 
     if (error) throw new Error("Código incorrecto o vencido");

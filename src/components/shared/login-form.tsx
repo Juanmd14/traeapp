@@ -51,7 +51,7 @@ export function LoginForm() {
 
   const otpForm = useForm<OtpInput>({
     resolver: zodResolver(otpSchema),
-    defaultValues: { email: "", token: "" },
+    defaultValues: { email: "", token: "", type: "email" },
   });
 
   // Recordar email del último login

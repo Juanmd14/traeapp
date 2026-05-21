@@ -28,6 +28,7 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export const otpSchema = z.object({
   email: emailSchema,
   token: z.string().length(6, "El código tiene 6 dígitos"),
+  type: z.enum(["email", "signup"]).default("email"),
 });
 export type OtpInput = z.infer<typeof otpSchema>;
 
