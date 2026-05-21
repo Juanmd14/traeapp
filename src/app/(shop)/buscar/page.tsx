@@ -81,31 +81,31 @@ products = typedProducts.filter(
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       {!hasQuery ? (
         <div className="text-center py-16">
-          <div className="size-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Search className="size-7 text-neutral-400" />
+          <div className="size-16 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Search className="size-7 text-neutral-400 dark:text-neutral-500" />
           </div>
-          <h1 className="text-heading-xl font-semibold text-neutral-900 mb-2">
+          <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
             ¿Qué estás buscando?
           </h1>
-          <p className="text-body-md text-neutral-500">
+          <p className="text-body-md text-neutral-500 dark:text-neutral-400">
             Buscá comercios o productos por nombre
           </p>
         </div>
       ) : !hasResults ? (
         <div className="text-center py-16">
-          <div className="size-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Search className="size-7 text-neutral-400" />
+          <div className="size-16 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Search className="size-7 text-neutral-400 dark:text-neutral-500" />
           </div>
-          <h1 className="text-heading-xl font-semibold text-neutral-900 mb-2">
+          <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
             Sin resultados para &quot;{q}&quot;
           </h1>
-          <p className="text-body-md text-neutral-500">
+          <p className="text-body-md text-neutral-500 dark:text-neutral-400">
             Probá con otro término o revisá la ortografía
           </p>
         </div>
       ) : (
         <div className="space-y-8">
-          <h1 className="text-heading-xl font-semibold text-neutral-900">
+          <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
             Resultados para{" "}
             <span className="text-primary-600">&quot;{q}&quot;</span>
           </h1>
@@ -113,7 +113,7 @@ products = typedProducts.filter(
           {/* Comercios */}
           {stores.length > 0 && (
             <section>
-              <h2 className="text-heading-md font-semibold text-neutral-800 mb-3">
+              <h2 className="text-heading-md font-semibold text-neutral-800 dark:text-neutral-200 mb-3">
                 Comercios
               </h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -127,13 +127,13 @@ products = typedProducts.filter(
           {/* Productos */}
           {products.length > 0 && (
             <section>
-              <h2 className="text-heading-md font-semibold text-neutral-800 mb-3">
+              <h2 className="text-heading-md font-semibold text-neutral-800 dark:text-neutral-200 mb-3">
                 Productos
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {products.map((product) => (
                   <div key={product.id} className="space-y-1">
-                    <p className="text-body-xs text-neutral-500 truncate px-1">
+                    <p className="text-body-xs text-neutral-500 dark:text-neutral-400 truncate px-1">
                       en{" "}
                       <a
                         href={`/s/${product.stores?.slug}`}

@@ -90,7 +90,7 @@ export function HeroBanner() {
           <h1 className="text-xl sm:text-3xl font-extrabold text-primary-600 leading-tight mb-1">
             Vadelivery
           </h1>
-          <p className="text-xs sm:text-base text-neutral-700 leading-snug font-medium">
+          <p className="text-xs sm:text-base text-neutral-700 dark:text-neutral-300 leading-snug font-medium">
             Pedí lo que quieras, llega rápido a tu puerta
           </p>
         </div>

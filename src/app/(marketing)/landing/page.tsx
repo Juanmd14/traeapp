@@ -102,7 +102,7 @@ export default function LandingPage() {
         {/* Fondo con gradiente sutil */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-white pointer-events-none"
+          className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-white dark:from-primary-900/10 dark:via-neutral-950 dark:to-neutral-950 pointer-events-none"
         />
         <div
           aria-hidden
@@ -110,17 +110,17 @@ export default function LandingPage() {
         />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-16 text-center">
-          <span className="inline-flex items-center gap-1.5 bg-primary-50 text-primary-600 text-body-xs font-semibold px-3 py-1 rounded-full mb-6 border border-primary-100">
+          <span className="inline-flex items-center gap-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-300 text-body-xs font-semibold px-3 py-1 rounded-full mb-6 border border-primary-100 dark:border-primary-800/40">
             <span className="size-1.5 rounded-full bg-primary-500 animate-pulse" />
             Delivery en tu ciudad
           </span>
 
-          <h1 className="text-display-lg sm:text-[3.5rem] sm:leading-[4rem] font-bold text-neutral-900 tracking-tight mb-6 max-w-3xl mx-auto">
+          <h1 className="text-display-lg sm:text-[3.5rem] sm:leading-[4rem] font-bold text-neutral-900 dark:text-neutral-100 tracking-tight mb-6 max-w-3xl mx-auto">
             Pedí lo que querés,{" "}
             <span className="text-primary">llega rápido</span>
           </h1>
 
-          <p className="text-body-lg text-neutral-500 max-w-xl mx-auto mb-10">
+          <p className="text-body-lg text-neutral-500 dark:text-neutral-400 max-w-xl mx-auto mb-10">
             Conectamos los mejores comercios de tu ciudad con repartidores de confianza.
             Seguí tu pedido en tiempo real, desde la cocina hasta tu puerta.
           </p>
@@ -134,7 +134,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/comercio/onboarding"
-              className="w-full sm:w-auto bg-white text-neutral-800 font-semibold px-8 py-4 rounded-xl text-body-lg border border-neutral-200 hover:border-neutral-400 transition"
+              className="w-full sm:w-auto bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 font-semibold px-8 py-4 rounded-xl text-body-lg border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 transition"
             >
               Sumar mi comercio
             </Link>
@@ -143,12 +143,12 @@ export default function LandingPage() {
           {/* Métricas de trayectoria */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto">
             {metrics.map((m) => (
-              <div key={m.label} className="bg-white/80 backdrop-blur rounded-xl border border-neutral-200 py-4 px-3">
-                <p className="text-heading-xl font-bold text-neutral-900 flex items-center justify-center gap-1">
+              <div key={m.label} className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur rounded-xl border border-neutral-200 dark:border-neutral-700 py-4 px-3">
+                <p className="text-heading-xl font-bold text-neutral-900 dark:text-neutral-100 flex items-center justify-center gap-1">
                   {m.value}
                   {m.star && <Star className="size-5 text-warning fill-warning" />}
                 </p>
-                <p className="text-body-xs text-neutral-500 mt-0.5">{m.label}</p>
+                <p className="text-body-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{m.label}</p>
               </div>
             ))}
           </div>
@@ -159,10 +159,10 @@ export default function LandingPage() {
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-display-md font-bold text-neutral-900 mb-3">
+            <h2 className="text-display-md font-bold text-neutral-900 dark:text-neutral-100 mb-3">
               Tres pasos, sin complicaciones
             </h2>
-            <p className="text-body-lg text-neutral-500 max-w-lg mx-auto">
+            <p className="text-body-lg text-neutral-500 dark:text-neutral-400 max-w-lg mx-auto">
               De querer algo a tenerlo en casa, en minutos.
             </p>
           </div>
@@ -171,23 +171,23 @@ export default function LandingPage() {
             {/* Línea conectora (solo desktop) */}
             <div
               aria-hidden
-              className="hidden sm:block absolute top-9 left-[22%] right-[22%] h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent"
+              className="hidden sm:block absolute top-9 left-[22%] right-[22%] h-px bg-gradient-to-r from-transparent via-neutral-200 dark:via-neutral-700 to-transparent"
             />
 
             {steps.map((step) => (
               <div key={step.number} className="relative flex flex-col items-center text-center">
                 <div className="relative mb-5">
-                  <div className="size-16 rounded-2xl bg-primary-50 border-2 border-primary-100 flex items-center justify-center text-2xl">
+                  <div className="size-16 rounded-2xl bg-primary-50 dark:bg-primary-900/20 border-2 border-primary-100 dark:border-primary-800/40 flex items-center justify-center text-2xl">
                     {step.emoji}
                   </div>
                   <span className="absolute -top-2 -right-2 bg-primary text-white text-label font-bold w-6 h-6 rounded-full flex items-center justify-center text-[10px]">
                     {step.number}
                   </span>
                 </div>
-                <h3 className="text-heading-md font-semibold text-neutral-900 mb-2">
+                <h3 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
                   {step.title}
                 </h3>
-                <p className="text-body-md text-neutral-500 max-w-xs">{step.desc}</p>
+                <p className="text-body-md text-neutral-500 dark:text-neutral-400 max-w-xs">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -195,13 +195,13 @@ export default function LandingPage() {
       </section>
 
       {/* ── Features ──────────────────────────────────────────────────────── */}
-      <section className="bg-neutral-50 border-y border-neutral-100 py-20">
+      <section className="bg-neutral-50 dark:bg-neutral-950 border-y border-neutral-100 dark:border-neutral-800 py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-display-md font-bold text-neutral-900 mb-3">
+            <h2 className="text-display-md font-bold text-neutral-900 dark:text-neutral-100 mb-3">
               Todo lo que necesitás
             </h2>
-            <p className="text-body-lg text-neutral-500 max-w-lg mx-auto">
+            <p className="text-body-lg text-neutral-500 dark:text-neutral-400 max-w-lg mx-auto">
               Una plataforma completa para clientes, comercios y repartidores.
             </p>
           </div>
@@ -212,15 +212,15 @@ export default function LandingPage() {
               return (
                 <div
                   key={f.title}
-                  className="bg-white rounded-2xl p-6 border border-neutral-200 hover:shadow-card hover:border-neutral-300 transition group"
+                  className="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200 dark:border-neutral-700 hover:shadow-card hover:border-neutral-300 dark:hover:border-neutral-600 transition group"
                 >
-                  <div className="size-11 rounded-xl bg-primary-50 flex items-center justify-center mb-4 group-hover:bg-primary-100 transition">
+                  <div className="size-11 rounded-xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center mb-4 group-hover:bg-primary-100 dark:group-hover:bg-primary-900/30 transition">
                     <Icon className="size-5 text-primary" />
                   </div>
-                  <h3 className="text-heading-md font-semibold text-neutral-900 mb-1.5">
+                  <h3 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100 mb-1.5">
                     {f.title}
                   </h3>
-                  <p className="text-body-md text-neutral-500">{f.desc}</p>
+                  <p className="text-body-md text-neutral-500 dark:text-neutral-400">{f.desc}</p>
                 </div>
               );
             })}
@@ -232,10 +232,10 @@ export default function LandingPage() {
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-display-md font-bold text-neutral-900 mb-3">
+            <h2 className="text-display-md font-bold text-neutral-900 dark:text-neutral-100 mb-3">
               Lo que dicen los usuarios
             </h2>
-            <p className="text-body-lg text-neutral-500">
+            <p className="text-body-lg text-neutral-500 dark:text-neutral-400">
               Clientes, comercios y repartidores hablan por nosotros.
             </p>
           </div>
@@ -244,19 +244,19 @@ export default function LandingPage() {
             {testimonials.map((t) => (
               <div
                 key={t.name}
-                className="bg-white rounded-2xl p-6 border border-neutral-200 shadow-card"
+                className="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-card"
               >
                 <div className="flex gap-0.5 mb-4">
                   {Array.from({ length: t.rating }).map((_, i) => (
                     <Star key={i} className="size-4 fill-warning text-warning" />
                   ))}
                 </div>
-                <p className="text-body-md text-neutral-700 mb-5 leading-relaxed">
+                <p className="text-body-md text-neutral-700 dark:text-neutral-300 mb-5 leading-relaxed">
                   &ldquo;{t.text}&rdquo;
                 </p>
                 <div>
-                  <p className="text-body-sm font-semibold text-neutral-900">{t.name}</p>
-                  <p className="text-body-xs text-neutral-400">{t.role}</p>
+                  <p className="text-body-sm font-semibold text-neutral-900 dark:text-neutral-100">{t.name}</p>
+                  <p className="text-body-xs text-neutral-400 dark:text-neutral-500">{t.role}</p>
                 </div>
               </div>
             ))}

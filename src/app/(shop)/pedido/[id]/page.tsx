@@ -116,41 +116,41 @@ export default async function OrderPage({
     <div className="container-shop py-4 pb-24">
       <Link
         href="/"
-        className="inline-flex items-center gap-1 text-body-sm text-neutral-500 hover:text-neutral-900 mb-3"
+        className="inline-flex items-center gap-1 text-body-sm text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 mb-3"
       >
         <ChevronLeft className="size-4" />
         Volver
       </Link>
 
       <header className="mb-5">
-        <p className="text-body-xs text-neutral-500 uppercase tracking-wider">
+        <p className="text-body-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
           Pedido #{order.order_number}
         </p>
 
-        <h1 className="text-heading-xl font-semibold text-neutral-900">
+        <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
           {store?.name}
         </h1>
       </header>
 
       {searchParams.status === "success" && (
-        <div className="bg-accent-50 border border-accent-200 rounded-md p-3 mb-4">
-          <p className="text-body-md font-medium text-accent-900">
+        <div className="bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800/40 rounded-md p-3 mb-4">
+          <p className="text-body-md font-medium text-accent-900 dark:text-accent-200">
             ¡Pago aprobado! 🎉
           </p>
 
-          <p className="text-body-sm text-accent-700 mt-0.5">
+          <p className="text-body-sm text-accent-700 dark:text-accent-300 mt-0.5">
             El comercio ya recibió tu pedido.
           </p>
         </div>
       )}
 
       {searchParams.status === "pending" && (
-        <div className="bg-warning-50 border border-warning-200 rounded-md p-3 mb-4">
-          <p className="text-body-md font-medium text-warning-900">
+        <div className="bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800/40 rounded-md p-3 mb-4">
+          <p className="text-body-md font-medium text-warning-900 dark:text-warning-200">
             Pago pendiente
           </p>
 
-          <p className="text-body-sm text-warning-700 mt-0.5">
+          <p className="text-body-sm text-warning-700 dark:text-warning-300 mt-0.5">
             Estamos esperando confirmación de Mercado Pago.
           </p>
         </div>
@@ -192,21 +192,21 @@ export default async function OrderPage({
       />
 
       {/* Dirección */}
-      <section className="bg-white rounded-md border border-neutral-200 p-4 mb-3">
-        <p className="text-body-xs text-neutral-500 uppercase tracking-wider mb-1.5">
+      <section className="bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 p-4 mb-3">
+        <p className="text-body-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">
           Entrega
         </p>
 
         <div className="flex items-start gap-2">
-          <MapPin className="size-4 text-neutral-400 mt-0.5 shrink-0" />
+          <MapPin className="size-4 text-neutral-400 dark:text-neutral-500 mt-0.5 shrink-0" />
 
           <div>
-            <p className="text-body-md text-neutral-900">
+            <p className="text-body-md text-neutral-900 dark:text-neutral-100">
               {order.delivery_address_text}
             </p>
 
             {order.customer_notes && (
-              <p className="text-body-sm text-neutral-500 mt-1">
+              <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mt-1">
                 Nota: {order.customer_notes}
               </p>
             )}
@@ -218,25 +218,25 @@ export default async function OrderPage({
       {store?.phone && (
         <a
           href={`tel:${store.phone}`}
-          className="flex items-center justify-between bg-white rounded-md border border-neutral-200 p-4 mb-3 hover:bg-neutral-50 transition"
+          className="flex items-center justify-between bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 p-4 mb-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition"
         >
           <div className="flex items-center gap-2">
-            <Phone className="size-4 text-neutral-500" />
+            <Phone className="size-4 text-neutral-500 dark:text-neutral-400" />
 
-            <span className="text-body-md text-neutral-900">
+            <span className="text-body-md text-neutral-900 dark:text-neutral-100">
               Llamar al comercio
             </span>
           </div>
 
-          <span className="text-body-sm text-neutral-500">
+          <span className="text-body-sm text-neutral-500 dark:text-neutral-400">
             {store.phone}
           </span>
         </a>
       )}
 
       {/* Detalle */}
-      <section className="bg-white rounded-md border border-neutral-200 p-4 mb-3">
-        <p className="text-body-xs text-neutral-500 uppercase tracking-wider mb-2">
+      <section className="bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-700 p-4 mb-3">
+        <p className="text-body-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-2">
           Detalle del pedido
         </p>
 
@@ -246,31 +246,31 @@ export default async function OrderPage({
               key={it.id}
               className="flex justify-between text-body-md"
             >
-              <span className="text-neutral-700">
+              <span className="text-neutral-700 dark:text-neutral-300">
                 <span className="font-medium">{it.quantity}×</span>{" "}
                 {it.product_name}
               </span>
 
-              <span className="text-neutral-900">
+              <span className="text-neutral-900 dark:text-neutral-100">
                 {formatPrice(it.total)}
               </span>
             </li>
           ))}
         </ul>
 
-        <div className="border-t border-neutral-200 mt-3 pt-3 space-y-1.5">
+        <div className="border-t border-neutral-200 dark:border-neutral-700 mt-3 pt-3 space-y-1.5">
           <div className="flex justify-between text-body-sm">
-            <span className="text-neutral-500">Subtotal</span>
+            <span className="text-neutral-500 dark:text-neutral-400">Subtotal</span>
 
-            <span className="text-neutral-700">
+            <span className="text-neutral-700 dark:text-neutral-300">
               {formatPrice(order.subtotal)}
             </span>
           </div>
 
           <div className="flex justify-between text-body-sm">
-            <span className="text-neutral-500">Envío</span>
+            <span className="text-neutral-500 dark:text-neutral-400">Envío</span>
 
-            <span className="text-neutral-700">
+            <span className="text-neutral-700 dark:text-neutral-300">
               {Number(order.delivery_fee) === 0
                 ? "Gratis"
                 : formatPrice(order.delivery_fee)}
@@ -279,21 +279,21 @@ export default async function OrderPage({
 
           {Number(order.discount) > 0 && (
             <div className="flex justify-between text-body-sm">
-              <span className="text-neutral-500">Descuento</span>
+              <span className="text-neutral-500 dark:text-neutral-400">Descuento</span>
 
-              <span className="text-accent-600">
+              <span className="text-accent-600 dark:text-accent-400">
                 - {formatPrice(order.discount)}
               </span>
             </div>
           )}
 
-          <div className="flex justify-between text-heading-sm font-semibold pt-1.5 border-t border-neutral-100">
+          <div className="flex justify-between text-heading-sm font-semibold pt-1.5 border-t border-neutral-100 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100">
             <span>Total</span>
 
             <span>{formatPrice(order.total)}</span>
           </div>
 
-          <p className="text-body-xs text-neutral-500 pt-1">
+          <p className="text-body-xs text-neutral-500 dark:text-neutral-400 pt-1">
             {order.payment_method === "cash"
               ? "Pagás en efectivo al recibir"
               : "Pagado con Mercado Pago"}

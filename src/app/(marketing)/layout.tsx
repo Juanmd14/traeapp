@@ -7,8 +7,8 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-white">
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-neutral-100">
+    <div className="min-h-screen bg-white dark:bg-neutral-950">
+      <header className="sticky top-0 z-40 bg-white/90 dark:bg-neutral-900/90 backdrop-blur border-b border-neutral-100 dark:border-neutral-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/">
             <Image
@@ -22,7 +22,7 @@ export default function MarketingLayout({
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="text-body-sm text-neutral-600 hover:text-neutral-900 font-medium transition"
+              className="text-body-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-100 font-medium transition"
             >
               Iniciar sesión
             </Link>
@@ -36,7 +36,7 @@ export default function MarketingLayout({
         </div>
       </header>
       {children}
-      <footer className="border-t border-neutral-100 py-8 text-center text-body-sm text-neutral-400">
+      <footer className="border-t border-neutral-100 dark:border-neutral-800 py-8 text-center text-body-sm text-neutral-400 dark:text-neutral-500">
         © {new Date().getFullYear()} Vadelivery · Todos los derechos reservados
       </footer>
     </div>

@@ -113,8 +113,8 @@ export default async function HomePage() {
       )}
 
       {mappedStores.length === 0 && (
-        <div className="bg-white rounded-xl p-8 text-center">
-          <p className="text-body-md text-neutral-500">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl p-8 text-center">
+          <p className="text-body-md text-neutral-500 dark:text-neutral-400">
             Pronto vamos a tener comercios en tu zona.
           </p>
         </div>
