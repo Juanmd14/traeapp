@@ -98,7 +98,7 @@ export function RegisterForm() {
         <button
           type="button"
           onClick={() => { setStage("register"); setServerError(null); }}
-          className="flex items-center gap-1 text-body-sm text-neutral-500 hover:text-neutral-900 transition"
+          className="flex items-center gap-1 text-body-sm text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition"
         >
           <ArrowLeft className="size-4" />
           Volver

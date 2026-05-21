@@ -149,7 +149,7 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => { setStage("login"); setServerError(null); }}
-          className="flex items-center gap-1 text-body-sm text-neutral-500 hover:text-neutral-900 transition"
+          className="flex items-center gap-1 text-body-sm text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition"
         >
           <ArrowLeft className="size-4" />
           Volver
@@ -212,10 +212,10 @@ export function LoginForm() {
   return (
     <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
       <div>
-        <h1 className="text-heading-xl font-semibold text-neutral-900">
+        <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
           Ingresá a tu cuenta
         </h1>
-        <p className="text-body-md text-neutral-500 mt-1">
+        <p className="text-body-md text-neutral-500 dark:text-neutral-400 mt-1">
           Usá tu email y contraseña para entrar.
         </p>
       </div>
@@ -268,7 +268,7 @@ export function LoginForm() {
       {/* Separador */}
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-neutral-200 dark:bg-neutral-700" />
-        <span className="text-body-xs text-neutral-400">o continuá con</span>
+        <span className="text-body-xs text-neutral-400 dark:text-neutral-500">o continuá con</span>
         <div className="flex-1 h-px bg-neutral-200 dark:bg-neutral-700" />
       </div>
 
@@ -286,7 +286,7 @@ export function LoginForm() {
         Continuar con Google
       </button>
 
-      <p className="text-body-xs text-neutral-500 text-center">
+      <p className="text-body-xs text-neutral-500 dark:text-neutral-400 text-center">
         Al continuar aceptás los términos y la política de privacidad.
       </p>
     </form>
