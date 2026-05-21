@@ -120,6 +120,15 @@ export const registerAction = action
 
     if (!data.user) throw new Error("No se pudo crear la cuenta");
 
+    // signUp() crea sesión automática cuando "Confirm email" está desactivado
+    // en Supabase. Cerramos sesión y disparamos OTP para forzar verificación.
+    await supabase.auth.signOut();
+
+    await supabase.auth.signInWithOtp({
+      email: parsedInput.email,
+      options: { shouldCreateUser: false },
+    });
+
     return { ok: true, email: parsedInput.email };
   });
 

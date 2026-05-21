@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,12 +35,11 @@ export function RegisterForm() {
     defaultValues: { email: "", token: "" },
   });
 
-  // Countdown reenvío
-  useState(() => {
+  useEffect(() => {
     if (resendCooldown <= 0) return;
     const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
-  });
+  }, [resendCooldown]);
 
   const onRegisterSubmit = (data: RegisterInput) => {
     setServerError(null);
