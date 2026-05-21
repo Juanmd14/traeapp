@@ -193,7 +193,7 @@ export function ProductsManager({ storeId, initial }: Props) {
       ) : filtered.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-body-md text-neutral-500">
-            Sin resultados para "{search}"
+            Sin resultados para &quot;{search}&quot;
           </p>
           <button
             onClick={() => { setSearch(""); setFilter("all"); }}

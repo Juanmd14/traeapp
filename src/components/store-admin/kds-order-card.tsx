@@ -278,7 +278,7 @@ export function KdsOrderCard({ order, items, variant }: Props) {
                   <span className="text-neutral-700 dark:text-neutral-300">{item.product_name}</span>
                 </div>
                 {item.notes && (
-                  <span className="text-body-xs text-amber-600 dark:text-amber-400 italic">"{item.notes}"</span>
+                  <span className="text-body-xs text-amber-600 dark:text-amber-400 italic">&quot;{item.notes}&quot;</span>
                 )}
               </div>
             ))}

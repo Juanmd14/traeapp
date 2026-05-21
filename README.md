@@ -1,5 +1,6 @@
 # Vadelivery
 
+[![CI](https://github.com/Juanmd14/vadelivery/actions/workflows/ci.yml/badge.svg)](https://github.com/Juanmd14/vadelivery/actions/workflows/ci.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20RLS-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
@@ -8,6 +9,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 🇪🇸 **Español** · [🇺🇸 English](./README.en.md)
+
+> 🌐 **Demo en vivo**: [vadelivery.vercel.app](https://vadelivery.vercel.app)
 
 Plataforma de delivery local tipo PedidosYa/Rappi para una ciudad pequeña.
 Stack: **Next.js 14 (App Router) · Supabase · PostgreSQL · TailwindCSS · TypeScript · Vercel**.

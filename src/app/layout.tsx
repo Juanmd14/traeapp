@@ -6,12 +6,31 @@ import { ThemeProvider } from "@/components/shared/theme-provider";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://vadelivery.vercel.app"
+  ),
   title: {
     default: "Vadelivery — Pedí lo que quieras, llega rápido",
     template: "%s · Vadelivery",
   },
-  description: "El delivery de tu ciudad. Comercios locales, repartidores propios.",
+  description:
+    "El delivery de tu ciudad. Comercios locales, repartidores propios.",
   manifest: "/manifest.json",
+  openGraph: {
+    type: "website",
+    locale: "es_AR",
+    url: "/",
+    siteName: "Vadelivery",
+    title: "Vadelivery — Marketplace de delivery local",
+    description:
+      "Auth OTP, RLS en Postgres, pagos con webhook firmado y tracking realtime. Next.js 14 + Supabase + Mercado Pago.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vadelivery — Marketplace de delivery local",
+    description:
+      "Next.js 14 + Supabase + Mercado Pago. Pagos con webhook firmado y tracking realtime.",
+  },
 };
 
 export const viewport: Viewport = {

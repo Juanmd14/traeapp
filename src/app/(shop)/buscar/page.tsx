@@ -97,7 +97,7 @@ products = typedProducts.filter(
             <Search className="size-7 text-neutral-400" />
           </div>
           <h1 className="text-heading-xl font-semibold text-neutral-900 mb-2">
-            Sin resultados para "{q}"
+            Sin resultados para &quot;{q}&quot;
           </h1>
           <p className="text-body-md text-neutral-500">
             Probá con otro término o revisá la ortografía
@@ -107,7 +107,7 @@ products = typedProducts.filter(
         <div className="space-y-8">
           <h1 className="text-heading-xl font-semibold text-neutral-900">
             Resultados para{" "}
-            <span className="text-primary-600">"{q}"</span>
+            <span className="text-primary-600">&quot;{q}&quot;</span>
           </h1>
 
           {/* Comercios */}

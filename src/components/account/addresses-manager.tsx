@@ -208,7 +208,7 @@ function AddressCard({
           )}
           {address.reference && (
             <p className="text-body-xs text-neutral-500 mt-1 italic">
-              "{address.reference}"
+              &quot;{address.reference}&quot;
             </p>
           )}
 
