@@ -18,8 +18,9 @@ Stack: **Next.js 14 (App Router) · Supabase · PostgreSQL · TailwindCSS · Typ
 ## 🖼️ Screenshots
 
 <p align="center">
-  <img src="./public/home.webp" alt="Home — store listing" width="49%" />
-  <img src="./public/checkout.webp" alt="Checkout — address + payment" width="49%" />
+  <img src="./public/home.webp" alt="Home — store listing" width="32%" />
+  <img src="./public/checkout.webp" alt="Checkout — address + payment" width="32%" />
+  <img src="./public/tracking.webp" alt="Live order tracking" width="32%" />
 </p>
 
 ---
