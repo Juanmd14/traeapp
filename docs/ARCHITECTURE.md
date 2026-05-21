@@ -38,6 +38,8 @@ Decidí **no** usar password porque:
 - Onboarding más simple para usuarios no técnicos del público objetivo
 - Supabase Auth ya implementa rate-limiting y rotación de tokens
 
+**SMTP — limitación conocida.** El envío del OTP va por Brevo SMTP sobre un subdominio compartido (`vadelivery2026@<id>.brevosend.com`). Funciona y entrega correctamente, pero el "From" visible no es un dominio propio. En producción real, comprar un dominio + configurar DKIM/SPF/DMARC en Brevo deja el sender como `noreply@vadelivery.com` y mejora entregabilidad (evita el greylisting que Gmail aplica a senders nuevos sin firma de dominio).
+
 ---
 
 ## 3. Order pricing: el cliente no puede mentir

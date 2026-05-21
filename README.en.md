@@ -89,6 +89,7 @@ Design decisions (stack, security, webhook idempotency, realtime, known trade-of
 - 5-step store onboarding: data → address → operation → products → publish
 - Panel layout with sidebar (desktop) + bottom nav (mobile)
 - Server Actions: stores, products
+- OTP delivery via Brevo SMTP (shared subdomain `brevosend.com`; with a custom domain + DKIM the sender would be `noreply@<domain>` — details in [ARCHITECTURE.md](./docs/ARCHITECTURE.md))
 
 ### Block 3 — Cart
 - Zustand store persisted in localStorage

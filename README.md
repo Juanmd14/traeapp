@@ -89,6 +89,7 @@ Las decisiones de diseño (stack, seguridad, idempotencia de webhooks, realtime,
 - Onboarding del comercio en 5 pasos: datos → dirección → operación → productos → publicar
 - Layout panel con sidebar (desktop) + bottom nav (móvil)
 - Server Actions: stores, products
+- Envío de OTP por Brevo SMTP (subdominio compartido `brevosend.com`; con dominio propio + DKIM el sender quedaría como `noreply@<dominio>` — detalle en [ARCHITECTURE.md](./docs/ARCHITECTURE.md))
 
 ### Bloque 3 — Carrito
 - Zustand store persistido en localStorage
