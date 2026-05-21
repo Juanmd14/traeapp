@@ -106,7 +106,6 @@ export const registerAction = action
       password: parsedInput.password,
       options: {
         data: { full_name: parsedInput.fullName },
-        // Supabase manda email de verificación con OTP de 8 dígitos
         emailRedirectTo: undefined,
       },
     });
@@ -133,7 +132,7 @@ export const registerAction = action
   });
 
 /* ============================================
- * VERIFICAR OTP de 8 dígitos
+ * VERIFICAR OTP de 6 dígitos
  * Límite: 5 intentos por email cada 30 minutos
  * ============================================ */
 

@@ -160,7 +160,7 @@ export function LoginForm() {
             Verificá tu email
           </h1>
           <p className="text-body-md text-neutral-500 mt-1">
-            Mandamos un código de 8 dígitos a{" "}
+            Mandamos un código de 6 dígitos a{" "}
             <span className="font-medium text-neutral-900">{pendingEmail}</span>
           </p>
         </div>
@@ -175,9 +175,9 @@ export function LoginForm() {
             id="token"
             inputMode="numeric"
             autoComplete="one-time-code"
-            maxLength={8}
+            maxLength={6}
             autoFocus
-            placeholder="12345678"
+            placeholder="123456"
             className="text-center text-heading-lg tracking-widest font-medium"
             invalid={!!otpForm.formState.errors.token}
             {...otpForm.register("token")}
