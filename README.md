@@ -101,7 +101,7 @@ Las decisiones de diseño (stack, seguridad, idempotencia de webhooks, realtime,
 - **createOrderAction**: crea pedido validando productos reales (no confía en cliente)
 - **CheckoutForm**: dirección + método pago + notas, en una pantalla
 - **Mercado Pago Service**: crea preferencia, mapea status MP → enum interno
-- **Webhook MP**: route handler en `/api/webhooks/mercadopago` con verificación HMAC-SHA256
+- **Webhook MP**: route handler en `/api/webhooks/mercadopago` que re-consulta el pago a MP y aplica la actualización vía RPC idempotente (verificación HMAC pendiente — detalle en [ARCHITECTURE.md](./docs/ARCHITECTURE.md))
 - **RPC `apply_payment_webhook`**: idempotente, actualiza pago + orden + crea delivery
 - **OrderTracker**: stepper visual de 5 pasos con animaciones
 - **useOrderRealtime**: hook que suscribe a cambios de orden vía Supabase Realtime
@@ -195,8 +195,7 @@ supabase/
    - Redirige al `init_point`
    - Cliente paga en MP
    - Webhook `/api/webhooks/mercadopago` recibe notificación
-   - Verifica firma HMAC-SHA256
-   - `getPayment(id)` para confirmar
+   - `getPayment(id)` contra MP para confirmar el pago (HMAC pendiente)
    - Llama RPC `apply_payment_webhook` (idempotente):
      - Upsert en `payments` por `mp_payment_id`
      - Si `approved` → `orders.payment_status='approved'`, `status='confirmed'`, crea fila `deliveries`
@@ -252,7 +251,6 @@ pnpm db:seed      # corre seed.sql
 
 - **Sandbox**: usar credenciales TEST y la cuenta de comprador de test (creada en MP Developers).
 - **Webhook local**: `ngrok http 3000` y pegar la URL HTTPS en MP → Webhooks.
-- **Verificar firma**: `console.log` en el route handler con `expected` vs `v1` del header.
 - **Idempotencia**: borrar `payments` con el mismo `mp_payment_id` para reproducir.
 
 ---

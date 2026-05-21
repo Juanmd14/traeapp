@@ -101,7 +101,7 @@ Design decisions (stack, security, webhook idempotency, realtime, known trade-of
 - **createOrderAction**: creates the order using real product prices (does not trust the client)
 - **CheckoutForm**: address + payment method + notes, single screen
 - **Mercado Pago Service**: creates preference, maps MP status → internal enum
-- **MP Webhook**: route handler at `/api/webhooks/mercadopago` with HMAC-SHA256 verification
+- **MP Webhook**: route handler at `/api/webhooks/mercadopago` that re-queries the payment from MP and applies the update via an idempotent RPC (HMAC verification pending — details in [ARCHITECTURE.md](./docs/ARCHITECTURE.md))
 - **RPC `apply_payment_webhook`**: idempotent — updates payment + order + creates delivery
 - **OrderTracker**: 5-step visual stepper with animations
 - **useOrderRealtime**: hook subscribed to order changes via Supabase Realtime
@@ -195,8 +195,7 @@ supabase/
    - Redirects to `init_point`
    - Customer pays in MP
    - Webhook `/api/webhooks/mercadopago` receives the notification
-   - Verifies HMAC-SHA256 signature
-   - `getPayment(id)` to confirm
+   - `getPayment(id)` against MP to confirm the payment (HMAC pending)
    - Calls RPC `apply_payment_webhook` (idempotent):
      - Upsert in `payments` by `mp_payment_id`
      - If `approved` → `orders.payment_status='approved'`, `status='confirmed'`, creates a `deliveries` row
@@ -252,7 +251,6 @@ pnpm db:seed      # runs seed.sql
 
 - **Sandbox**: use TEST credentials and the test buyer account (created in MP Developers).
 - **Local webhook**: `ngrok http 3000` and paste the HTTPS URL in MP → Webhooks.
-- **Verify signature**: `console.log` in the route handler comparing `expected` vs the `v1` header.
 - **Idempotency**: delete `payments` rows with the same `mp_payment_id` to reproduce.
 
 ---
