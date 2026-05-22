@@ -21,6 +21,7 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-geist-mono)", "ui-monospace", "monospace"],
+        display: ["var(--font-jakarta)", "var(--font-geist-sans)", "sans-serif"],
       },
       colors: {
         // === MARCA ===
@@ -30,12 +31,12 @@ const config: Config = {
           200: "#FFC2BB",
           300: "#FF9B8F",
           400: "#FF7565",
-          500: "#FF4D3A", // brand
-          600: "#E63823", // CTA default
-          700: "#C42A18",
-          800: "#9F2114",
-          900: "#7A1A10",
-          DEFAULT: "#E63823",
+          500: "#FF4D29", // brand — coral oficial
+          600: "#C8351A", // CTA default — coral-dark oficial
+          700: "#A82A14",
+          800: "#852010",
+          900: "#5F170C",
+          DEFAULT: "#C8351A",
           foreground: "#FFFFFF",
         },
         accent: {
@@ -57,13 +58,13 @@ const config: Config = {
           100: "#FEF3C7",
           200: "#FDE68A",
           300: "#FCD34D",
-          400: "#FBBF24",
+          400: "#FFB627", // yellow oficial
           500: "#F59E0B",
           600: "#D97706",
           700: "#B45309",
           800: "#92400E",
           900: "#78350F",
-          DEFAULT: "#F59E0B",
+          DEFAULT: "#FFB627",
         },
         // === NEUTROS CÁLIDOS (stone) ===
         neutral: {
@@ -103,6 +104,9 @@ const config: Config = {
         },
         success: "#16A34A",
         info: "#2563EB",
+        // === Brand tokens semánticos (paleta oficial) ===
+        "brand-carbon": "#1A1614",
+        "brand-cream": "#FAF7F5",
       },
       fontSize: {
         // [size, lineHeight]
