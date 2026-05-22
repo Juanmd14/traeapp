@@ -23,13 +23,13 @@ export const metadata: Metadata = {
     siteName: "Vadelivery",
     title: "Vadelivery — Marketplace de delivery local",
     description:
-      "Auth OTP, RLS en Postgres, pagos con webhook firmado y tracking realtime. Next.js 14 + Supabase + Mercado Pago.",
+      "Auth OTP, RLS en Postgres, checkout con Mercado Pago y tracking realtime. Next.js + Supabase + Mercado Pago.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Vadelivery — Marketplace de delivery local",
     description:
-      "Next.js 14 + Supabase + Mercado Pago. Pagos con webhook firmado y tracking realtime.",
+      "Next.js + Supabase + Mercado Pago. Checkout integrado y tracking realtime.",
   },
 };
 

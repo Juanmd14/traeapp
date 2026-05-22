@@ -8,7 +8,7 @@ Documento corto sobre **por qué** las decisiones técnicas, no qué hace cada p
 
 | Necesidad | Elección | Por qué |
 |---|---|---|
-| Frontend + SSR + API en un proceso | **Next.js 14 App Router** | Server Components reducen JS al cliente; Server Actions evitan armar una capa REST/GraphQL para mutaciones internas. |
+| Frontend + SSR + API en un proceso | **Next.js App Router** | Server Components reducen JS al cliente; Server Actions evitan armar una capa REST/GraphQL para mutaciones internas. |
 | Postgres + Auth + Realtime + Storage | **Supabase** | Es Postgres real (no una abstracción propia). Puedo escribir SQL plano y migrar a un Postgres propio si crece. |
 | Pagos en Argentina | **Mercado Pago** | Es la única opción realista para el mercado objetivo (PYMEs de ciudad chica). |
 | Hosting | **Vercel** | Adyacente a Next, edge runtime para webhooks y OG image. |

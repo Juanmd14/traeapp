@@ -77,7 +77,7 @@ export default function OpengraphImage() {
             fontWeight: 600,
           }}
         >
-          {["Next.js 14", "Supabase", "Mercado Pago", "TypeScript"].map(
+          {["Next.js", "Supabase", "Mercado Pago", "TypeScript"].map(
             (label) => (
               <div
                 key={label}

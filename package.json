@@ -2,7 +2,7 @@
   "name": "delivery-platform",
   "version": "0.1.0",
   "private": true,
-  "description": "Local-first delivery marketplace — Next.js 14 App Router, Supabase (Postgres + RLS + Realtime), and Mercado Pago checkout with HMAC-verified webhooks.",
+  "description": "Local-first delivery marketplace — Next.js App Router, Supabase (Postgres + RLS + Realtime), and Mercado Pago checkout with idempotent webhooks.",
   "author": "Juan M. (https://github.com/Juanmd14)",
   "license": "MIT",
   "homepage": "https://github.com/Juanmd14/vadelivery#readme",
