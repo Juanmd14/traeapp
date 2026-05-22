@@ -29,8 +29,8 @@ type Props = {
 export function OrderTracker({ status }: Props) {
   if (status === "cancelled" || status === "rejected") {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-        <p className="text-heading-sm font-semibold text-red-900">
+      <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 rounded-lg p-4 text-center">
+        <p className="text-heading-sm font-semibold text-red-900 dark:text-red-200">
           {status === "cancelled" ? "Pedido cancelado" : "Pedido rechazado"}
         </p>
       </div>

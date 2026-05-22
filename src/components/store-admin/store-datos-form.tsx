@@ -206,7 +206,7 @@ export function StoreDatosForm({ storeId, initial }: Props) {
           </FormField>
 
           {serverErrorProfile && (
-            <p className="text-body-sm text-destructive bg-red-50 px-3 py-2 rounded-md">
+            <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">
               {serverErrorProfile}
             </p>
           )}
@@ -264,7 +264,7 @@ export function StoreDatosForm({ storeId, initial }: Props) {
           </FormField>
 
           {serverErrorAddress && (
-            <p className="text-body-sm text-destructive bg-red-50 px-3 py-2 rounded-md">
+            <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">
               {serverErrorAddress}
             </p>
           )}

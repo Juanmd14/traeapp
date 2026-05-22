@@ -116,7 +116,7 @@ export function StoreHoursForm({ storeId, initial }: Props) {
       </div>
 
       {error && (
-        <p className="text-body-sm text-destructive bg-red-50 px-3 py-2 rounded-md">
+        <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">
           {error}
         </p>
       )}
