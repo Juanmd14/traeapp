@@ -37,8 +37,7 @@ export function CategoryPill({ category }: { category: Category }) {
           "size-12 sm:size-14 rounded-full flex items-center justify-center transition border",
           "hover:scale-105 active:scale-95",
           category.bgClass,
-          // En dark, círculo blanco siempre para que las imágenes con fondo no choquen
-          "dark:bg-white dark:border-neutral-200",
+          "dark:bg-neutral-800 dark:border-neutral-700",
         )}
       >
         {!iconSrc || imgError ? (
@@ -49,7 +48,7 @@ export function CategoryPill({ category }: { category: Category }) {
             alt={category.name}
             width={40}
             height={40}
-            className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
+            className="w-7 h-7 sm:w-8 sm:h-8 object-contain dark:invert dark:brightness-200"
             onError={() => setImgError(true)}
           />
         )}
