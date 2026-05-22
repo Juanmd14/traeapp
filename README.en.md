@@ -15,7 +15,7 @@
 > 🌐 **Public demo**: [vadelivery.vercel.app](https://vadelivery.vercel.app)
 
 Local delivery marketplace (à la PedidosYa / Rappi) built for a small city.
-Stack: **Next.js 14 (App Router) · Supabase · PostgreSQL · TailwindCSS · TypeScript · Vercel**.
+Stack: **Next.js (App Router) · Supabase · PostgreSQL · TailwindCSS · TypeScript · Vercel**.
 
 ## 🖼️ Screenshots
 
