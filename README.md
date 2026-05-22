@@ -10,7 +10,9 @@
 
 🇪🇸 **Español** · [🇺🇸 English](./README.en.md)
 
-> 🌐 **Demo en vivo**: [vadelivery.vercel.app](https://vadelivery.vercel.app)
+> 🟢 **En producción** — primer cliente confirmado · Deploy continuo en Vercel
+>
+> 🌐 **Demo pública**: [vadelivery.vercel.app](https://vadelivery.vercel.app)
 
 Plataforma de delivery local tipo PedidosYa/Rappi para una ciudad pequeña.
 Stack: **Next.js 14 (App Router) · Supabase · PostgreSQL · TailwindCSS · TypeScript · Vercel**.
@@ -99,27 +101,41 @@ Las decisiones de diseño (stack, seguridad, idempotencia de webhooks, realtime,
 - CartFloatingButton sticky
 
 ### Bloque 4 — Checkout + Mercado Pago + Tracking
-- **Pricing service**: cálculo de subtotal/total/comisión del lado server
-- **createOrderAction**: crea pedido validando productos reales (no confía en cliente)
-- **CheckoutForm**: dirección + método pago + notas, en una pantalla
-- **Mercado Pago Service**: crea preferencia, mapea status MP → enum interno
-- **Webhook MP**: route handler en `/api/webhooks/mercadopago` que re-consulta el pago a MP y aplica la actualización vía RPC idempotente (verificación HMAC pendiente — detalle en [ARCHITECTURE.md](./docs/ARCHITECTURE.md))
-- **RPC `apply_payment_webhook`**: idempotente, actualiza pago + orden + crea delivery
-- **OrderTracker**: stepper visual de 5 pasos con animaciones
-- **useOrderRealtime**: hook que suscribe a cambios de orden vía Supabase Realtime
-- **Página `/pedido/[id]`**: tracking en vivo + detalle completo + contacto comercio
-- **Acciones del comercio**: aceptar / marcar listo / rechazar pedido
+
+**💳 Mercado Pago — integración completa**
+- Checkout con creación de preferencia (`createPreference`) y redirect al flow oficial de MP
+- Webhook en `/api/webhooks/mercadopago` que re-consulta el pago a la API de MP (`getPayment`) antes de actualizar BD — mitiga inyección de webhooks falsos sin HMAC
+- RPC `apply_payment_webhook` en Postgres: idempotente (`INSERT ... ON CONFLICT`), sobrevive reintentos sin duplicar pedidos
+- Mapeo de estados MP → enum interno (`pending` / `approved` / `rejected` / `cancelled`)
+- Verificación HMAC pendiente — documentado como decisión consciente en [ARCHITECTURE.md](./docs/ARCHITECTURE.md#4-webhooks-idempotencia-hmac-pendiente)
+
+**🛒 Order pricing seguro**
+- Pricing service: subtotal / total / comisión calculados 100% server-side
+- `createOrderAction`: nunca confía en precios del cliente, los lee desde BD por ID
+- `CheckoutForm`: dirección + método pago + notas, en una sola pantalla
+
+**📡 Realtime tracking**
+- `useOrderRealtime`: hook con suscripción a `postgres_changes` (Supabase Realtime), sin polling
+- `OrderTracker`: stepper visual de 5 pasos con animaciones
+- Página `/pedido/[id]`: tracking en vivo + detalle completo + contacto comercio
+- Acciones del comercio: aceptar / marcar listo / rechazar
 
 ---
 
-## 🔜 Próximos bloques
+### Bloque 5 — Panel comercio + Admin + App repartidor
 
-- **Panel KDS del comercio**: Kanban con pedidos en vivo (Realtime), botones de aceptar/rechazar/listo
-- **App del repartidor**: tomar pedidos disponibles, geolocalización, marcar estados
-- **Tracking del repartidor en mapa**: Realtime broadcast cliente↔cliente
-- **Notificaciones**: email transaccional con Resend, push web, WhatsApp para confirmación
-- **Panel admin**: gestión de comercios, repartidores, finanzas, comisiones
-- **Página de productos del comercio (panel)**: CRUD con drag & drop
+- **Panel comercio**: KDS de pedidos en vivo, CRUD de productos con imágenes, promociones, estadísticas de ventas, horarios de operación
+- **Panel admin**: gestión de comercios, repartidores, usuarios, finanzas y pedidos
+- **App del repartidor**: pedidos disponibles, aceptar/rechazar, marcar estados (`/driver/disponibles`, `/driver/activo`)
+- **Tracking del repartidor en mapa**: posición en vivo cliente ↔ cliente vía Supabase Realtime broadcast
+
+---
+
+## 🔜 Próximos pasos
+
+- **Notificaciones**: email transaccional para confirmación / cambios de estado, push web, WhatsApp
+- **Verificación HMAC del webhook MP** (gap conocido — documentado)
+- **Tests**: setup de Vitest + Playwright (en progreso, parte del curso de testing del autor)
 
 ---
 

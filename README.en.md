@@ -10,7 +10,9 @@
 
 🇺🇸 **English** · [🇪🇸 Español](./README.md)
 
-> 🌐 **Live demo**: [vadelivery.vercel.app](https://vadelivery.vercel.app)
+> 🟢 **In production** — first customer confirmed · Continuous deployment on Vercel
+>
+> 🌐 **Public demo**: [vadelivery.vercel.app](https://vadelivery.vercel.app)
 
 Local delivery marketplace (à la PedidosYa / Rappi) built for a small city.
 Stack: **Next.js 14 (App Router) · Supabase · PostgreSQL · TailwindCSS · TypeScript · Vercel**.
@@ -99,27 +101,41 @@ Design decisions (stack, security, webhook idempotency, realtime, known trade-of
 - Sticky CartFloatingButton
 
 ### Block 4 — Checkout + Mercado Pago + Tracking
-- **Pricing service**: subtotal/total/fee computed server-side
-- **createOrderAction**: creates the order using real product prices (does not trust the client)
-- **CheckoutForm**: address + payment method + notes, single screen
-- **Mercado Pago Service**: creates preference, maps MP status → internal enum
-- **MP Webhook**: route handler at `/api/webhooks/mercadopago` that re-queries the payment from MP and applies the update via an idempotent RPC (HMAC verification pending — details in [ARCHITECTURE.md](./docs/ARCHITECTURE.md))
-- **RPC `apply_payment_webhook`**: idempotent — updates payment + order + creates delivery
-- **OrderTracker**: 5-step visual stepper with animations
-- **useOrderRealtime**: hook subscribed to order changes via Supabase Realtime
-- **`/pedido/[id]` page**: live tracking + full detail + store contact
-- **Store actions**: accept / mark ready / reject order
+
+**💳 Mercado Pago — full integration**
+- Checkout with preference creation (`createPreference`) and redirect to the official MP flow
+- Webhook at `/api/webhooks/mercadopago` that re-queries the payment from MP's API (`getPayment`) before touching the DB — mitigates fake-webhook injection even without HMAC
+- `apply_payment_webhook` RPC in Postgres: idempotent (`INSERT ... ON CONFLICT`), survives retries without duplicating orders
+- Maps MP status → internal enum (`pending` / `approved` / `rejected` / `cancelled`)
+- HMAC verification pending — documented as a conscious decision in [ARCHITECTURE.md](./docs/ARCHITECTURE.md#4-webhooks-idempotencia-hmac-pendiente)
+
+**🛒 Secure order pricing**
+- Pricing service: subtotal / total / commission computed 100% server-side
+- `createOrderAction`: never trusts client-side prices, reads them from the DB by ID
+- `CheckoutForm`: address + payment method + notes, on a single screen
+
+**📡 Realtime tracking**
+- `useOrderRealtime`: hook subscribed to `postgres_changes` (Supabase Realtime), no polling
+- `OrderTracker`: 5-step visual stepper with animations
+- `/pedido/[id]` page: live tracking + full detail + store contact
+- Store actions: accept / mark ready / reject
 
 ---
 
-## 🔜 Next blocks
+### Block 5 — Store panel + Admin + Driver app
 
-- **Store KDS panel**: Kanban with live orders (Realtime), accept/reject/ready buttons
-- **Driver app**: claim available orders, geolocation, status updates
-- **Driver tracking on map**: Realtime broadcast client ↔ client
-- **Notifications**: transactional email with Resend, web push, WhatsApp confirmation
-- **Admin panel**: stores, drivers, finance, commissions
-- **Store products page (panel)**: CRUD with drag & drop
+- **Store panel**: live KDS for incoming orders, product CRUD with images, promotions, sales statistics, operating hours
+- **Admin panel**: management of stores, drivers, users, finance and orders
+- **Driver app**: available orders, accept/reject, status updates (`/driver/disponibles`, `/driver/activo`)
+- **Driver tracking on map**: live position client ↔ client via Supabase Realtime broadcast
+
+---
+
+## 🔜 Next steps
+
+- **Notifications**: transactional email for confirmation / status changes, web push, WhatsApp
+- **MP webhook HMAC verification** (known gap — documented)
+- **Tests**: Vitest + Playwright setup (in progress, part of the author's testing course)
 
 ---
 
