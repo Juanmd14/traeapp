@@ -17,18 +17,14 @@
 Plataforma de delivery local tipo PedidosYa/Rappi para una ciudad pequeña.
 Stack: **Next.js (App Router) · Supabase · PostgreSQL · TailwindCSS · TypeScript · Vercel**.
 
-## 🎬 Probar la demo (sin instalar nada)
+## 🎬 Ver la demo
 
-La demo en [vadelivery.vercel.app](https://vadelivery.vercel.app) ya tiene **5 comercios y 25 productos** cargados (pizzería, verdulería, burger house, heladería, farmacia).
+La instancia en [vadelivery.vercel.app](https://vadelivery.vercel.app) está **en producción con un cliente real**, así que sólo se puede recorrer la UI del marketplace en modo navegación (home, fichas de comercio, catálogo, carrito) — no se realizan pedidos de prueba para no contaminar la base del cliente.
 
-| Qué querés ver | Cómo |
-|---|---|
-| 🛍️ **Marketplace cliente** (home, ficha comercio, carrito) | Entrá directo. No requiere login para navegar y armar carrito. |
-| 💳 **Checkout + Mercado Pago + tracking en vivo** | Login con tu email → llega un OTP de 6 dígitos en ~30s. En MP usá las [credenciales de test](https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/additional-content/your-integrations/test/cards) (tarjeta `5031 7557 3453 0604`, código `123`, cualquier nombre/CVV). |
-| 🏪 **Panel comercio + KDS** | Pedime credenciales por mail o clonalo local con el setup de abajo (incluye comercio demo en el seed). |
-| 🚗 **App repartidor** | Idem panel comercio — pedime credenciales o setup local. |
+Para ver el flujo completo (checkout con Mercado Pago, tracking en vivo, panel del comercio con KDS, app del repartidor) hay dos caminos:
 
-> 💡 Para el tour más rápido: entrá al sitio → elegí "Pizzería La Esquina" → armá un pedido → checkout con MP (tarjeta test de arriba). Vas a ver el tracking en vivo y los estados se actualizan por Supabase Realtime.
+- 📹 **Pedirme un walkthrough en video** o una llamada corta donde lo recorro contra una instancia de staging.
+- 🛠️ **Clonarlo local** con el setup de abajo (15 min): trae 5 comercios + 25 productos en el seed y se puede probar punta a punta con credenciales TEST de MP.
 
 ## 🖼️ Capturas
 
