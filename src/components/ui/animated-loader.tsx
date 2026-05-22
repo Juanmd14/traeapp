@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
+import { Logo } from "@/components/brand/logo";
 
 export function AnimatedLoader({ 
   onComplete,
@@ -20,16 +20,9 @@ export function AnimatedLoader({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-neutral-950">
       <div className="relative">
-        <Image
-          src="/logo-vadelivery.jpg"
-          alt="Vadelivery"
-          width={180}
-          height={60}
-          className="h-16 w-auto animate-float"
-          priority
-        />
+        <Logo className="h-16 w-auto animate-float" priority />
         <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
           <div className="h-1 w-24 rounded-full bg-primary/30 overflow-hidden">
             <div 

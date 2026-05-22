@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/components/brand/logo";
 import { Package, Navigation, LogOut } from "lucide-react";
 import { requireAuth } from "@/server/auth/session";
 import { logoutAction } from "@/server/actions/auth";
@@ -21,13 +21,7 @@ export default async function DriverLayout({ children }: { children: React.React
     <div className="min-h-screen bg-neutral-50 flex flex-col">
       <header className="bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
         <Link href="/" className="flex items-center">
-          <Image
-            src="/logo-vadelivery.jpg"
-            alt="Vadelivery"
-            width={120}
-            height={40}
-            className="h-7 w-auto object-contain object-left"
-          />
+          <Logo className="h-7 w-auto" />
         </Link>
         <div className="flex items-center gap-3">
           <span className="text-sm text-neutral-600 hidden sm:block">{session.fullName}</span>

@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { Logo } from "@/components/brand/logo";
 
 export default function AuthLayout({
   children,
@@ -10,18 +10,8 @@ export default function AuthLayout({
     <div className="min-h-screen flex flex-col lg:flex-row bg-neutral-50 dark:bg-neutral-950">
       {/* Panel lateral — solo desktop */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-500 to-primary-700 text-white p-12 flex-col justify-between">
-        <Link
-          href="/"
-          className="inline-block w-fit rounded-lg bg-white px-3 py-2 shadow-sm"
-        >
-          <Image
-            src="/logo-vadelivery.jpg"
-            alt="Vadelivery"
-            width={180}
-            height={56}
-            className="h-9 w-auto object-contain object-left"
-            priority
-          />
+        <Link href="/" className="inline-block w-fit">
+          <Logo forceWhite className="h-10 w-auto" priority />
         </Link>
         <div className="space-y-4 max-w-md">
           <p className="text-display-md font-bold leading-tight">
@@ -41,14 +31,7 @@ export default function AuthLayout({
         <div className="w-full max-w-sm">
           {/* Logo mobile */}
           <Link href="/" className="lg:hidden flex justify-center mb-8">
-            <Image
-              src="/logo-vadelivery.jpg"
-              alt="Vadelivery"
-              width={200}
-              height={64}
-              className="h-12 w-auto object-contain"
-              priority
-            />
+            <Logo className="h-12 w-auto" priority />
           </Link>
           {children}
         </div>

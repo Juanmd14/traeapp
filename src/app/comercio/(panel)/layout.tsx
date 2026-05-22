@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/components/brand/logo";
 import {
   ClipboardList,
   Package,
@@ -44,13 +44,7 @@ export default async function ComercioLayout({
       <aside className="hidden lg:flex w-60 bg-white border-r border-neutral-200 flex-col">
         <div className="p-5 border-b border-neutral-200">
           <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo-vadelivery.jpg"
-              alt="Vadelivery"
-              width={140}
-              height={44}
-              className="h-8 w-auto max-w-[120px] object-contain object-left"
-            />
+            <Logo className="h-8 w-auto max-w-[120px]" />
           </Link>
           <p className="text-body-xs text-neutral-500 mt-1.5">Panel comercio</p>
         </div>
@@ -95,13 +89,7 @@ export default async function ComercioLayout({
         {/* Top bar móvil */}
         <header className="lg:hidden bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
           <Link href="/" className="flex items-center min-w-0">
-            <Image
-              src="/logo-vadelivery.jpg"
-              alt="Vadelivery"
-              width={120}
-              height={40}
-              className="h-7 w-auto max-w-[108px] object-contain object-left"
-            />
+            <Logo className="h-7 w-auto max-w-[108px]" />
           </Link>
         </header>
 

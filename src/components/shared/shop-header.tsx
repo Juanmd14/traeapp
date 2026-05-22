@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/components/brand/logo";
 import { MapPin, User, ClipboardList } from "lucide-react";
 import { getSession } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -15,14 +15,7 @@ function BrandLogo() {
       className="flex items-center shrink-0 pr-4 mr-2 border-r border-neutral-200 dark:border-neutral-700"
       aria-label="Vadelivery — inicio"
     >
-<Image
-              src="/logo-vadelivery.jpg"
-              alt="Vadelivery"
-              width={120}
-              height={40}
-              priority
-              className="h-7 w-auto"
-            />
+      <Logo className="h-7 w-auto" priority />
     </Link>
   );
 }

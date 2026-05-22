@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/components/brand/logo";
 
 export default function MarketingLayout({
   children,
@@ -11,13 +11,7 @@ export default function MarketingLayout({
       <header className="sticky top-0 z-40 bg-white/90 dark:bg-neutral-900/90 backdrop-blur border-b border-neutral-100 dark:border-neutral-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/">
-            <Image
-              src="/logo-vadelivery.jpg"
-              alt="Vadelivery"
-              width={140}
-              height={44}
-              className="h-8 w-auto object-contain object-left"
-            />
+            <Logo className="h-8 w-auto" />
           </Link>
           <div className="flex items-center gap-3">
             <Link
