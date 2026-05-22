@@ -94,19 +94,19 @@ export function StoreKds({ storeId, initialOrders, itemsByOrder }: Props) {
   return (
     <div className="space-y-4">
       {/* Header con métricas */}
-      <div className="bg-white rounded-lg border border-neutral-200 p-4">
+      <div className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 p-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Clock className="size-4 text-neutral-400" />
-              <span className="text-body-sm text-neutral-500">
-                Tiempo avg: <strong className="text-neutral-900">{metrics.avgWaitTime}m</strong>
+              <Clock className="size-4 text-neutral-400 dark:text-neutral-500" />
+              <span className="text-body-sm text-neutral-500 dark:text-neutral-400">
+                Tiempo avg: <strong className="text-neutral-900 dark:text-neutral-100">{metrics.avgWaitTime}m</strong>
               </span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="size-4 text-accent-500" />
-              <span className="text-body-sm text-neutral-500">
-                Hoy: <strong className="text-neutral-900">{metrics.completedToday}</strong> pedidos
+              <span className="text-body-sm text-neutral-500 dark:text-neutral-400">
+                Hoy: <strong className="text-neutral-900 dark:text-neutral-100">{metrics.completedToday}</strong> pedidos
               </span>
             </div>
           </div>
@@ -114,16 +114,16 @@ export function StoreKds({ storeId, initialOrders, itemsByOrder }: Props) {
           <div className="flex items-center gap-2">
             {/* Indicador de pedidos urgentes */}
             {metrics.avgWaitTime >= 10 && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-700 rounded-full text-body-xs">
+              <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 rounded-full text-body-xs">
                 <AlertCircle className="size-3.5" />
                 Tiempo elevado
               </span>
             )}
-            
+
             <button
               type="button"
               onClick={() => setSoundEnabled((v) => !v)}
-              className="text-body-xs text-neutral-500 hover:text-neutral-900 inline-flex items-center gap-1.5 transition"
+              className="text-body-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 inline-flex items-center gap-1.5 transition"
             >
               {soundEnabled ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
               Sonido {soundEnabled ? "on" : "off"}
@@ -134,7 +134,7 @@ export function StoreKds({ storeId, initialOrders, itemsByOrder }: Props) {
 
       {/* Aviso de interacción para sonido */}
       {!hasInteracted && metrics.pending === 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-md px-3 py-2 text-body-sm text-blue-800 flex items-center gap-2">
+        <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 rounded-md px-3 py-2 text-body-sm text-blue-800 dark:text-blue-200 flex items-center gap-2">
           <Volume2 className="size-4 shrink-0" />
           <span>Tocá cualquier lugar para activar el sonido de pedidos nuevos</span>
         </div>
@@ -211,23 +211,23 @@ function Column({
 
   return (
     <section>
-      <header className="flex items-center gap-2 mb-3 sticky top-0 bg-neutral-50 py-2 -mx-2 px-2 z-10">
+      <header className="flex items-center gap-2 mb-3 sticky top-0 bg-neutral-50 dark:bg-neutral-950 py-2 -mx-2 px-2 z-10">
         <span className={cn("size-2 rounded-full animate-pulse", colorMap[color])} />
-        <h2 className="text-body-md font-semibold uppercase tracking-wider text-neutral-700">
+        <h2 className="text-body-md font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-200">
           {title}
         </h2>
         <span className={cn(
           "text-body-md font-semibold px-2 py-0.5 rounded-full",
-          color === "primary" && "bg-primary-100 text-primary-700",
-          color === "warning" && "bg-warning-100 text-warning-700",
-          color === "accent" && "bg-accent-100 text-accent-700"
+          color === "primary" && "bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300",
+          color === "warning" && "bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-300",
+          color === "accent" && "bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300"
         )}>
           {count}
         </span>
       </header>
       {count === 0 ? (
-        <div className="bg-neutral-100 border-2 border-dashed border-neutral-200 rounded-lg p-6 text-center">
-          <p className="text-body-sm text-neutral-400">{empty}</p>
+        <div className="bg-neutral-100 dark:bg-neutral-900/50 border-2 border-dashed border-neutral-200 dark:border-neutral-800 rounded-lg p-6 text-center">
+          <p className="text-body-sm text-neutral-400 dark:text-neutral-500">{empty}</p>
         </div>
       ) : (
         <div className="space-y-3">{children}</div>

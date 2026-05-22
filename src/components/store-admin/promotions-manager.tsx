@@ -231,7 +231,7 @@ export function PromotionsManager({ storeId, initial }: Props) {
       )}
 
       {promotions.length === 0 ? (
-        <div className="text-center py-12 text-neutral-500">
+        <div className="text-center py-12 text-neutral-500 dark:text-neutral-400">
           <Tag className="size-12 mx-auto mb-3 opacity-30" />
           <p>No hay promociones creadas</p>
           <p className="text-body-sm mt-1">Creá tu primera promoción para atraer clientes</p>

@@ -175,6 +175,12 @@ export default async function EstadisticasPage() {
   return (
     <div className="max-w-4xl">
       <header className="mb-8">
+        <a
+          href="/comercio/pedidos"
+          className="inline-flex items-center gap-1 text-body-sm text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition mb-3"
+        >
+          <span aria-hidden>←</span> Volver al panel
+        </a>
         <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
           Estadísticas
         </h1>

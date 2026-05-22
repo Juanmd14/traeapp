@@ -20,6 +20,8 @@ import {
   ChefHat,
 } from "lucide-react";
 
+import { formatPrice } from "@/lib/utils";
+
 type ChartPoint = { name: string; pedidos: number; ingresos: number };
 type TopProduct = { name: string; qty: number };
 
@@ -41,10 +43,6 @@ type Props = {
   storeId: string;
   initial: Stats;
 };
-
-function ars(n: number) {
-  return "$" + n.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-}
 
 export function StatsDashboard({ initial }: Props) {
   const [period, setPeriod] = useState<"today" | "week" | "month">("week");
@@ -89,14 +87,14 @@ export function StatsDashboard({ initial }: Props) {
         />
         <MetricCard
           icon={<DollarSign className="size-4" />}
-          label="Ingresos"
-          value={ars(stats.revenue)}
+          label="Ingresos (ARS)"
+          value={formatPrice(stats.revenue)}
           color="green"
         />
         <MetricCard
           icon={<TrendingUp className="size-4" />}
-          label="Ticket promedio"
-          value={ars(avgTicket)}
+          label="Ticket promedio (ARS)"
+          value={formatPrice(avgTicket)}
           color="blue"
         />
         <MetricCard
@@ -268,23 +266,23 @@ function MetricCard({
   sublabel?: string;
 }) {
   const bg: Record<string, string> = {
-    red:   "bg-primary-50   text-primary-600",
-    green: "bg-accent-50    text-accent-600",
-    blue:  "bg-blue-50      text-blue-600",
-    amber: "bg-warning/10   text-warning-600",
+    red:   "bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-300",
+    green: "bg-accent-50 dark:bg-accent-950/40 text-accent-600 dark:text-accent-300",
+    blue:  "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300",
+    amber: "bg-warning/10 dark:bg-warning/20 text-warning-600 dark:text-warning-300",
   };
 
   return (
-    <div className="bg-white rounded-xl border border-neutral-200 p-4">
+    <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4">
       <div className={`inline-flex p-2 rounded-lg mb-3 ${bg[color]}`}>
         {icon}
       </div>
-      <p className="text-body-xs text-neutral-500 mb-1">{label}</p>
-      <p className="text-heading-md font-bold text-neutral-900 leading-none tabular-nums">
+      <p className="text-body-xs text-neutral-500 dark:text-neutral-400 mb-1">{label}</p>
+      <p className="text-heading-md font-bold text-neutral-900 dark:text-neutral-100 leading-none tabular-nums">
         {value}
       </p>
       {sublabel && (
-        <p className="text-body-xs text-neutral-400 mt-1">{sublabel}</p>
+        <p className="text-body-xs text-neutral-400 dark:text-neutral-500 mt-1">{sublabel}</p>
       )}
     </div>
   );
@@ -307,9 +305,9 @@ function StatusRow({
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <span className={`size-2 rounded-full shrink-0 ${dot[color]}`} />
-        <span className="text-body-sm text-neutral-600">{label}</span>
+        <span className="text-body-sm text-neutral-600 dark:text-neutral-300">{label}</span>
       </div>
-      <span className="font-semibold text-neutral-900 text-body-sm tabular-nums">{value}</span>
+      <span className="font-semibold text-neutral-900 dark:text-neutral-100 text-body-sm tabular-nums">{value}</span>
     </div>
   );
 }

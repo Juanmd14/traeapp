@@ -34,10 +34,16 @@ export default async function HorariosPage() {
   return (
     <div className="max-w-2xl">
       <header className="mb-8">
-        <h1 className="text-heading-xl font-semibold text-neutral-900">
+        <a
+          href="/comercio/pedidos"
+          className="inline-flex items-center gap-1 text-body-sm text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition mb-3"
+        >
+          <span aria-hidden>←</span> Volver al panel
+        </a>
+        <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
           Horarios de atención
         </h1>
-        <p className="text-body-md text-neutral-500 mt-0.5">
+        <p className="text-body-md text-neutral-500 dark:text-neutral-400 mt-0.5">
           Configurá los días y horarios en que tu comercio recibe pedidos.
         </p>
       </header>

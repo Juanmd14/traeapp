@@ -35,13 +35,13 @@ export default async function ActivoPage() {
   if (!delivery || !delivery.orders) {
     return (
       <div className="max-w-lg mx-auto px-4 py-6">
-        <h1 className="text-xl font-bold text-neutral-900 mb-6">Pedido activo</h1>
+        <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">Pedido activo</h1>
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="size-16 rounded-2xl bg-neutral-100 flex items-center justify-center mb-4">
-            <PackageSearch className="size-8 text-neutral-400" />
+          <div className="size-16 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-4">
+            <PackageSearch className="size-8 text-neutral-400 dark:text-neutral-500" />
           </div>
-          <p className="text-neutral-600 font-medium">Sin pedido activo</p>
-          <p className="text-sm text-neutral-400 mt-1 mb-6">Tomá un pedido disponible para empezar</p>
+          <p className="text-neutral-600 dark:text-neutral-300 font-medium">Sin pedido activo</p>
+          <p className="text-sm text-neutral-400 dark:text-neutral-500 mt-1 mb-6">Tomá un pedido disponible para empezar</p>
           <Link
             href="/driver/disponibles"
             className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-primary/90 transition"
@@ -79,7 +79,7 @@ export default async function ActivoPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 py-6">
-      <h1 className="text-xl font-bold text-neutral-900 mb-6">Pedido activo</h1>
+      <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">Pedido activo</h1>
       <ActiveDeliveryView data={data} />
     </div>
   );

@@ -97,17 +97,17 @@ export function StoreDatosForm({ storeId, initial }: Props) {
 
   return (
     <div className="max-w-xl space-y-10">
-      <section className="border-b border-neutral-200 pb-8">
-        <h2 className="text-heading-md font-semibold text-neutral-900 mb-1">
+      <section className="border-b border-neutral-200 dark:border-neutral-800 pb-8">
+        <h2 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
           Imágenes del comercio
         </h2>
-        <p className="text-body-sm text-neutral-500 mb-5">
+        <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mb-5">
           Logo y portada que se muestran en la tienda.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-body-sm font-medium text-neutral-700 mb-2">
+            <p className="text-body-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
               Logo
             </p>
             <StoreImageUpload
@@ -118,7 +118,7 @@ export function StoreDatosForm({ storeId, initial }: Props) {
             />
           </div>
           <div>
-            <p className="text-body-sm font-medium text-neutral-700 mb-2">
+            <p className="text-body-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
               Portada
             </p>
             <StoreImageUpload
@@ -132,10 +132,10 @@ export function StoreDatosForm({ storeId, initial }: Props) {
       </section>
 
       <section>
-        <h2 className="text-heading-md font-semibold text-neutral-900 mb-1">
+        <h2 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
           Datos y contacto
         </h2>
-        <p className="text-body-sm text-neutral-500 mb-5">
+        <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mb-5">
           Nombre visible para clientes, teléfono para llamadas desde el pedido y email de contacto.
         </p>
 
@@ -163,12 +163,12 @@ export function StoreDatosForm({ storeId, initial }: Props) {
               id="sd-description"
               rows={3}
               className={cn(
-                "flex w-full rounded-md border bg-white px-3 py-2 text-body-md min-h-[88px]",
-                "placeholder:text-neutral-400",
+                "flex w-full rounded-md border bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 px-3 py-2 text-body-md min-h-[88px]",
+                "placeholder:text-neutral-400 dark:placeholder:text-neutral-500",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:border-primary",
                 profileForm.formState.errors.description
                   ? "border-destructive"
-                  : "border-neutral-200",
+                  : "border-neutral-200 dark:border-neutral-700",
               )}
               {...profileForm.register("description")}
             />
@@ -217,11 +217,11 @@ export function StoreDatosForm({ storeId, initial }: Props) {
         </form>
       </section>
 
-      <section className="border-t border-neutral-200 pt-10">
-        <h2 className="text-heading-md font-semibold text-neutral-900 mb-1">
+      <section className="border-t border-neutral-200 dark:border-neutral-800 pt-10">
+        <h2 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
           Ubicación y reparto
         </h2>
-        <p className="text-body-sm text-neutral-500 mb-5">
+        <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mb-5">
           Dirección desde donde salen los pedidos y radio de entrega.
         </p>
 
@@ -257,7 +257,7 @@ export function StoreDatosForm({ storeId, initial }: Props) {
               className="w-full accent-primary-600"
               {...addressForm.register("deliveryRadiusKm", { valueAsNumber: true })}
             />
-            <div className="flex justify-between text-body-xs text-neutral-500 mt-1">
+            <div className="flex justify-between text-body-xs text-neutral-500 dark:text-neutral-400 mt-1">
               <span>0.5 km</span>
               <span>20 km</span>
             </div>

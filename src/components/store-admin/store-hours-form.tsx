@@ -79,37 +79,40 @@ export function StoreHoursForm({ storeId, initial }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="bg-white rounded-lg border border-neutral-200 divide-y divide-neutral-200">
+      <div className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-800">
         {hours.map((day, index) => (
-          <div key={index} className="p-4 flex items-center gap-4">
-            <div className="w-28">
-              <span className="font-medium text-neutral-900">{dayNames[index]}</span>
+          <div
+            key={index}
+            className="p-3 sm:p-4 grid grid-cols-[auto_auto_1fr] sm:flex sm:items-center gap-x-3 gap-y-2 sm:gap-4"
+          >
+            <div className="sm:w-28 col-start-1">
+              <span className="font-medium text-neutral-900 dark:text-neutral-100">{dayNames[index]}</span>
             </div>
 
             <Switch
               checked={day.isOpen}
               onCheckedChange={() => toggleDay(index)}
-              className="flex-shrink-0"
+              className="flex-shrink-0 col-start-2 justify-self-end sm:justify-self-auto"
             />
 
             {day.isOpen ? (
-              <div className="flex items-center gap-2 flex-1">
+              <div className="col-span-3 sm:col-auto flex items-center gap-2 sm:flex-1 flex-wrap">
                 <input
                   type="time"
                   value={day.opensAt}
                   onChange={(e) => updateTime(index, "opensAt", e.target.value)}
-                  className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+                  className="rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-2 sm:px-3 py-1.5 text-sm min-w-0"
                 />
-                <span className="text-neutral-400">a</span>
+                <span className="text-neutral-400 dark:text-neutral-500">a</span>
                 <input
                   type="time"
                   value={day.closesAt}
                   onChange={(e) => updateTime(index, "closesAt", e.target.value)}
-                  className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+                  className="rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-2 sm:px-3 py-1.5 text-sm min-w-0"
                 />
               </div>
             ) : (
-              <span className="text-neutral-400 text-sm">Cerrado</span>
+              <span className="col-span-3 sm:col-auto text-neutral-400 dark:text-neutral-500 text-sm">Cerrado</span>
             )}
           </div>
         ))}

@@ -139,17 +139,17 @@ export function ProfileForm({ initial }: Props) {
             className="hidden"
           />
         </div>
-        <p className="text-body-md font-medium text-neutral-900 mt-3">
+        <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100 mt-3">
           {initial.fullName}
         </p>
         {initial.email && (
-          <p className="text-body-sm text-neutral-500">{initial.email}</p>
+          <p className="text-body-sm text-neutral-500 dark:text-neutral-400">{initial.email}</p>
         )}
       </section>
 
       {/* Form datos personales */}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <h2 className="text-heading-sm font-semibold text-neutral-900">
+        <h2 className="text-heading-sm font-semibold text-neutral-900 dark:text-neutral-100">
           Datos personales
         </h2>
 
@@ -214,7 +214,7 @@ export function ProfileForm({ initial }: Props) {
 
       {/* Atajos */}
       <section className="space-y-2">
-        <h2 className="text-heading-sm font-semibold text-neutral-900">
+        <h2 className="text-heading-sm font-semibold text-neutral-900 dark:text-neutral-100">
           Más opciones
         </h2>
         <Link

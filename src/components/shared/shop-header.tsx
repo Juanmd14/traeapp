@@ -103,12 +103,15 @@ export async function ShopHeader() {
             <div className="hidden lg:block w-px h-6 bg-neutral-200 dark:bg-neutral-700 shrink-0" />
           )}
 
-          {/* Buscador */}
-          <div className="flex-1 flex justify-center min-w-0">
+          {/* Buscador — solo desktop. En mobile va en su propia fila debajo */}
+          <div className="hidden md:flex flex-1 justify-center min-w-0">
             <div className="w-full max-w-md">
               <SearchBar />
             </div>
           </div>
+
+          {/* Spacer mobile para empujar acciones a la derecha */}
+          <div className="md:hidden flex-1" />
 
           {/* Acciones derecha */}
           <ThemeToggle />
@@ -150,12 +153,17 @@ export async function ShopHeader() {
           )}
         </div>
 
+        {/* Fila mobile — buscador full width */}
+        <div className="md:hidden pb-2">
+          <SearchBar />
+        </div>
+
         {/* Fila mobile — dirección debajo */}
         {session && (
           <div className="lg:hidden flex items-center justify-between pb-2 gap-2">
             <Link href="/direcciones" className="flex items-center gap-1.5 min-w-0 group">
               <MapPin className="size-3.5 text-primary-600 shrink-0" strokeWidth={2.5} />
-              <span className="text-body-sm font-medium text-neutral-700 group-hover:text-primary-600 transition truncate">
+              <span className="text-body-sm font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-primary-600 transition truncate">
                 {defaultAddressLine ?? "Agregar dirección"}
               </span>
             </Link>

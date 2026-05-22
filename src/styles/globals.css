@@ -30,6 +30,10 @@
     font-feature-settings: "cv11", "ss01";
   }
 
+  .dark body {
+    @apply bg-neutral-950 text-neutral-100;
+  }
+
   /* Inputs sin estilos nativos feos en iOS */
   input,
   textarea,

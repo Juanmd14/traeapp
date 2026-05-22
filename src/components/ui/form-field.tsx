@@ -33,7 +33,7 @@ export function FormField({
       {error ? (
         <p className="text-body-xs text-destructive">{error}</p>
       ) : hint ? (
-        <p className="text-body-xs text-neutral-500">{hint}</p>
+        <p className="text-body-xs text-neutral-500 dark:text-neutral-400">{hint}</p>
       ) : null}
     </div>
   );
