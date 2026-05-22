@@ -13,12 +13,12 @@ export type Category = {
 };
 
 const SLUG_TO_FILE: Record<string, string> = {
-  comida:       "pizza",
-  supermercado: "supermercado",
-  farmacia:     "farmacia",
-  bebidas:      "hamburguesa",
-  heladeria:    "helado",
-  mascotas:     "mascotas",
+  comida:       "pizza-blanco",
+  supermercado: "supermercado-blanco",
+  farmacia:     "farmacia-blanco",
+  bebidas:      "bebidas-blanco",
+  heladeria:    "helado-blanco",
+  mascotas:     "mascotas-blanco",
 };
 
 export function CategoryPill({ category }: { category: Category }) {
@@ -34,10 +34,9 @@ export function CategoryPill({ category }: { category: Category }) {
     >
       <div
         className={cn(
-          "size-12 sm:size-14 rounded-full flex items-center justify-center transition border",
+          "size-12 sm:size-14 rounded-full flex items-center justify-center transition overflow-hidden",
           "hover:scale-105 active:scale-95",
-          category.bgClass,
-          "dark:bg-neutral-800 dark:border-neutral-700",
+          "bg-white dark:bg-neutral-100 border-2 border-primary-100 dark:border-primary-900/40",
         )}
       >
         {!iconSrc || imgError ? (
@@ -46,9 +45,9 @@ export function CategoryPill({ category }: { category: Category }) {
           <Image
             src={iconSrc}
             alt={category.name}
-            width={40}
-            height={40}
-            className="w-7 h-7 sm:w-8 sm:h-8 object-contain dark:invert dark:brightness-200"
+            width={48}
+            height={48}
+            className="w-9 h-9 sm:w-11 sm:h-11 object-contain"
             onError={() => setImgError(true)}
           />
         )}

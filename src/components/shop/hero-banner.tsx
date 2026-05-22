@@ -5,13 +5,13 @@ import Image from "next/image";
 import { Logo } from "@/components/brand/logo";
 
 const HERO_ICONS = [
-  { src: "/icons/pizza-blanco.png",        alt: "Pizza",        fallback: "🍕" },
-  { src: "/icons/hamburguesa-blanco.png",  alt: "Hamburguesa",  fallback: "🍔" },
-  { src: "/icons/helado-blanco.png",       alt: "Helado",       fallback: "🍦" },
-  { src: "/icons/supermercado-blanco.png", alt: "Supermercado", fallback: "🛒" },
-  { src: "/icons/farmacia-blanco.png",     alt: "Farmacia",     fallback: "💊" },
-  { src: "/icons/mascotas-blanco.png",     alt: "Mascotas",     fallback: "🐕" },
-  { src: "/icons/bebidas-blanco.png",      alt: "Bebidas",      fallback: "🍺" },
+  { src: "/icons/pizza-blanco2.png",        alt: "Pizza",        fallback: "🍕" },
+  { src: "/icons/hamburguesa-blanco2.png",  alt: "Hamburguesa",  fallback: "🍔" },
+  { src: "/icons/helado-blanco2.png",       alt: "Helado",       fallback: "🍦" },
+  { src: "/icons/supermercado-blanco2.png", alt: "Supermercado", fallback: "🛒" },
+  { src: "/icons/farmacia-blanco2.png",     alt: "Farmacia",     fallback: "💊" },
+  { src: "/icons/mascotas-blanco2.png",     alt: "Mascotas",     fallback: "🐕" },
+  { src: "/icons/bebidas-blanco2.png",      alt: "Bebidas",      fallback: "🍺" },
 ] as const;
 
 export function HeroBanner() {
@@ -79,9 +79,11 @@ export function HeroBanner() {
             flex items-center justify-center
             border-2 border-primary-100 dark:border-primary-900/40
             shadow-[0_4px_16px_rgba(255,77,41,0.15)]
+            overflow-hidden
           "
         >
           <div
+            className="w-14 h-14 sm:w-20 sm:h-20 flex items-center justify-center"
             style={{
               opacity: allLoaded && isVisible ? 1 : 0,
               transform: allLoaded && isVisible
@@ -103,7 +105,7 @@ export function HeroBanner() {
                 width={96}
                 height={96}
                 priority
-                className="object-contain w-16 h-16 sm:w-24 sm:h-24"
+                className="object-contain w-full h-full"
                 onError={() => setImgError(true)}
               />
             )}
