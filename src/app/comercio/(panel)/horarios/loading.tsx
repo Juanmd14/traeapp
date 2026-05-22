@@ -12,7 +12,7 @@ export default function HorariosLoading() {
       </StaggeredFadeIn>
 
       <StaggeredFadeIn delay={100}>
-        <div className="bg-white rounded-lg border border-neutral-200 divide-y divide-neutral-200">
+        <div className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-800">
           {Array.from({ length: 7 }).map((_, i) => (
             <StaggeredFadeIn key={i} delay={150 + i * 50}>
               <div className="p-4 flex items-center gap-4">

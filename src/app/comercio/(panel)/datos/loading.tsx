@@ -12,10 +12,10 @@ export default function DatosLoading() {
       </StaggeredFadeIn>
 
       <StaggeredFadeIn delay={100}>
-        <div className="border-b border-neutral-200 pb-8 mb-8">
+        <div className="border-b border-neutral-200 dark:border-neutral-800 pb-8 mb-8">
           <Skeleton variant="text" className="w-40 h-6 mb-1" />
           <Skeleton variant="text" className="w-64 h-4 mb-5" />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <SkeletonInput />
             <Skeleton variant="rectangular" className="aspect-video rounded-lg" />
@@ -25,7 +25,7 @@ export default function DatosLoading() {
       </StaggeredFadeIn>
 
       <StaggeredFadeIn delay={200}>
-        <div className="border-b border-neutral-200 pb-8 mb-8">
+        <div className="border-b border-neutral-200 dark:border-neutral-800 pb-8 mb-8">
           <Skeleton variant="text" className="w-48 h-6 mb-1" />
           <Skeleton variant="text" className="w-72 h-4 mb-5" />
           

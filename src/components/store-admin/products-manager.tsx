@@ -112,10 +112,10 @@ export function ProductsManager({ storeId, initial }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-heading-xl font-semibold text-neutral-900">
+          <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
             Productos
           </h1>
-          <div className="flex items-center gap-3 mt-1 text-body-sm text-neutral-500">
+          <div className="flex items-center gap-3 mt-1 text-body-sm text-neutral-500 dark:text-neutral-400">
             <span>{products.length} en total</span>
             <span>·</span>
             <span className="text-accent-600 font-medium">
@@ -124,7 +124,7 @@ export function ProductsManager({ storeId, initial }: Props) {
             {unavailableCount > 0 && (
               <>
                 <span>·</span>
-                <span className="text-neutral-400">{unavailableCount} ocultos</span>
+                <span className="text-neutral-400 dark:text-neutral-500">{unavailableCount} ocultos</span>
               </>
             )}
           </div>
@@ -140,17 +140,17 @@ export function ProductsManager({ storeId, initial }: Props) {
         <div className="flex items-center gap-2 mb-4 flex-wrap">
           <div className="flex-1 min-w-[180px]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400 dark:text-neutral-500" />
               <input
                 type="search"
                 placeholder="Buscar producto..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-neutral-100 rounded-lg text-body-md placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-primary-500 transition"
+                className="w-full pl-9 pr-3 py-2 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 rounded-lg text-body-md placeholder:text-neutral-400 dark:text-neutral-500 outline-none focus:ring-2 focus:ring-primary-500 transition"
               />
             </div>
           </div>
-          <div className="flex rounded-lg border border-neutral-200 overflow-hidden shrink-0">
+          <div className="flex rounded-lg border border-neutral-200 dark:border-neutral-800 overflow-hidden shrink-0">
             {(["all", "available", "unavailable"] as FilterType[]).map((f) => (
               <button
                 key={f}
@@ -158,8 +158,8 @@ export function ProductsManager({ storeId, initial }: Props) {
                 className={cn(
                   "px-3 py-2 text-body-sm font-medium transition",
                   filter === f
-                    ? "bg-neutral-900 text-white"
-                    : "bg-white text-neutral-600 hover:bg-neutral-50",
+                    ? "bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900"
+                    : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800",
                 )}
               >
                 {f === "all"
@@ -175,14 +175,14 @@ export function ProductsManager({ storeId, initial }: Props) {
 
       {/* Lista */}
       {products.length === 0 ? (
-        <div className="bg-white border border-neutral-200 rounded-xl p-10 text-center">
-          <div className="size-14 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <Package className="size-6 text-neutral-400" />
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 dark:border-neutral-800 rounded-xl p-10 text-center">
+          <div className="size-14 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Package className="size-6 text-neutral-400 dark:text-neutral-500" />
           </div>
-          <h2 className="text-heading-sm font-medium text-neutral-900 mb-1">
+          <h2 className="text-heading-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">
             Aún no tenés productos
           </h2>
-          <p className="text-body-md text-neutral-500 mb-5">
+          <p className="text-body-md text-neutral-500 dark:text-neutral-400 mb-5">
             Agregá tu primer producto para que aparezca en el marketplace.
           </p>
           <Button onClick={() => setEditingProduct("new")}>
@@ -192,7 +192,7 @@ export function ProductsManager({ storeId, initial }: Props) {
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-body-md text-neutral-500">
+          <p className="text-body-md text-neutral-500 dark:text-neutral-400">
             Sin resultados para &quot;{search}&quot;
           </p>
           <button
@@ -275,12 +275,12 @@ function ProductListRow({
   return (
     <div
       className={cn(
-        "bg-white border border-neutral-200 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 transition hover:border-neutral-300",
+        "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 dark:border-neutral-800 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 transition hover:border-neutral-300 dark:hover:border-neutral-700",
         !product.is_available && "opacity-60",
       )}
     >
       {/* Imagen */}
-      <div className="size-16 sm:size-20 rounded-lg overflow-hidden bg-neutral-100 shrink-0 relative">
+      <div className="size-16 sm:size-20 rounded-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800 shrink-0 relative">
         {product.image_url ? (
           <Image
             src={product.image_url}
@@ -290,7 +290,7 @@ function ProductListRow({
             className="object-cover"
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-950 dark:to-primary-900 flex items-center justify-center">
             <Package className="size-6 text-primary-400" />
           </div>
         )}
@@ -303,20 +303,20 @@ function ProductListRow({
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <h3 className="text-body-md font-semibold text-neutral-900 truncate">
+        <h3 className="text-body-md font-semibold text-neutral-900 dark:text-neutral-100 dark:text-neutral-100 truncate">
           {product.name}
         </h3>
         {product.description && (
-          <p className="text-body-sm text-neutral-500 line-clamp-1 mt-0.5">
+          <p className="text-body-sm text-neutral-500 dark:text-neutral-400 line-clamp-1 mt-0.5">
             {product.description}
           </p>
         )}
         <div className="flex items-baseline gap-2 mt-1.5">
-          <span className="text-body-md font-bold text-neutral-900">
+          <span className="text-body-md font-bold text-neutral-900 dark:text-neutral-100">
             {formatPrice(product.price)}
           </span>
           {hasDiscount && (
-            <span className="text-body-xs text-neutral-400 line-through">
+            <span className="text-body-xs text-neutral-400 dark:text-neutral-500 line-through">
               {formatPrice(product.compare_at_price!)}
             </span>
           )}
@@ -334,7 +334,7 @@ function ProductListRow({
           <span
             className={cn(
               "text-body-xs font-medium hidden sm:block transition",
-              product.is_available ? "text-accent-600" : "text-neutral-400",
+              product.is_available ? "text-accent-600" : "text-neutral-400 dark:text-neutral-500",
             )}
           >
             {product.is_available ? "Activo" : "Oculto"}
@@ -343,15 +343,15 @@ function ProductListRow({
 
         <button
           onClick={onEdit}
-          className="size-9 sm:size-8 rounded-md hover:bg-neutral-100 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition"
+          className="size-9 sm:size-8 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center justify-center text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 transition"
           aria-label="Editar"
         >
           <Pencil className="size-4" />
         </button>
 
         {confirmDelete ? (
-          <div className="flex items-center gap-1.5 sm:gap-1 bg-red-50 rounded-lg px-2.5 py-1.5 sm:px-2 sm:py-1">
-            <span className="text-body-xs text-neutral-600">¿Borrar?</span>
+          <div className="flex items-center gap-1.5 sm:gap-1 bg-red-50 dark:bg-red-950/30 rounded-lg px-2.5 py-1.5 sm:px-2 sm:py-1">
+            <span className="text-body-xs text-neutral-600 dark:text-neutral-400">¿Borrar?</span>
             <button
               onClick={onDelete}
               disabled={isPending}
@@ -359,10 +359,10 @@ function ProductListRow({
             >
               Sí
             </button>
-            <span className="text-neutral-300">|</span>
+            <span className="text-neutral-300 dark:text-neutral-700">|</span>
             <button
               onClick={() => setConfirmDelete(false)}
-              className="text-body-xs font-medium text-neutral-500 hover:underline min-w-fit"
+              className="text-body-xs font-medium text-neutral-500 dark:text-neutral-400 hover:underline min-w-fit"
             >
               No
             </button>
@@ -370,7 +370,7 @@ function ProductListRow({
         ) : (
           <button
             onClick={() => setConfirmDelete(true)}
-            className="size-9 sm:size-8 rounded-md hover:bg-red-50 flex items-center justify-center text-neutral-500 hover:text-destructive transition"
+            className="size-9 sm:size-8 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center justify-center text-neutral-500 dark:text-neutral-400 hover:text-destructive transition"
             aria-label="Borrar"
           >
             <Trash2 className="size-4" />
@@ -620,7 +620,7 @@ function ProductFormDialog({
             <div
               className={cn(
                 "relative overflow-hidden rounded-lg border-2 border-dashed transition-colors",
-                imagePreview ? "border-neutral-200" : "border-neutral-300 hover:border-neutral-400"
+                imagePreview ? "border-neutral-200" : "border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-600"
               )}
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
@@ -637,7 +637,7 @@ function ProductFormDialog({
                   <button
                     type="button"
                     onClick={() => { setImagePreview(""); setPendingFile(null); }}
-                    className="absolute top-2 right-2 size-6 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 hover:text-destructive transition shadow-sm"
+                    className="absolute top-2 right-2 size-6 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 dark:text-neutral-400 hover:text-destructive transition shadow-sm"
                   >
                     <X className="size-3.5" />
                   </button>
@@ -646,7 +646,7 @@ function ProductFormDialog({
                 <button
                   type="button"
                   onClick={() => inputRef.current?.click()}
-                  className="w-full aspect-video flex flex-col items-center justify-center gap-2 py-8 text-neutral-500 hover:text-neutral-700 transition-colors"
+                  className="w-full aspect-video flex flex-col items-center justify-center gap-2 py-8 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:text-neutral-300 transition-colors"
                 >
                   <Upload className="size-8" />
                   <span className="text-body-sm">Subir imagen</span>
@@ -657,7 +657,7 @@ function ProductFormDialog({
             <div
               className={cn(
                 "relative overflow-hidden rounded-lg border-2 border-dashed transition-colors",
-                imagePreview ? "border-neutral-200" : "border-neutral-300 hover:border-neutral-400"
+                imagePreview ? "border-neutral-200" : "border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-600"
               )}
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
@@ -674,7 +674,7 @@ function ProductFormDialog({
                   <button
                     type="button"
                     onClick={() => { setImagePreview(""); setPendingFile(null); }}
-                    className="absolute top-2 right-2 size-6 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 hover:text-destructive transition shadow-sm"
+                    className="absolute top-2 right-2 size-6 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 dark:text-neutral-400 hover:text-destructive transition shadow-sm"
                   >
                     <X className="size-3.5" />
                   </button>
@@ -683,7 +683,7 @@ function ProductFormDialog({
                 <button
                   type="button"
                   onClick={() => inputRef.current?.click()}
-                  className="w-full aspect-video flex flex-col items-center justify-center gap-2 py-8 text-neutral-500 hover:text-neutral-700 transition-colors"
+                  className="w-full aspect-video flex flex-col items-center justify-center gap-2 py-8 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:text-neutral-300 transition-colors"
                   disabled={isPending}
                 >
                   <Upload className="size-8" />
@@ -762,7 +762,7 @@ function ProductFormDialog({
               error={form.formState.errors.price?.message}
             >
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400">
                   $
                 </span>
                 <Input
@@ -783,7 +783,7 @@ function ProductFormDialog({
               hint="Tachado, opcional"
             >
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400">
                   $
                 </span>
                 <Input
@@ -802,16 +802,16 @@ function ProductFormDialog({
           </div>
 
           {/* Toggle disponibilidad */}
-          <label className="flex items-center gap-3 cursor-pointer select-none bg-neutral-50 rounded-lg px-3 py-3">
+          <label className="flex items-center gap-3 cursor-pointer select-none bg-neutral-50 dark:bg-neutral-800/50 rounded-lg px-3 py-3">
             <Switch
               checked={form.watch("isAvailable")}
               onCheckedChange={(v) => form.setValue("isAvailable", v)}
             />
             <div>
-              <p className="text-body-md font-medium text-neutral-900">
+              <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">
                 Disponible para pedir
               </p>
-              <p className="text-body-xs text-neutral-500">
+              <p className="text-body-xs text-neutral-500 dark:text-neutral-400">
                 {form.watch("isAvailable")
                   ? "Los clientes pueden agregar este producto al carrito"
                   : "Temporalmente oculto en la app"}
@@ -820,17 +820,17 @@ function ProductFormDialog({
           </label>
 
           {/* Quantity Options */}
-          <div className="border border-neutral-200 rounded-lg p-4 space-y-4">
+          <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 space-y-4">
             <label className="flex items-center gap-3 cursor-pointer select-none">
               <Switch
                 checked={hasQuantityOptions}
                 onCheckedChange={(v) => setHasQuantityOptions(v)}
               />
               <div>
-                <p className="text-body-md font-medium text-neutral-900">
+                <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">
                   Tiene cantidades predefinidas
                 </p>
-                <p className="text-body-xs text-neutral-500">
+                <p className="text-body-xs text-neutral-500 dark:text-neutral-400">
                   Ej: media docena (6), docena (12). No usa selector manual
                 </p>
               </div>
@@ -838,7 +838,7 @@ function ProductFormDialog({
 
             {hasQuantityOptions && (
               <div className="space-y-3">
-                <p className="text-body-sm font-medium text-neutral-700">
+                <p className="text-body-sm font-medium text-neutral-700 dark:text-neutral-300 dark:text-neutral-700">
                   Opciones de cantidad:
                 </p>
                 <div className="space-y-2">
@@ -855,13 +855,13 @@ function ProductFormDialog({
                             setQuantityOptions(newOpts);
                           }
                         }}
-                        className="w-20 px-2 py-1.5 border border-neutral-200 rounded-md text-body-sm"
+                        className="w-20 px-2 py-1.5 border border-neutral-200 dark:border-neutral-800 rounded-md text-body-sm"
                         placeholder="Cant."
                       />
-                      <span className="text-neutral-400">unidades</span>
-                      <span className="text-neutral-500">x</span>
+                      <span className="text-neutral-400 dark:text-neutral-500">unidades</span>
+                      <span className="text-neutral-500 dark:text-neutral-400">x</span>
                       <div className="relative flex-1 max-w-32">
-                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-neutral-500 text-sm">$</span>
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400 text-sm">$</span>
                         <input
                           type="number"
                           min="0"
@@ -873,7 +873,7 @@ function ProductFormDialog({
                               setQuantityOptions(newOpts);
                             }
                           }}
-                          className="w-full pl-6 py-1.5 border border-neutral-200 rounded-md text-body-sm"
+                          className="w-full pl-6 py-1.5 border border-neutral-200 dark:border-neutral-800 rounded-md text-body-sm"
                           placeholder="Precio"
                         />
                       </div>
@@ -891,7 +891,7 @@ function ProductFormDialog({
                           }}
                           className="accent-primary-600"
                         />
-                        <span className="text-body-xs text-neutral-500">Por defecto</span>
+                        <span className="text-body-xs text-neutral-500 dark:text-neutral-400">Por defecto</span>
                       </label>
                       <label className="flex items-center gap-1 cursor-pointer">
                         <input
@@ -907,14 +907,14 @@ function ProductFormDialog({
                           }}
                           className="accent-primary-600"
                         />
-                        <span className="text-body-xs text-neutral-500">Mejor precio</span>
+                        <span className="text-body-xs text-neutral-500 dark:text-neutral-400">Mejor precio</span>
                       </label>
                       <button
                         type="button"
                         onClick={() => {
                           setQuantityOptions(quantityOptions.filter((_: QuantityOptionInput, i: number) => i !== idx));
                         }}
-                        className="text-neutral-400 hover:text-destructive"
+                        className="text-neutral-400 dark:text-neutral-500 hover:text-destructive"
                       >
                         <X className="size-4" />
                       </button>
@@ -941,7 +941,7 @@ function ProductFormDialog({
                     onChange={(e) => setHideManualQuantity(e.target.checked)}
                     className="accent-primary-600"
                   />
-                  <span className="text-body-sm text-neutral-600">
+                  <span className="text-body-sm text-neutral-600 dark:text-neutral-400">
                     Ocultar selector manual de cantidad
                   </span>
                 </label>
@@ -950,14 +950,14 @@ function ProductFormDialog({
           </div>
 
           {/* Personalización del cliente - Modifiers */}
-          <div className="border border-neutral-200 rounded-lg p-4 space-y-4">
-            <p className="text-body-md font-medium text-neutral-900">
+          <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 space-y-4">
+            <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">
               Personalización del cliente
             </p>
 
             {/* Removable Ingredients */}
             <div className="space-y-2">
-              <p className="text-body-sm font-medium text-neutral-700">
+              <p className="text-body-sm font-medium text-neutral-700 dark:text-neutral-300 dark:text-neutral-700">
                 Ingredientes (el cliente puede quitar)
               </p>
               <div className="space-y-2">
@@ -978,7 +978,7 @@ function ProductFormDialog({
                       onClick={() => {
                         setRemovableIngredients(removableIngredients.filter((_, i) => i !== idx));
                       }}
-                      className="text-neutral-400 hover:text-destructive"
+                      className="text-neutral-400 dark:text-neutral-500 hover:text-destructive"
                     >
                       <X className="size-4" />
                     </button>
@@ -998,7 +998,7 @@ function ProductFormDialog({
 
             {/* Extras */}
             <div className="space-y-2 pt-3 border-t border-neutral-200">
-              <p className="text-body-sm font-medium text-neutral-700">
+              <p className="text-body-sm font-medium text-neutral-700 dark:text-neutral-300 dark:text-neutral-700">
                 Extras (el cliente puede agregar)
               </p>
               <div className="space-y-2">
@@ -1017,7 +1017,7 @@ function ProductFormDialog({
                       placeholder="Ej: papas extra"
                     />
                     <div className="relative w-24">
-                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-neutral-500 text-sm">$</span>
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400 text-sm">$</span>
                       <Input
                         type="number"
                         min="0"
@@ -1038,7 +1038,7 @@ function ProductFormDialog({
                       onClick={() => {
                         setExtras(extras.filter((_, i) => i !== idx));
                       }}
-                      className="text-neutral-400 hover:text-destructive"
+                      className="text-neutral-400 dark:text-neutral-500 hover:text-destructive"
                     >
                       <X className="size-4" />
                     </button>

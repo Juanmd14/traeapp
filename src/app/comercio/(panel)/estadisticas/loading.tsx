@@ -12,7 +12,7 @@ export default function EstadisticasLoading() {
       </StaggeredFadeIn>
 
       <StaggeredFadeIn delay={100}>
-        <div className="flex items-center gap-1 bg-neutral-100 p-1 rounded-lg mb-6 w-fit">
+        <div className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-lg mb-6 w-fit">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} variant="rectangular" className="h-8 w-20 rounded-md" />
           ))}
@@ -23,7 +23,7 @@ export default function EstadisticasLoading() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {Array.from({ length: 4 }).map((_, i) => (
             <StaggeredFadeIn key={i} delay={200 + i * 50}>
-              <div className="bg-white rounded-lg border border-neutral-200 p-4">
+              <div className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 p-4">
                 <div className="flex items-center gap-2 text-neutral-500 mb-1">
                   <Skeleton variant="circular" className="h-4 w-4" />
                   <Skeleton variant="text" className="w-12 h-3" />
@@ -36,7 +36,7 @@ export default function EstadisticasLoading() {
       </StaggeredFadeIn>
 
       <StaggeredFadeIn delay={400}>
-        <div className="bg-white rounded-lg border border-neutral-200 p-4">
+        <div className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 p-4">
           <Skeleton variant="text" className="w-32 h-5 mb-4" />
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (

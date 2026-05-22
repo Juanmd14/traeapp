@@ -15,7 +15,7 @@ export default function PromocionesLoading() {
       </StaggeredFadeIn>
 
       <StaggeredFadeIn delay={100}>
-        <div className="bg-neutral-50 rounded-lg p-6 border border-neutral-200 space-y-4">
+        <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SkeletonInput />
             <div className="space-y-1.5">
@@ -33,7 +33,7 @@ export default function PromocionesLoading() {
         <div className="mt-8 space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <StaggeredFadeIn key={i} delay={250 + i * 50}>
-              <div className="flex items-center justify-between p-4 rounded-lg border border-neutral-200 bg-white">
+              <div className="flex items-center justify-between p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
                 <div className="flex items-center gap-4">
                   <Skeleton variant="circular" className="h-10 w-10" />
                   <div>
