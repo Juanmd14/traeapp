@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { Logo } from "@/components/brand/logo";
 
 const HERO_ICONS = [
   { src: "/icons/pizza-blanco.png",        alt: "Pizza",        fallback: "🍕" },
@@ -46,16 +47,40 @@ export function HeroBanner() {
   const currentIcon = HERO_ICONS[currentIndex] || HERO_ICONS[0];
 
   return (
-    <section className="
-      rounded-2xl overflow-hidden
-      bg-white
-      border border-neutral-200
-      shadow-sm
-    ">
-      <div className="flex items-center gap-4 sm:gap-6 px-4 sm:px-6 py-4 sm:py-6">
+    <section
+      className="
+        relative rounded-2xl overflow-hidden
+        bg-gradient-to-br from-primary-50 via-white to-primary-50/40
+        dark:from-primary-950/20 dark:via-neutral-900 dark:to-neutral-950
+        border border-primary-100/60 dark:border-neutral-800
+        shadow-sm
+      "
+    >
+      {/* Isotipo decorativo en la esquina inferior derecha */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-6 -right-6 opacity-[0.07] dark:opacity-[0.10]"
+      >
+        <Image
+          src="/brand/icon-vadelivery.svg"
+          alt=""
+          width={180}
+          height={190}
+          className="w-32 h-32 sm:w-44 sm:h-44"
+        />
+      </div>
 
-        {/* Icono dentro de círculo blanco para que el PNG con fondo no choque */}
-        <div className="flex-shrink-0 w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-white flex items-center justify-center shadow-sm border border-neutral-100">
+      <div className="relative flex items-center gap-4 sm:gap-6 px-4 sm:px-6 py-5 sm:py-7">
+        {/* Círculo con íconos rotatorios */}
+        <div
+          className="
+            flex-shrink-0 w-20 h-20 sm:w-28 sm:h-28 rounded-full
+            bg-white dark:bg-neutral-100
+            flex items-center justify-center
+            border-2 border-primary-100 dark:border-primary-900/40
+            shadow-[0_4px_16px_rgba(255,77,41,0.15)]
+          "
+        >
           <div
             style={{
               opacity: allLoaded && isVisible ? 1 : 0,
@@ -85,15 +110,27 @@ export function HeroBanner() {
           </div>
         </div>
 
-        {/* Eslogan — coral en ambos modos */}
+        {/* Wordmark + eslogan */}
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl sm:text-3xl font-extrabold text-primary-600 leading-tight mb-1">
-            Vadelivery
-          </h1>
-          <p className="text-xs sm:text-base text-neutral-700 dark:text-neutral-300 leading-snug font-medium">
+          <Logo className="h-7 sm:h-10 w-auto mb-1.5" priority />
+          <p className="text-xs sm:text-base font-display font-semibold text-neutral-700 dark:text-neutral-300 leading-snug">
             Pedí lo que quieras, llega rápido a tu puerta
           </p>
         </div>
+      </div>
+
+      {/* Indicadores de posición — sutiles */}
+      <div className="relative flex justify-center gap-1.5 pb-3">
+        {HERO_ICONS.map((_, i) => (
+          <span
+            key={i}
+            className={`block h-1 rounded-full transition-all duration-300 ${
+              i === currentIndex
+                ? "w-4 bg-primary-500"
+                : "w-1 bg-neutral-300 dark:bg-neutral-700"
+            }`}
+          />
+        ))}
       </div>
     </section>
   );
