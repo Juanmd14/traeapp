@@ -1,4 +1,4 @@
-// Generates app icons from public/logo-vadelivery.jpg into src/app/.
+// Generates app icons from public/brand/app-icon-vadelivery-512.svg into src/app/ and public/.
 // Run with: node scripts/generate-icons.mjs
 import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
@@ -7,29 +7,23 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
-const source = resolve(root, "public/logo-vadelivery.jpg");
-const outDir = resolve(root, "src/app");
+const source = resolve(root, "public/brand/app-icon-vadelivery-512.svg");
+const appOutDir = resolve(root, "src/app");
+const publicOutDir = resolve(root, "public");
 
-await mkdir(outDir, { recursive: true });
+await mkdir(appOutDir, { recursive: true });
+await mkdir(publicOutDir, { recursive: true });
 
-const renderToSquare = (size, padding) =>
-  sharp(source)
-    .resize({
-      width: size - padding * 2,
-      height: size - padding * 2,
-      fit: "contain",
-      background: { r: 255, g: 255, b: 255, alpha: 1 },
-    })
-    .extend({
-      top: padding,
-      bottom: padding,
-      left: padding,
-      right: padding,
-      background: { r: 255, g: 255, b: 255, alpha: 1 },
-    })
-    .png();
+// Source is an SVG with the brand coral background already baked in (per assets/README.md).
+// Render straight to PNG at multiple sizes without padding.
+const renderTo = (size) =>
+  sharp(source).resize({ width: size, height: size, fit: "contain" }).png();
 
-await renderToSquare(512, 32).toFile(resolve(outDir, "icon.png"));
-await renderToSquare(180, 12).toFile(resolve(outDir, "apple-icon.png"));
+await renderTo(512).toFile(resolve(appOutDir, "icon.png"));
+await renderTo(180).toFile(resolve(appOutDir, "apple-icon.png"));
+await renderTo(512).toFile(resolve(publicOutDir, "icon-512.png"));
+await renderTo(192).toFile(resolve(publicOutDir, "icon-192.png"));
 
-console.log("Generated: src/app/icon.png, src/app/apple-icon.png");
+console.log(
+  "Generated: src/app/icon.png, src/app/apple-icon.png, public/icon-512.png, public/icon-192.png"
+);
