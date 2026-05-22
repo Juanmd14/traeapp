@@ -209,6 +209,19 @@ export const updateStoreOperationAction = authAction
 export const publishStoreAction = authAction
   .schema(z.object({ storeId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
+    const supabase = createClient();
+    const { data: membership } = await supabase
+      .from("store_users")
+      .select("role")
+      .eq("store_id", parsedInput.storeId)
+      .eq("user_id", ctx.session.id)
+      .eq("is_active", true)
+      .single();
+
+    if (!membership && ctx.session.role !== "admin") {
+      throw new Error("No tenés permiso sobre este comercio");
+    }
+
     // Verificar que tenga lo mínimo
     const { data: store } = await supabaseAdmin
       .from("stores")
