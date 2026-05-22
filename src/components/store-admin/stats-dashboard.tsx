@@ -23,7 +23,7 @@ import {
 import { formatPrice } from "@/lib/utils";
 
 type ChartPoint = { name: string; pedidos: number; ingresos: number };
-type TopProduct = { name: string; qty: number };
+type TopProduct = { name: string; revenue: number };
 
 type Stats = {
   today: { orders: number; revenue: number };
@@ -168,8 +168,8 @@ export function StatsDashboard({ initial }: Props) {
           {initial.topProducts.length > 0 ? (
             <div className="space-y-3.5">
               {initial.topProducts.map((p, i) => {
-                const maxQty = initial.topProducts[0]?.qty ?? 1;
-                const pct = Math.round((p.qty / maxQty) * 100);
+                const maxRevenue = initial.topProducts[0]?.revenue ?? 1;
+                const pct = Math.round((p.revenue / maxRevenue) * 100);
                 const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
                 return (
                   <div key={p.name} className="space-y-1">
@@ -178,7 +178,7 @@ export function StatsDashboard({ initial }: Props) {
                         {medal} {p.name}
                       </span>
                       <span className="font-semibold text-neutral-900 dark:text-neutral-100 shrink-0 tabular-nums">
-                        {p.qty} uds.
+                        {formatPrice(p.revenue)}
                       </span>
                     </div>
                     <div className="h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
