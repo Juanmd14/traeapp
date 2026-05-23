@@ -30,8 +30,19 @@ export default function MarketingLayout({
         </div>
       </header>
       {children}
-      <footer className="border-t border-neutral-100 dark:border-neutral-800 py-8 text-center text-body-sm text-neutral-400 dark:text-neutral-500">
-        © {new Date().getFullYear()} Vadelivery · Todos los derechos reservados
+      <footer className="border-t border-neutral-100 dark:border-neutral-800 py-8 text-center text-body-sm text-neutral-400 dark:text-neutral-500 space-y-2">
+        <p>© {new Date().getFullYear()} Vadelivery · Todos los derechos reservados</p>
+        <p className="text-xs text-neutral-300 dark:text-neutral-600">
+          Diseñado y desarrollado por{" "}
+          <a
+            href="https://juanmd14.netlify.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-primary-500 dark:hover:text-primary-400"
+          >
+            Juan García
+          </a>
+        </p>
       </footer>
     </div>
   );
