@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { Logo } from "@/components/brand/logo";
 import { MapPin, User, ClipboardList } from "lucide-react";
+import Link from "next/link";
+import { ElasticLogo } from "@/components/brand/elastic-logo";
 import { getSession } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { SearchBar } from "@/components/shared/search-bar";
@@ -10,13 +10,9 @@ import { UserMenuDropdown } from "@/components/shared/user-menu-dropdown";
 
 function BrandLogo() {
   return (
-    <Link
-      href="/"
-      className="flex items-center shrink-0 pr-4 mr-2 border-r border-neutral-200 dark:border-neutral-700"
-      aria-label="Vadelivery — inicio"
-    >
-      <Logo className="h-7 w-auto" priority />
-    </Link>
+    <div className="flex items-center shrink-0 pr-4 mr-2 border-r border-neutral-200 dark:border-neutral-700">
+      <ElasticLogo className="h-7 w-auto" />
+    </div>
   );
 }
 

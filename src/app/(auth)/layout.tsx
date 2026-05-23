@@ -1,8 +1,5 @@
-"use client";
-
 import Link from "next/link";
 import { Bike } from "lucide-react";
-import { motion } from "framer-motion";
 import { Logo } from "@/components/brand/logo";
 
 export default function AuthLayout({
@@ -14,15 +11,9 @@ export default function AuthLayout({
     <div className="min-h-screen flex flex-col lg:flex-row bg-neutral-50 dark:bg-neutral-950">
       {/* Panel lateral — solo desktop */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-500 to-primary-700 text-white p-12 flex-col justify-between">
-        <motion.div
-          whileHover={{ scale: 1.12, y: -4, rotate: -2 }}
-          transition={{ type: "spring", stiffness: 500, damping: 10 }}
-          className="inline-block w-fit"
-        >
-          <Link href="/">
-            <Logo forceWhite className="h-10 w-auto" priority />
-          </Link>
-        </motion.div>
+        <Link href="/" className="inline-block w-fit">
+          <Logo forceWhite className="h-10 w-auto" priority />
+        </Link>
 
         <div className="space-y-4 max-w-md">
           <p className="text-display-md font-bold leading-tight">
@@ -49,15 +40,11 @@ export default function AuthLayout({
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12 dark:bg-neutral-950">
         <div className="w-full max-w-sm">
           {/* Logo mobile */}
-          <motion.div
-            whileHover={{ scale: 1.1, y: -4 }}
-            transition={{ type: "spring", stiffness: 500, damping: 10 }}
-            className="lg:hidden flex justify-center mb-8"
-          >
+          <div className="lg:hidden flex justify-center mb-8">
             <Link href="/">
               <Logo className="h-12 w-auto" priority />
             </Link>
-          </motion.div>
+          </div>
           {children}
         </div>
       </div>

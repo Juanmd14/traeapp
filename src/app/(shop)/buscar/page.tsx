@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { StoreCard } from "@/components/shop/store-card";
-import { ProductCard } from "@/components/shop/product-card";
+import { SearchProductCard } from "@/components/shop/search-product-card";
 import { Search } from "lucide-react";
 
 export const metadata = { title: "Buscar" };
@@ -132,34 +132,23 @@ products = typedProducts.filter(
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {products.map((product) => (
-                  <div key={product.id} className="space-y-1">
-                    <p className="text-body-xs text-neutral-500 dark:text-neutral-400 truncate px-1">
-                      en{" "}
-                      <a
-                        href={`/s/${product.stores?.slug}`}
-                        className="text-primary-600 hover:underline font-medium"
-                      >
-                        {product.stores?.name}
-                      </a>
-                    </p>
-
-                    <ProductCard
-                      product={{
-                        id: product.id,
-                        name: product.name,
-                        description: product.description,
-                        price: product.price,
-                        compareAtPrice: product.compare_at_price,
-                        imageUrl: product.image_url,
-                        isAvailable: product.is_available,
-                      }}
-                      storeId={product.stores?.id ?? ""}
-                      storeSlug={product.stores?.slug ?? ""}
-                      storeName={product.stores?.name ?? ""}
-                      deliveryFee={product.stores?.delivery_fee ?? 0}
-                      minOrderAmount={product.stores?.min_order_amount ?? 0}
-                    />
-                  </div>
+                  <SearchProductCard
+                    key={product.id}
+                    product={{
+                      id: product.id,
+                      name: product.name,
+                      description: product.description,
+                      price: product.price,
+                      compareAtPrice: product.compare_at_price,
+                      imageUrl: product.image_url,
+                      isAvailable: product.is_available,
+                    }}
+                    storeId={product.stores?.id ?? ""}
+                    storeSlug={product.stores?.slug ?? ""}
+                    storeName={product.stores?.name ?? ""}
+                    deliveryFee={product.stores?.delivery_fee ?? 0}
+                    minOrderAmount={product.stores?.min_order_amount ?? 0}
+                  />
                 ))}
               </div>
             </section>
