@@ -264,6 +264,35 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── Para repartidores ────────────────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+        <div className="bg-gradient-to-br from-primary-50 to-white dark:from-primary-950/30 dark:to-neutral-900 rounded-3xl p-10 sm:p-12 border border-primary-100 dark:border-primary-900/30">
+          <div className="flex flex-col sm:flex-row items-center gap-8">
+            <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center shadow-primary">
+              <Bike className="size-8 text-white" />
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <span className="inline-flex items-center gap-1.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-body-xs font-semibold px-3 py-1 rounded-full mb-3">
+                Para repartidores
+              </span>
+              <h2 className="text-heading-xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
+                ¿Querés repartir con nosotros?
+              </h2>
+              <p className="text-body-md text-neutral-500 dark:text-neutral-400 mb-6 max-w-lg">
+                Manejá tus tiempos, elegís tus horarios y ganás por cada entrega. Sin jefes, sin horarios fijos.
+              </p>
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-6 py-3 rounded-xl hover:bg-primary/90 transition"
+              >
+                <Bike className="size-4" />
+                Sumarme como repartidor
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Para comercios ────────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
         <div className="bg-neutral-900 rounded-3xl p-10 sm:p-16 text-center relative overflow-hidden">

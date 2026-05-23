@@ -5,7 +5,14 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { action, authAction } from "./safe-action";
-import { loginSchema, otpSchema, registerSchema, signupSchema } from "@/schemas";
+import {
+  loginSchema,
+  otpSchema,
+  registerSchema,
+  signupSchema,
+  resetPasswordRequestSchema,
+  newPasswordSchema,
+} from "@/schemas";
 
 /* ============================================
  * RATE LIMITING — simple in-memory
@@ -226,6 +233,33 @@ export const completeProfileAction = action
     if (error) throw new Error(error.message);
 
     revalidatePath("/", "layout");
+    return { ok: true };
+  });
+
+/* ============================================
+ * RECUPERAR CONTRASEÑA
+ * ============================================ */
+
+export const resetPasswordRequestAction = action
+  .schema(resetPasswordRequestSchema)
+  .action(async ({ parsedInput: { email } }) => {
+    const supabase = createClient();
+    const origin = headers().get("origin") ?? "";
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/auth/callback?next=/nueva-password`,
+    });
+
+    if (error) throw new Error("No se pudo enviar el email. Intentá de nuevo.");
+    return { ok: true };
+  });
+
+export const updatePasswordAction = authAction
+  .schema(newPasswordSchema)
+  .action(async ({ parsedInput: { password } }) => {
+    const supabase = createClient();
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) throw new Error("No se pudo actualizar la contraseña. Intentá de nuevo.");
     return { ok: true };
   });
 

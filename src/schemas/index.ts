@@ -39,6 +39,22 @@ export const signupSchema = z.object({
 });
 export type SignupInput = z.infer<typeof signupSchema>;
 
+export const resetPasswordRequestSchema = z.object({
+  email: emailSchema,
+});
+export type ResetPasswordRequestInput = z.infer<typeof resetPasswordRequestSchema>;
+
+export const newPasswordSchema = z
+  .object({
+    password: z.string().min(6, "Mínimo 6 caracteres"),
+    confirm: z.string(),
+  })
+  .refine((d) => d.password === d.confirm, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirm"],
+  });
+export type NewPasswordInput = z.infer<typeof newPasswordSchema>;
+
 /* ============================================
  * STORE ONBOARDING
  * ============================================ */

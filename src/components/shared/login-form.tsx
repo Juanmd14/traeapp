@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LogIn, ArrowLeft, Mail } from "lucide-react";
@@ -259,6 +260,15 @@ export function LoginForm() {
           {serverError}
         </p>
       )}
+
+      <div className="flex justify-end">
+        <Link
+          href="/recuperar"
+          className="text-body-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition"
+        >
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </div>
 
       <Button type="submit" fullWidth size="lg" loading={isPending}>
         <LogIn className="size-4" />
