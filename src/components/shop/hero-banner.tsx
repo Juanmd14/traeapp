@@ -121,19 +121,6 @@ export function HeroBanner() {
         </div>
       </div>
 
-      {/* Indicadores de posición — sutiles */}
-      <div className="relative flex justify-center gap-1.5 pb-3">
-        {HERO_ICONS.map((_, i) => (
-          <span
-            key={i}
-            className={`block h-1 rounded-full transition-all duration-300 ${
-              i === currentIndex
-                ? "w-4 bg-primary-500"
-                : "w-1 bg-neutral-300 dark:bg-neutral-700"
-            }`}
-          />
-        ))}
-      </div>
     </section>
   );
 }
