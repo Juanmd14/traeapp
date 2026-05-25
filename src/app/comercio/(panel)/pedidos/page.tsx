@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import {
   requireAuth,
   getUserStores,
+  getActiveStoreId,
 } from "@/server/auth/session";
 
 import { createClient } from "@/lib/supabase/server";
@@ -69,7 +70,7 @@ export default async function PedidosPage() {
     redirect("/comercio/onboarding");
   }
 
-  const storeId = stores[0]?.storeId;
+  const storeId = getActiveStoreId(stores);
 
   if (!storeId) {
     redirect("/comercio/onboarding");

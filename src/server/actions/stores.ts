@@ -3,10 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { cookies } from "next/headers";
 
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { authAction } from "./safe-action";
+import { requireAuth, getUserStores } from "@/server/auth/session";
 import {
   storeBasicSchema,
   storeAddressSchema,
@@ -612,3 +614,24 @@ export const deletePromotionAction = authAction
     revalidatePath("/comercio/promociones");
     return { ok: true };
   });
+
+/** Guarda en cookie el comercio activo seleccionado por el dueño. */
+export async function setActiveStoreAction(formData: FormData) {
+  const session = await requireAuth("/login");
+  const storeId = formData.get("storeId") as string;
+  if (!storeId) throw new Error("storeId requerido");
+
+  const stores = await getUserStores(session.id);
+  if (!stores.some((s) => s.storeId === storeId)) {
+    throw new Error("No tenés acceso a ese comercio");
+  }
+
+  (cookies() as any).set("active_store_id", storeId, {
+    path: "/comercio",
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30,
+  });
+
+  redirect("/comercio/pedidos");
+}

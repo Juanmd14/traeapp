@@ -1,5 +1,6 @@
 import "server-only";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
 export type UserRole =
@@ -73,4 +74,35 @@ export async function getUserStores(userId: string): Promise<Array<{ storeId: st
     storeId: r.store_id,
     role: r.role as "owner" | "manager" | "staff",
   }));
+}
+
+export type StoreWithName = {
+  storeId: string;
+  role: "owner" | "manager" | "staff";
+  name: string;
+};
+
+export async function getUserStoresWithNames(userId: string): Promise<StoreWithName[]> {
+  const supabase = createClient();
+  const { data } = await (supabase.from("store_users") as any)
+    .select("store_id, role, stores(name)")
+    .eq("user_id", userId)
+    .eq("is_active", true);
+
+  return (data ?? []).map((r: any) => ({
+    storeId: r.store_id,
+    role: r.role as "owner" | "manager" | "staff",
+    name: r.stores?.name ?? "Sin nombre",
+  }));
+}
+
+/** Devuelve el storeId activo leyendo la cookie; cae al primero si no hay cookie válida. */
+export function getActiveStoreId(stores: Array<{ storeId: string }>): string | null {
+  if (stores.length === 0) return null;
+  const cookieStore = cookies();
+  const savedId = (cookieStore as any).get("active_store_id")?.value as string | undefined;
+  if (savedId && stores.some((s) => s.storeId === savedId)) {
+    return savedId;
+  }
+  return stores[0]?.storeId ?? null;
 }

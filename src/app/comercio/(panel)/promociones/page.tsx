@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { requireAuth, getUserStores } from "@/server/auth/session";
+import { requireAuth, getUserStores, getActiveStoreId } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { PromotionsManager } from "@/components/store-admin/promotions-manager";
 
@@ -15,7 +15,7 @@ export default async function PromocionesPage() {
     redirect("/comercio/onboarding");
   }
 
-  const storeId = stores[0]?.storeId;
+  const storeId = getActiveStoreId(stores);
   if (!storeId) redirect("/comercio/onboarding");
 
   const supabase = createClient();

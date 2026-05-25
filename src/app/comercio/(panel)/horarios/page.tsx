@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { requireAuth, getUserStores } from "@/server/auth/session";
+import { requireAuth, getUserStores, getActiveStoreId } from "@/server/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { StoreHoursForm } from "@/components/store-admin/store-hours-form";
 
@@ -15,7 +15,7 @@ export default async function HorariosPage() {
     redirect("/comercio/onboarding");
   }
 
-  const storeId = stores[0]?.storeId;
+  const storeId = getActiveStoreId(stores);
   if (!storeId) redirect("/comercio/onboarding");
 
   const supabase = createClient();

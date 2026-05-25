@@ -11,8 +11,10 @@ import {
   Building2,
   Home,
 } from "lucide-react";
-import { requireAuth, getUserStores } from "@/server/auth/session";
+import { requireAuth, getUserStoresWithNames, getActiveStoreId } from "@/server/auth/session";
 import { logoutAction } from "@/server/actions/auth";
+import { setActiveStoreAction } from "@/server/actions/stores";
+import { StoreSwitcher } from "@/components/store-admin/store-switcher";
 
 const navItems = [
   { href: "/comercio/pedidos", label: "Pedidos", icon: ClipboardList },
@@ -30,14 +32,17 @@ export default async function ComercioLayout({
 }) {
   const session = await requireAuth("/login?next=/comercio");
 
-  // El usuario debe ser miembro de algún comercio (o admin)
-  if (session.role !== "admin") {
-    const stores = await getUserStores(session.id);
-    if (stores.length === 0) {
-      // No tiene comercio aún → onboarding
-      redirect("/comercio/onboarding");
-    }
+  const stores = session.role !== "admin"
+    ? await getUserStoresWithNames(session.id)
+    : [];
+
+  if (session.role !== "admin" && stores.length === 0) {
+    redirect("/comercio/onboarding");
   }
+
+  const activeStoreId = getActiveStoreId(stores) ?? "";
+  const activeStore = stores.find((s) => s.storeId === activeStoreId);
+  const multiStore = stores.length > 1;
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex">
@@ -48,6 +53,19 @@ export default async function ComercioLayout({
             <Logo className="h-8 w-auto max-w-[120px]" />
           </Link>
           <p className="text-body-xs text-neutral-500 dark:text-neutral-400 mt-1.5">Panel comercio</p>
+
+          {multiStore ? (
+            <StoreSwitcher
+              stores={stores.map((s) => ({ storeId: s.storeId, name: s.name }))}
+              activeStoreId={activeStoreId}
+              switchAction={setActiveStoreAction}
+            />
+          ) : activeStore ? (
+            <p className="mt-2 text-body-sm font-medium text-neutral-800 dark:text-neutral-200 truncate">
+              {activeStore.name}
+            </p>
+          ) : null}
+
           <Link
             href="/"
             className="mt-3 inline-flex items-center gap-1.5 text-body-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 transition"
@@ -99,14 +117,23 @@ export default async function ComercioLayout({
           <Link href="/" className="flex items-center min-w-0" aria-label="Vadelivery — Inicio">
             <Logo className="h-7 w-auto max-w-[108px]" />
           </Link>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-body-sm font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
-            aria-label="Volver al inicio"
-          >
-            <Home className="size-4" />
-            Inicio
-          </Link>
+          <div className="flex items-center gap-2">
+            {multiStore && (
+              <StoreSwitcher
+                stores={stores.map((s) => ({ storeId: s.storeId, name: s.name }))}
+                activeStoreId={activeStoreId}
+                switchAction={setActiveStoreAction}
+              />
+            )}
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-body-sm font-medium text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+              aria-label="Volver al inicio"
+            >
+              <Home className="size-4" />
+              Inicio
+            </Link>
+          </div>
         </header>
 
         <div className="flex-1 p-4 lg:p-8">{children}</div>
