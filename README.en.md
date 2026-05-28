@@ -133,7 +133,7 @@ Design decisions (stack, security, webhook idempotency, realtime, known trade-of
 
 ## 🔜 Next steps
 
-- **Notifications**: transactional email for confirmation / status changes, web push, WhatsApp
+- **Notifications**: transactional email for confirmation / status changes, web push (WhatsApp already implemented via Meta Cloud API — requires Meta Business setup + approved template to activate)
 - **MP webhook HMAC verification** (known gap — documented)
 - **Tests**: Vitest + Playwright setup (in progress, part of the author's testing course)
 

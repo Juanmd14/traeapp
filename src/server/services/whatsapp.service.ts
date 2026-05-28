@@ -1,19 +1,25 @@
 /**
  * Envío de WhatsApp para notificar al dueño del comercio.
  *
- * Provider actual: CallMeBot (https://www.callmebot.com/blog/free-api-whatsapp-messages/).
- * El owner debe enviar "I allow callmebot to send me messages" al +34 644 51 95 23
- * desde su WhatsApp y recibe un apikey personal. Esa apikey se guarda en
- * stores.whatsapp_provider_key.
+ * Provider: WhatsApp Cloud API (Meta). Vadelivery se registra una sola vez
+ * como sender — cada local solo carga su número en /comercio/datos.
  *
- * Demo mode: para producción real conviene migrar a WhatsApp Cloud API (Meta) o Twilio.
- * La interfaz es la misma — solo cambia esta función.
+ * Setup global (env vars):
+ *   META_WHATSAPP_TOKEN          System User Access Token permanente
+ *   META_WHATSAPP_PHONE_ID       Phone Number ID del WhatsApp Business
+ *   META_WHATSAPP_TEMPLATE_NAME  Nombre del template aprobado (ej: nuevo_pedido)
+ *   META_WHATSAPP_TEMPLATE_LANG  Código de idioma del template (ej: es_MX)
+ *
+ * El template debe tener 4 variables en el body, en este orden:
+ *   {{1}} storeName, {{2}} orderNumber, {{3}} totalLabel, {{4}} panelUrl
  */
 
 export type WhatsappSendInput = {
-  to: string; // E.164 sin espacios ni signos: "+5491122223333"
-  apiKey: string;
-  message: string;
+  to: string;           // E.164 con o sin "+", ej: "+5491122223333"
+  storeName: string;
+  orderNumber: number | string;
+  totalLabel: string;   // "$5.500"
+  panelUrl: string;
 };
 
 export type WhatsappSendResult = {
@@ -21,32 +27,60 @@ export type WhatsappSendResult = {
   error?: string;
 };
 
-const CALLMEBOT_ENDPOINT = "https://api.callmebot.com/whatsapp.php";
+const GRAPH_VERSION = "v21.0";
 const TIMEOUT_MS = 5000;
 
-export async function sendWhatsapp(
-  input: WhatsappSendInput,
-): Promise<WhatsappSendResult> {
-  const phone = input.to.replace(/^\+/, "");
+export async function sendWhatsapp(input: WhatsappSendInput): Promise<WhatsappSendResult> {
+  const token = process.env.META_WHATSAPP_TOKEN;
+  const phoneId = process.env.META_WHATSAPP_PHONE_ID;
+  const templateName = process.env.META_WHATSAPP_TEMPLATE_NAME;
+  const templateLang = process.env.META_WHATSAPP_TEMPLATE_LANG ?? "es_MX";
 
-  const url =
-    `${CALLMEBOT_ENDPOINT}?phone=${encodeURIComponent(phone)}` +
-    `&text=${encodeURIComponent(input.message)}` +
-    `&apikey=${encodeURIComponent(input.apiKey)}`;
+  if (!token || !phoneId || !templateName) {
+    return { ok: false, error: "WhatsApp no configurado (faltan env vars META_WHATSAPP_*)" };
+  }
+
+  const to = input.to.replace(/^\+/, "");
+
+  const url = `https://graph.facebook.com/${GRAPH_VERSION}/${phoneId}/messages`;
+  const body = {
+    messaging_product: "whatsapp",
+    to,
+    type: "template",
+    template: {
+      name: templateName,
+      language: { code: templateLang },
+      components: [
+        {
+          type: "body",
+          parameters: [
+            { type: "text", text: input.storeName },
+            { type: "text", text: String(input.orderNumber) },
+            { type: "text", text: input.totalLabel },
+            { type: "text", text: input.panelUrl },
+          ],
+        },
+      ],
+    },
+  };
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const res = await fetch(url, { method: "GET", signal: controller.signal });
-    const body = await res.text();
+    const res = await fetch(url, {
+      method: "POST",
+      signal: controller.signal,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
 
-    // CallMeBot devuelve 200 con texto "Message queued" o similar incluso si la apikey
-    // está mal — por eso chequeamos también el contenido.
-    const looksOk = res.ok && /queued|sent|success/i.test(body);
-
-    if (!looksOk) {
-      return { ok: false, error: body.slice(0, 200) };
+    if (!res.ok) {
+      const text = await res.text();
+      return { ok: false, error: `Meta ${res.status}: ${text.slice(0, 200)}` };
     }
 
     return { ok: true };

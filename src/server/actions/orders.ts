@@ -249,21 +249,21 @@ export const createOrderAction = authAction
     // WhatsApp al dueño (si lo activó). Independiente de la notificación in-app
     // para que el dueño se entere sin tener el panel abierto.
     ;(supabaseAdmin.from("stores") as any)
-      .select("whatsapp_number, whatsapp_provider_key, whatsapp_notifications_enabled")
+      .select("whatsapp_number, whatsapp_notifications_enabled, name")
       .eq("id", store.id)
       .single()
-      .then(({ data: s }: { data: { whatsapp_number: string | null; whatsapp_provider_key: string | null; whatsapp_notifications_enabled: boolean } | null }) => {
+      .then(({ data: s }: { data: { whatsapp_number: string | null; whatsapp_notifications_enabled: boolean; name: string } | null }) => {
         if (!s?.whatsapp_notifications_enabled) return;
-        if (!s.whatsapp_number || !s.whatsapp_provider_key) return;
+        if (!s.whatsapp_number) return;
 
-        const header = `🛎️ Pedido nuevo #${order.order_number}`;
-        const link = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/comercio/pedidos`;
-        const message = `${header}\n${totalStr} · ${payLabel}\n${link}`;
+        const panelUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/comercio/pedidos`;
 
         sendWhatsapp({
           to: s.whatsapp_number,
-          apiKey: s.whatsapp_provider_key,
-          message,
+          storeName: s.name,
+          orderNumber: order.order_number,
+          totalLabel: `${totalStr} · ${payLabel}`,
+          panelUrl,
         }).catch(() => {});
       })
       .catch(() => {});

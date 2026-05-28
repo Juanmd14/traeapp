@@ -128,22 +128,20 @@ async function notifyStoreOnPaymentApproved(orderId: string) {
   }
 
   const { data: store } = await (supabaseAdmin.from("stores") as any)
-    .select("whatsapp_number, whatsapp_provider_key, whatsapp_notifications_enabled")
+    .select("whatsapp_number, whatsapp_notifications_enabled, name")
     .eq("id", order.store_id)
     .single();
 
-  if (
-    !store?.whatsapp_notifications_enabled ||
-    !store.whatsapp_number ||
-    !store.whatsapp_provider_key
-  ) {
+  if (!store?.whatsapp_notifications_enabled || !store.whatsapp_number) {
     return;
   }
 
-  const link = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/comercio/pedidos`;
+  const panelUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/comercio/pedidos`;
   await sendWhatsapp({
     to: store.whatsapp_number,
-    apiKey: store.whatsapp_provider_key,
-    message: `🛎️ Pedido nuevo #${order.order_number}\n${totalStr} · Mercado Pago (pagado)\n${link}`,
+    storeName: store.name,
+    orderNumber: order.order_number,
+    totalLabel: `${totalStr} · Mercado Pago (pagado)`,
+    panelUrl,
   });
 }

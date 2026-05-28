@@ -191,16 +191,11 @@ export const updateStoreNotificationsAction = authAction
 
     const number =
       parsedInput.whatsappNumber === "" ? null : parsedInput.whatsappNumber ?? null;
-    const providerKey =
-      parsedInput.whatsappProviderKey === ""
-        ? null
-        : parsedInput.whatsappProviderKey ?? null;
 
     const { error } = await supabaseAdmin
       .from("stores")
       .update({
         whatsapp_number: number,
-        whatsapp_provider_key: providerKey,
         whatsapp_notifications_enabled: parsedInput.whatsappEnabled,
       } as any)
       .eq("id", parsedInput.storeId);
@@ -228,18 +223,22 @@ export const testWhatsappAction = authAction
     }
 
     const { data: store } = await (supabaseAdmin.from("stores") as any)
-      .select("whatsapp_number, whatsapp_provider_key, name")
+      .select("whatsapp_number, name")
       .eq("id", parsedInput.storeId)
       .single();
 
-    if (!store?.whatsapp_number || !store?.whatsapp_provider_key) {
-      throw new Error("Cargá número y API key antes de probar");
+    if (!store?.whatsapp_number) {
+      throw new Error("Cargá tu número antes de probar");
     }
+
+    const panelUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/comercio/pedidos`;
 
     const result = await sendWhatsapp({
       to: store.whatsapp_number,
-      apiKey: store.whatsapp_provider_key,
-      message: `vadelivery · Test ✅\nNotificaciones activas para "${store.name}".`,
+      storeName: store.name,
+      orderNumber: "TEST",
+      totalLabel: "prueba",
+      panelUrl,
     });
 
     if (!result.ok) {

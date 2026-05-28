@@ -101,20 +101,11 @@ export const storeNotificationsSchema = z
       .regex(/^\+[1-9]\d{7,14}$/, "Usá formato internacional: +5491122223333")
       .optional()
       .or(z.literal("")),
-    whatsappProviderKey: z
-      .string()
-      .min(4, "API key muy corta")
-      .max(120)
-      .optional()
-      .or(z.literal("")),
   })
-  .refine(
-    (d) => !d.whatsappEnabled || (!!d.whatsappNumber && !!d.whatsappProviderKey),
-    {
-      message: "Para activar WhatsApp cargá número y API key",
-      path: ["whatsappEnabled"],
-    },
-  );
+  .refine((d) => !d.whatsappEnabled || !!d.whatsappNumber, {
+    message: "Para activar WhatsApp cargá tu número",
+    path: ["whatsappEnabled"],
+  });
 export type StoreNotificationsInput = z.infer<typeof storeNotificationsSchema>;
 
 /* ============================================

@@ -29,7 +29,6 @@ type StoreData = {
   cover_url: string | null;
   whatsapp_number: string | null;
   whatsapp_notifications_enabled: boolean | null;
-  whatsapp_provider_key: string | null;
 };
 
 export default async function DatosComercioPage() {
@@ -68,8 +67,7 @@ export default async function DatosComercioPage() {
       logo_url,
       cover_url,
       whatsapp_number,
-      whatsapp_notifications_enabled,
-      whatsapp_provider_key
+      whatsapp_notifications_enabled
     `)
     .eq("id", storeId)
     .single();
@@ -117,7 +115,6 @@ export default async function DatosComercioPage() {
           whatsapp_number: store.whatsapp_number,
           whatsapp_notifications_enabled:
             store.whatsapp_notifications_enabled ?? false,
-          whatsapp_provider_key: store.whatsapp_provider_key,
         }}
       />
     </div>

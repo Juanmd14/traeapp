@@ -39,7 +39,6 @@ type Initial = {
   cover_url: string | null;
   whatsapp_number: string | null;
   whatsapp_notifications_enabled: boolean;
-  whatsapp_provider_key: string | null;
 };
 
 type Props = {
@@ -85,7 +84,6 @@ export function StoreDatosForm({ storeId, initial }: Props) {
     defaultValues: {
       whatsappEnabled: initial.whatsapp_notifications_enabled,
       whatsappNumber: initial.whatsapp_number ?? "",
-      whatsappProviderKey: initial.whatsapp_provider_key ?? "",
     },
   });
 
@@ -274,17 +272,6 @@ export function StoreDatosForm({ storeId, initial }: Props) {
           dependés de tener abierto el panel.
         </p>
 
-        <details className="mb-5 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 px-3 py-2 text-body-sm text-neutral-600 dark:text-neutral-400">
-          <summary className="cursor-pointer font-medium text-neutral-700 dark:text-neutral-300">
-            Cómo obtener la API key (CallMeBot · gratis)
-          </summary>
-          <ol className="mt-2 list-decimal space-y-1 pl-5">
-            <li>Agendá el número <strong>+34 644 51 95 23</strong> en tu WhatsApp.</li>
-            <li>Mandale el mensaje exacto: <code>I allow callmebot to send me messages</code>.</li>
-            <li>Vas a recibir tu API key personal. Copiala acá abajo.</li>
-          </ol>
-        </details>
-
         <form onSubmit={notificationsForm.handleSubmit(onNotificationsSubmit)} className="space-y-4">
           <label className="flex items-center gap-3 cursor-pointer select-none">
             <input
@@ -309,22 +296,6 @@ export function StoreDatosForm({ storeId, initial }: Props) {
               placeholder="+5491122223333"
               invalid={!!notificationsForm.formState.errors.whatsappNumber}
               {...notificationsForm.register("whatsappNumber")}
-            />
-          </FormField>
-
-          <FormField
-            label="API key (CallMeBot)"
-            htmlFor="sd-whatsapp-key"
-            error={notificationsForm.formState.errors.whatsappProviderKey?.message}
-            hint="La que te devuelve el bot tras autorizarlo."
-          >
-            <Input
-              id="sd-whatsapp-key"
-              type="password"
-              autoComplete="off"
-              placeholder="••••••••"
-              invalid={!!notificationsForm.formState.errors.whatsappProviderKey}
-              {...notificationsForm.register("whatsappProviderKey")}
             />
           </FormField>
 
