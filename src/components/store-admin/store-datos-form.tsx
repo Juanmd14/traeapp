@@ -13,12 +13,16 @@ import { StoreImageUpload } from "./store-image-upload";
 import {
   storeProfileSchema,
   storeAddressSchema,
+  storeNotificationsSchema,
   type StoreProfileInput,
   type StoreAddressInput,
+  type StoreNotificationsInput,
 } from "@/schemas";
 import {
   updateStoreProfileAction,
   updateStoreAddressAction,
+  updateStoreNotificationsAction,
+  testWhatsappAction,
 } from "@/server/actions/stores";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +37,9 @@ type Initial = {
   delivery_radius_km: number;
   logo_url: string | null;
   cover_url: string | null;
+  whatsapp_number: string | null;
+  whatsapp_notifications_enabled: boolean;
+  whatsapp_provider_key: string | null;
 };
 
 type Props = {
@@ -44,8 +51,12 @@ export function StoreDatosForm({ storeId, initial }: Props) {
   const router = useRouter();
   const [serverErrorProfile, setServerErrorProfile] = useState<string | null>(null);
   const [serverErrorAddress, setServerErrorAddress] = useState<string | null>(null);
+  const [serverErrorNotif, setServerErrorNotif] = useState<string | null>(null);
+  const [notifFeedback, setNotifFeedback] = useState<string | null>(null);
   const [pendingProfile, startProfile] = useTransition();
   const [pendingAddress, startAddress] = useTransition();
+  const [pendingNotif, startNotif] = useTransition();
+  const [pendingTest, startTest] = useTransition();
   const [logoUrl, setLogoUrl] = useState(initial.logo_url);
   const [coverUrl, setCoverUrl] = useState(initial.cover_url);
 
@@ -69,7 +80,17 @@ export function StoreDatosForm({ storeId, initial }: Props) {
     },
   });
 
+  const notificationsForm = useForm<StoreNotificationsInput>({
+    resolver: zodResolver(storeNotificationsSchema),
+    defaultValues: {
+      whatsappEnabled: initial.whatsapp_notifications_enabled,
+      whatsappNumber: initial.whatsapp_number ?? "",
+      whatsappProviderKey: initial.whatsapp_provider_key ?? "",
+    },
+  });
+
   const radius = addressForm.watch("deliveryRadiusKm");
+  const whatsappEnabled = notificationsForm.watch("whatsappEnabled");
 
   const onProfileSubmit = (data: StoreProfileInput) => {
     setServerErrorProfile(null);
@@ -92,6 +113,33 @@ export function StoreDatosForm({ storeId, initial }: Props) {
         return;
       }
       router.refresh();
+    });
+  };
+
+  const onNotificationsSubmit = (data: StoreNotificationsInput) => {
+    setServerErrorNotif(null);
+    setNotifFeedback(null);
+    startNotif(async () => {
+      const result = await updateStoreNotificationsAction({ ...data, storeId });
+      if (result?.serverError) {
+        setServerErrorNotif(result.serverError);
+        return;
+      }
+      setNotifFeedback("Notificaciones guardadas.");
+      router.refresh();
+    });
+  };
+
+  const onTestWhatsapp = () => {
+    setServerErrorNotif(null);
+    setNotifFeedback(null);
+    startTest(async () => {
+      const result = await testWhatsappAction({ storeId });
+      if (result?.serverError) {
+        setServerErrorNotif(result.serverError);
+        return;
+      }
+      setNotifFeedback("Te enviamos un WhatsApp de prueba. Revisalo en unos segundos.");
     });
   };
 
@@ -214,6 +262,104 @@ export function StoreDatosForm({ storeId, initial }: Props) {
           <Button type="submit" loading={pendingProfile}>
             Guardar datos y contacto
           </Button>
+        </form>
+      </section>
+
+      <section className="border-t border-neutral-200 dark:border-neutral-800 pt-10">
+        <h2 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
+          Notificaciones por WhatsApp
+        </h2>
+        <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mb-5">
+          Te avisamos a WhatsApp cada vez que entra un pedido, así no
+          dependés de tener abierto el panel.
+        </p>
+
+        <details className="mb-5 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 px-3 py-2 text-body-sm text-neutral-600 dark:text-neutral-400">
+          <summary className="cursor-pointer font-medium text-neutral-700 dark:text-neutral-300">
+            Cómo obtener la API key (CallMeBot · gratis)
+          </summary>
+          <ol className="mt-2 list-decimal space-y-1 pl-5">
+            <li>Agendá el número <strong>+34 644 51 95 23</strong> en tu WhatsApp.</li>
+            <li>Mandale el mensaje exacto: <code>I allow callmebot to send me messages</code>.</li>
+            <li>Vas a recibir tu API key personal. Copiala acá abajo.</li>
+          </ol>
+        </details>
+
+        <form onSubmit={notificationsForm.handleSubmit(onNotificationsSubmit)} className="space-y-4">
+          <label className="flex items-center gap-3 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              className="size-4 accent-primary-600"
+              {...notificationsForm.register("whatsappEnabled")}
+            />
+            <span className="text-body-md text-neutral-900 dark:text-neutral-100">
+              Activar notificaciones por WhatsApp
+            </span>
+          </label>
+
+          <FormField
+            label="Número de WhatsApp"
+            htmlFor="sd-whatsapp-number"
+            error={notificationsForm.formState.errors.whatsappNumber?.message}
+            hint="Formato internacional. Ej: +5491122223333"
+          >
+            <Input
+              id="sd-whatsapp-number"
+              type="tel"
+              placeholder="+5491122223333"
+              invalid={!!notificationsForm.formState.errors.whatsappNumber}
+              {...notificationsForm.register("whatsappNumber")}
+            />
+          </FormField>
+
+          <FormField
+            label="API key (CallMeBot)"
+            htmlFor="sd-whatsapp-key"
+            error={notificationsForm.formState.errors.whatsappProviderKey?.message}
+            hint="La que te devuelve el bot tras autorizarlo."
+          >
+            <Input
+              id="sd-whatsapp-key"
+              type="password"
+              autoComplete="off"
+              placeholder="••••••••"
+              invalid={!!notificationsForm.formState.errors.whatsappProviderKey}
+              {...notificationsForm.register("whatsappProviderKey")}
+            />
+          </FormField>
+
+          {notificationsForm.formState.errors.whatsappEnabled?.message && (
+            <p className="text-body-sm text-destructive">
+              {notificationsForm.formState.errors.whatsappEnabled.message}
+            </p>
+          )}
+
+          {serverErrorNotif && (
+            <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">
+              {serverErrorNotif}
+            </p>
+          )}
+
+          {notifFeedback && (
+            <p className="text-body-sm text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-2 rounded-md">
+              {notifFeedback}
+            </p>
+          )}
+
+          <div className="flex flex-wrap gap-3">
+            <Button type="submit" loading={pendingNotif}>
+              Guardar notificaciones
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onTestWhatsapp}
+              loading={pendingTest}
+              disabled={!whatsappEnabled}
+            >
+              Probar envío
+            </Button>
+          </div>
         </form>
       </section>
 

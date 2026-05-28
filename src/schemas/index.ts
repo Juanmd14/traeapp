@@ -93,6 +93,30 @@ export const storeProfileSchema = z.object({
 });
 export type StoreProfileInput = z.infer<typeof storeProfileSchema>;
 
+export const storeNotificationsSchema = z
+  .object({
+    whatsappEnabled: z.boolean(),
+    whatsappNumber: z
+      .string()
+      .regex(/^\+[1-9]\d{7,14}$/, "Usá formato internacional: +5491122223333")
+      .optional()
+      .or(z.literal("")),
+    whatsappProviderKey: z
+      .string()
+      .min(4, "API key muy corta")
+      .max(120)
+      .optional()
+      .or(z.literal("")),
+  })
+  .refine(
+    (d) => !d.whatsappEnabled || (!!d.whatsappNumber && !!d.whatsappProviderKey),
+    {
+      message: "Para activar WhatsApp cargá número y API key",
+      path: ["whatsappEnabled"],
+    },
+  );
+export type StoreNotificationsInput = z.infer<typeof storeNotificationsSchema>;
+
 /* ============================================
  * PRODUCTS
  * ============================================ */

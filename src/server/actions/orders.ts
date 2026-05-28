@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { calculatePricing } from "@/server/services/pricing.service";
 import { createPreference } from "@/server/services/mercadopago.service";
 import { createNotification } from "@/server/services/notifications.service";
+import { sendWhatsapp } from "@/server/services/whatsapp.service";
 
 const cartItemInputSchema = z.object({
   productId: z.string().uuid(),
@@ -224,9 +225,12 @@ export const createOrderAction = authAction
       }
     }
 
-    // 7. Notificar al comercio (best-effort, no bloquea)
+    // 7. Notificar al comercio (best-effort, no bloquea la respuesta al cliente).
+    // Acá sólo llega el flujo de efectivo — MP ya retornó en el paso 6 y la
+    // notificación se dispara en el webhook al confirmarse el pago.
     const totalStr = "$" + Number(pricing.total).toLocaleString("es-AR", { maximumFractionDigits: 0 });
-    const payLabel = parsedInput.paymentMethod === "cash" ? "Efectivo" : "Mercado Pago";
+    const payLabel = "Efectivo";
+
     ;(supabaseAdmin.from("store_users") as any)
       .select("user_id")
       .eq("store_id", store.id)
@@ -239,6 +243,28 @@ export const createOrderAction = authAction
             data: { link: "/comercio/pedidos", orderId: order.id, orderNumber: order.order_number },
           }).catch(() => {});
         }
+      })
+      .catch(() => {});
+
+    // WhatsApp al dueño (si lo activó). Independiente de la notificación in-app
+    // para que el dueño se entere sin tener el panel abierto.
+    ;(supabaseAdmin.from("stores") as any)
+      .select("whatsapp_number, whatsapp_provider_key, whatsapp_notifications_enabled")
+      .eq("id", store.id)
+      .single()
+      .then(({ data: s }: { data: { whatsapp_number: string | null; whatsapp_provider_key: string | null; whatsapp_notifications_enabled: boolean } | null }) => {
+        if (!s?.whatsapp_notifications_enabled) return;
+        if (!s.whatsapp_number || !s.whatsapp_provider_key) return;
+
+        const header = `🛎️ Pedido nuevo #${order.order_number}`;
+        const link = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/comercio/pedidos`;
+        const message = `${header}\n${totalStr} · ${payLabel}\n${link}`;
+
+        sendWhatsapp({
+          to: s.whatsapp_number,
+          apiKey: s.whatsapp_provider_key,
+          message,
+        }).catch(() => {});
       })
       .catch(() => {});
 

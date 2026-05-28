@@ -14,8 +14,10 @@ import {
   storeAddressSchema,
   storeOperationSchema,
   storeProfileSchema,
+  storeNotificationsSchema,
 } from "@/schemas";
 import { slugify } from "@/lib/utils";
+import { sendWhatsapp } from "@/server/services/whatsapp.service";
 
 /**
  * Crea un comercio en estado 'draft' con el usuario actual como owner.
@@ -164,6 +166,88 @@ export const updateStoreAddressAction = authAction
     if (error) throw new Error(error.message);
 
     revalidatePath("/comercio", "layout");
+    return { ok: true };
+  });
+
+const updateStoreNotificationsInput = storeNotificationsSchema.and(
+  z.object({ storeId: z.string().uuid() }),
+);
+
+export const updateStoreNotificationsAction = authAction
+  .schema(updateStoreNotificationsInput)
+  .action(async ({ parsedInput, ctx }) => {
+    const supabase = createClient();
+    const { data: membership } = await supabase
+      .from("store_users")
+      .select("role")
+      .eq("store_id", parsedInput.storeId)
+      .eq("user_id", ctx.session.id)
+      .eq("is_active", true)
+      .single();
+
+    if (!membership && ctx.session.role !== "admin") {
+      throw new Error("No tenés permiso sobre este comercio");
+    }
+
+    const number =
+      parsedInput.whatsappNumber === "" ? null : parsedInput.whatsappNumber ?? null;
+    const providerKey =
+      parsedInput.whatsappProviderKey === ""
+        ? null
+        : parsedInput.whatsappProviderKey ?? null;
+
+    const { error } = await supabaseAdmin
+      .from("stores")
+      .update({
+        whatsapp_number: number,
+        whatsapp_provider_key: providerKey,
+        whatsapp_notifications_enabled: parsedInput.whatsappEnabled,
+      } as any)
+      .eq("id", parsedInput.storeId);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/comercio", "layout");
+    return { ok: true };
+  });
+
+export const testWhatsappAction = authAction
+  .schema(z.object({ storeId: z.string().uuid() }))
+  .action(async ({ parsedInput, ctx }) => {
+    const supabase = createClient();
+    const { data: membership } = await supabase
+      .from("store_users")
+      .select("role")
+      .eq("store_id", parsedInput.storeId)
+      .eq("user_id", ctx.session.id)
+      .eq("is_active", true)
+      .single();
+
+    if (!membership && ctx.session.role !== "admin") {
+      throw new Error("No tenés permiso sobre este comercio");
+    }
+
+    const { data: store } = await (supabaseAdmin.from("stores") as any)
+      .select("whatsapp_number, whatsapp_provider_key, name")
+      .eq("id", parsedInput.storeId)
+      .single();
+
+    if (!store?.whatsapp_number || !store?.whatsapp_provider_key) {
+      throw new Error("Cargá número y API key antes de probar");
+    }
+
+    const result = await sendWhatsapp({
+      to: store.whatsapp_number,
+      apiKey: store.whatsapp_provider_key,
+      message: `vadelivery · Test ✅\nNotificaciones activas para "${store.name}".`,
+    });
+
+    if (!result.ok) {
+      throw new Error(
+        `No se pudo enviar el WhatsApp${result.error ? `: ${result.error}` : ""}`,
+      );
+    }
+
     return { ok: true };
   });
 

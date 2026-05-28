@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getPayment } from "@/server/services/mercadopago.service";
+import { createNotification } from "@/server/services/notifications.service";
+import { sendWhatsapp } from "@/server/services/whatsapp.service";
 
 type PaymentWebhookStatus =
   | "pending"
@@ -73,6 +75,13 @@ export async function POST(req: Request) {
       );
     }
 
+    // Pago aprobado → notificar al comercio (in-app + WhatsApp si lo activó).
+    // Best-effort: si falla cualquier paso, el webhook igual responde ok para
+    // que MP no haga retry de una notificación informativa.
+    if (status === "approved") {
+      notifyStoreOnPaymentApproved(orderId).catch((e) => console.error(e));
+    }
+
     return NextResponse.json({
       ok: true,
     });
@@ -88,4 +97,53 @@ export async function POST(req: Request) {
       }
     );
   }
+}
+
+async function notifyStoreOnPaymentApproved(orderId: string) {
+  const { data: order } = await (supabaseAdmin.from("orders") as any)
+    .select("id, order_number, total, store_id")
+    .eq("id", orderId)
+    .single();
+
+  if (!order?.store_id) return;
+
+  const totalStr =
+    "$" + Number(order.total).toLocaleString("es-AR", { maximumFractionDigits: 0 });
+
+  const { data: owners } = await (supabaseAdmin.from("store_users") as any)
+    .select("user_id")
+    .eq("store_id", order.store_id);
+
+  for (const o of (owners as { user_id: string }[] | null) ?? []) {
+    createNotification({
+      userId: o.user_id,
+      title: `Pago confirmado · Pedido #${order.order_number}`,
+      body: `${totalStr} · Mercado Pago`,
+      data: {
+        link: "/comercio/pedidos",
+        orderId: order.id,
+        orderNumber: order.order_number,
+      },
+    }).catch(() => {});
+  }
+
+  const { data: store } = await (supabaseAdmin.from("stores") as any)
+    .select("whatsapp_number, whatsapp_provider_key, whatsapp_notifications_enabled")
+    .eq("id", order.store_id)
+    .single();
+
+  if (
+    !store?.whatsapp_notifications_enabled ||
+    !store.whatsapp_number ||
+    !store.whatsapp_provider_key
+  ) {
+    return;
+  }
+
+  const link = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/comercio/pedidos`;
+  await sendWhatsapp({
+    to: store.whatsapp_number,
+    apiKey: store.whatsapp_provider_key,
+    message: `🛎️ Pedido nuevo #${order.order_number}\n${totalStr} · Mercado Pago (pagado)\n${link}`,
+  });
 }
