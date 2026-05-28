@@ -16,8 +16,6 @@ const HERO_ICONS = [
 
 export function HeroBanner() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
-  const [imgError, setImgError] = useState(false);
   const [allLoaded, setAllLoaded] = useState(false);
 
   useEffect(() => {
@@ -34,17 +32,10 @@ export function HeroBanner() {
   useEffect(() => {
     if (!allLoaded) return;
     const interval = setInterval(() => {
-      setIsVisible(false);
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % HERO_ICONS.length);
-        setImgError(false);
-        setIsVisible(true);
-      }, 400);
+      setCurrentIndex((prev) => (prev + 1) % HERO_ICONS.length);
     }, 2500);
     return () => clearInterval(interval);
   }, [allLoaded]);
-
-  const currentIcon = HERO_ICONS[currentIndex] || HERO_ICONS[0];
 
   return (
     <section
@@ -82,33 +73,20 @@ export function HeroBanner() {
             overflow-hidden
           "
         >
-          <div
-            className="w-14 h-14 sm:w-20 sm:h-20 flex items-center justify-center"
-            style={{
-              opacity: allLoaded && isVisible ? 1 : 0,
-              transform: allLoaded && isVisible
-                ? "scale(1) rotate(0deg)"
-                : "scale(0.5) rotate(-10deg)",
-              transition: allLoaded
-                ? "opacity 0.35s ease, transform 0.35s ease"
-                : "none",
-            }}
-          >
-            {imgError ? (
-              <span className="text-4xl sm:text-6xl leading-none select-none">
-                {currentIcon.fallback}
-              </span>
-            ) : (
+          {/* Double-buffer: todas las imágenes apiladas, solo cambia opacity */}
+          <div className="relative w-14 h-14 sm:w-20 sm:h-20">
+            {HERO_ICONS.map((icon, i) => (
               <Image
-                src={currentIcon.src}
-                alt={currentIcon.alt}
+                key={icon.src}
+                src={icon.src}
+                alt={icon.alt}
                 width={96}
                 height={96}
-                priority
-                className="object-contain w-full h-full"
-                onError={() => setImgError(true)}
+                priority={i === 0}
+                className="absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ease-out"
+                style={{ opacity: allLoaded && i === currentIndex ? 1 : 0 }}
               />
-            )}
+            ))}
           </div>
         </div>
 
