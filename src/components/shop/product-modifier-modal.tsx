@@ -72,7 +72,7 @@ export function ProductModifierModal({
     setSelected((prev) => {
       const current = prev[group.id] ?? [];
       if (group.max_select === 1) {
-        return { ...prev, [group.id]: [optionId] };
+        return { ...prev, [group.id]: already ? [] : [optionId] };
       }
       const already = current.includes(optionId);
       return {
