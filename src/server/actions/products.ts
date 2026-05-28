@@ -180,12 +180,23 @@ const modifierOptionSchema = z.object({
   isRemoval: z.boolean(),
 });
 
+const customGroupSchema = z.object({
+  name: z.string().min(1),
+  is_required: z.boolean(),
+  max_select: z.number().int().min(1),
+  options: z.array(z.object({
+    name: z.string().min(1),
+    price: z.number().int().min(0),
+  })),
+});
+
 export const upsertModifiersAction = authAction
   .schema(z.object({
     storeId: z.string().uuid(),
     productId: z.string().uuid(),
     removableIngredients: z.array(z.string()),
     extras: z.array(modifierOptionSchema),
+    customGroups: z.array(customGroupSchema).default([]),
   }))
   .action(async ({ parsedInput, ctx }) => {
     await ensureStoreMember(ctx.session.id, parsedInput.storeId, ctx.session.role);
@@ -246,6 +257,36 @@ export const upsertModifiersAction = authAction
         await supabaseAdmin
           .from("product_modifier_options")
           .insert(optionsToInsert);
+      }
+    }
+
+    for (const group of parsedInput.customGroups) {
+      const validOptions = group.options.filter((o) => o.name.trim());
+      if (validOptions.length === 0) continue;
+
+      const { data: modifier } = await supabaseAdmin
+        .from("product_modifiers")
+        .insert({
+          product_id: parsedInput.productId,
+          name: group.name,
+          is_required: group.is_required,
+          min_select: group.is_required ? 1 : 0,
+          max_select: group.max_select,
+        })
+        .select("id")
+        .single();
+
+      if (modifier) {
+        await supabaseAdmin
+          .from("product_modifier_options")
+          .insert(
+            validOptions.map((o) => ({
+              modifier_id: modifier.id,
+              name: o.name,
+              price_delta: o.price,
+              is_removal: false,
+            }))
+          );
       }
     }
 

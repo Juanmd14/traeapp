@@ -194,7 +194,7 @@ export function ProductModifierModal({
                               onClick={() => toggleOption(group, option.id)}
                               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition ${
                                 isActive
-                                  ? "border-primary-500 bg-primary-50"
+                                  ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
                                   : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
                               }`}
                             >
@@ -241,7 +241,7 @@ export function ProductModifierModal({
                           onClick={() => group && toggleOption(group, option.id)}
                           className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition ${
                             isActive
-                              ? "border-neutral-400 bg-neutral-100"
+                              ? "border-neutral-400 bg-neutral-100 dark:bg-neutral-700"
                               : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300"
                           }`}
                         >

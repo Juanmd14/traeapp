@@ -41,10 +41,19 @@ type QuantityOptionInput = {
 type ModifierData = {
   modifier_id: string;
   modifier_name: string;
+  modifier_is_required: boolean;
+  modifier_max_select: number;
   id: string;
   name: string;
   price_delta: number;
   is_removal: boolean;
+};
+
+type CustomModifierGroup = {
+  name: string;
+  is_required: boolean;
+  max_select: number;
+  options: { name: string; price: number }[];
 };
 
 export type ProductRow = {
@@ -415,9 +424,25 @@ function ProductFormDialog({
   );
   const [extras, setExtras] = useState<{ name: string; price: number }[]>(
     initial?.modifiers_data
-      .filter((m) => !m.is_removal)
+      .filter((m) => !m.is_removal && m.modifier_name === "Extras")
       .map((m) => ({ name: m.name, price: m.price_delta })) ?? []
   );
+  const [customGroups, setCustomGroups] = useState<CustomModifierGroup[]>(() => {
+    const grouped = new Map<string, CustomModifierGroup>();
+    for (const m of (initial?.modifiers_data ?? [])) {
+      if (m.modifier_name === "Ingredientes" || m.modifier_name === "Extras") continue;
+      if (!grouped.has(m.modifier_id)) {
+        grouped.set(m.modifier_id, {
+          name: m.modifier_name,
+          is_required: m.modifier_is_required,
+          max_select: m.modifier_max_select,
+          options: [],
+        });
+      }
+      grouped.get(m.modifier_id)!.options.push({ name: m.name, price: m.price_delta });
+    }
+    return Array.from(grouped.values());
+  });
   const isEditing = !!initial;
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -564,12 +589,21 @@ function ProductFormDialog({
       const validExtras = extras
         .filter((e) => e.name.trim() && e.price >= 0)
         .map((e) => ({ name: e.name, price: e.price, isRemoval: false }));
+      const validCustomGroups = customGroups
+        .filter((g) => g.name.trim() && g.options.some((o) => o.name.trim()))
+        .map((g) => ({
+          name: g.name.trim(),
+          is_required: g.is_required,
+          max_select: g.max_select,
+          options: g.options.filter((o) => o.name.trim()).map((o) => ({ name: o.name.trim(), price: o.price })),
+        }));
 
       await upsertModifiersAction({
         storeId,
         productId,
         removableIngredients: validRemovable,
         extras: validExtras,
+        customGroups: validCustomGroups,
       });
 
       const updated: ProductRow = {
@@ -581,6 +615,8 @@ function ProductFormDialog({
           ...validRemovable.map((name) => ({
             modifier_id: "",
             modifier_name: "Ingredientes",
+            modifier_is_required: false,
+            modifier_max_select: validRemovable.length,
             id: "",
             name,
             price_delta: 0,
@@ -589,11 +625,25 @@ function ProductFormDialog({
           ...validExtras.map((e) => ({
             modifier_id: "",
             modifier_name: "Extras",
+            modifier_is_required: false,
+            modifier_max_select: validExtras.length,
             id: "",
             name: e.name,
             price_delta: e.price,
             is_removal: false,
           })),
+          ...validCustomGroups.flatMap((g) =>
+            g.options.map((o) => ({
+              modifier_id: "",
+              modifier_name: g.name,
+              modifier_is_required: g.is_required,
+              modifier_max_select: g.max_select,
+              id: "",
+              name: o.name,
+              price_delta: o.price,
+              is_removal: false,
+            }))
+          ),
         ],
       };
 
@@ -997,8 +1047,8 @@ function ProductFormDialog({
             </div>
 
             {/* Extras */}
-            <div className="space-y-2 pt-3 border-t border-neutral-200">
-              <p className="text-body-sm font-medium text-neutral-700 dark:text-neutral-300 dark:text-neutral-700">
+            <div className="space-y-2 pt-3 border-t border-neutral-200 dark:border-neutral-700">
+              <p className="text-body-sm font-medium text-neutral-700 dark:text-neutral-300">
                 Extras (el cliente puede agregar)
               </p>
               <div className="space-y-2">
@@ -1054,6 +1104,116 @@ function ProductFormDialog({
               >
                 + Agregar extra
               </button>
+            </div>
+
+            {/* Grupos personalizados */}
+            <div className="space-y-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-body-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    Grupos personalizados
+                  </p>
+                  <p className="text-[11px] text-neutral-400 mt-0.5">Ej: Punto de cocción, Tamaño, Salsa</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCustomGroups([...customGroups, { name: "", is_required: false, max_select: 1, options: [{ name: "", price: 0 }] }])}
+                  className="text-body-sm text-primary-600 hover:underline"
+                >
+                  + Agregar grupo
+                </button>
+              </div>
+
+              {customGroups.map((group, gIdx) => (
+                <div key={gIdx} className="border border-neutral-200 dark:border-neutral-700 rounded-lg p-3 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={group.name}
+                      onChange={(e) => setCustomGroups(customGroups.map((g, i) => i === gIdx ? { ...g, name: e.target.value } : g))}
+                      placeholder="Nombre del grupo (ej: Punto de cocción)"
+                      className="flex-1"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setCustomGroups(customGroups.filter((_, i) => i !== gIdx))}
+                      className="text-neutral-400 dark:text-neutral-500 hover:text-destructive flex-shrink-0"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <Switch
+                        checked={group.is_required}
+                        onCheckedChange={(v) => setCustomGroups(customGroups.map((g, i) => i === gIdx ? { ...g, is_required: v } : g))}
+                      />
+                      <span className="text-body-sm text-neutral-700 dark:text-neutral-300">Obligatorio</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <span className="text-[12px] text-neutral-500 dark:text-neutral-400">Máx. opciones:</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        value={group.max_select}
+                        onChange={(e) => setCustomGroups(customGroups.map((g, i) => i === gIdx ? { ...g, max_select: parseInt(e.target.value) || 1 } : g))}
+                        className="w-12 border border-neutral-200 dark:border-neutral-700 rounded px-2 py-1 text-sm text-center bg-transparent text-neutral-900 dark:text-neutral-100"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="space-y-2">
+                    {group.options.map((opt, oIdx) => (
+                      <div key={oIdx} className="flex items-center gap-2">
+                        <Input
+                          value={opt.name}
+                          onChange={(e) => setCustomGroups(customGroups.map((g, i) => i !== gIdx ? g : {
+                            ...g,
+                            options: g.options.map((o, j) => j === oIdx ? { ...o, name: e.target.value } : o),
+                          }))}
+                          placeholder="Ej: Jugoso"
+                          className="flex-1"
+                        />
+                        <div className="relative w-24">
+                          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400 text-sm">$</span>
+                          <Input
+                            type="number"
+                            min="0"
+                            value={opt.price}
+                            onChange={(e) => setCustomGroups(customGroups.map((g, i) => i !== gIdx ? g : {
+                              ...g,
+                              options: g.options.map((o, j) => j === oIdx ? { ...o, price: parseInt(e.target.value) || 0 } : o),
+                            }))}
+                            className="pl-6"
+                            placeholder="0"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setCustomGroups(customGroups.map((g, i) => i !== gIdx ? g : {
+                            ...g,
+                            options: g.options.filter((_, j) => j !== oIdx),
+                          }))}
+                          className="text-neutral-400 dark:text-neutral-500 hover:text-destructive"
+                        >
+                          <X className="size-4" />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setCustomGroups(customGroups.map((g, i) => i !== gIdx ? g : {
+                        ...g,
+                        options: [...g.options, { name: "", price: 0 }],
+                      }))}
+                      className="text-body-sm text-primary-600 hover:underline"
+                    >
+                      + Agregar opción
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 

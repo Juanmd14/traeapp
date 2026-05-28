@@ -23,7 +23,7 @@ export default async function ProductosPage() {
   const supabase = createClient();
   const { data: productsData } = await supabase
     .from("products")
-    .select("*, product_quantity_options(id, quantity, price, is_default, sort_order), product_modifiers(id, name, product_modifier_options(id, name, price_delta, is_removal))")
+    .select("*, product_quantity_options(id, quantity, price, is_default, sort_order), product_modifiers(id, name, is_required, max_select, product_modifier_options(id, name, price_delta, is_removal))")
     .eq("store_id", storeId)
     .is("deleted_at", null)
     .eq("is_active", true)
@@ -45,6 +45,8 @@ export default async function ProductosPage() {
       (mod.product_modifier_options ?? []).map((opt: any) => ({
         modifier_id: mod.id,
         modifier_name: mod.name,
+        modifier_is_required: mod.is_required ?? false,
+        modifier_max_select: mod.max_select ?? 1,
         ...opt,
       }))
     ),
