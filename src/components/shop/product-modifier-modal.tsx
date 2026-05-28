@@ -160,50 +160,66 @@ export function ProductModifierModal({
         <div className="overflow-y-auto flex-1 p-4 space-y-5">
           {hasModifiers && (
             <>
-              {modifiers.some(g => g.product_modifier_options.some(o => !o.is_removal)) && (
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <p className="text-body-md font-semibold text-neutral-900 dark:text-neutral-100">AGREGAR</p>
-                  </div>
-                  <div className="space-y-2">
-                    {modifiers.flatMap(g => g.product_modifier_options.filter(o => !o.is_removal))
-                      .sort((a, b) => a.sort_order - b.sort_order)
-                      .map((option) => {
-                      const group = modifiers.find(g => g.product_modifier_options.some(o => o.id === option.id));
-                      const isActive = group ? isSelected(group.id, option.id) : false;
-                      
-                      return (
-                        <button
-                          key={option.id}
-                          type="button"
-                          onClick={() => group && toggleOption(group, option.id)}
-                          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition ${
-                            isActive
-                              ? "border-primary-500 bg-primary-50"
-                              : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`size-5 rounded-full border-2 flex items-center justify-center transition ${
-                              isActive ? "border-primary-500 bg-primary-500" : "border-neutral-300"
-                            }`}>
-                              {isActive && <Check className="size-3 text-white" />}
-                            </div>
-                            <span className="text-body-md text-neutral-900 dark:text-neutral-100">{option.name}</span>
-                          </div>
-                          {Number(option.price_delta) > 0 && (
-                            <span className="text-body-sm font-medium text-primary-600">
-                              {option.is_absolute_price
-                                ? formatPrice(Number(option.price_delta))
-                                : `+ ${formatPrice(Number(option.price_delta))}`}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+              {modifiers
+                .filter(g => g.product_modifier_options.some(o => !o.is_removal))
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .map((group) => {
+                  const addOptions = group.product_modifier_options
+                    .filter(o => !o.is_removal)
+                    .sort((a, b) => a.sort_order - b.sort_order);
+
+                  return (
+                    <div key={group.id}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <p className="text-body-md font-semibold text-neutral-900 dark:text-neutral-100 uppercase">
+                          {group.name}
+                        </p>
+                        {group.is_required && (
+                          <span className="text-[10px] uppercase font-medium text-red-500">Obligatorio</span>
+                        )}
+                        {group.max_select > 1 && (
+                          <span className="text-[10px] text-neutral-400">
+                            (hasta {group.max_select})
+                          </span>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        {addOptions.map((option) => {
+                          const isActive = isSelected(group.id, option.id);
+
+                          return (
+                            <button
+                              key={option.id}
+                              type="button"
+                              onClick={() => toggleOption(group, option.id)}
+                              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition ${
+                                isActive
+                                  ? "border-primary-500 bg-primary-50"
+                                  : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`size-5 rounded-full border-2 flex items-center justify-center transition ${
+                                  isActive ? "border-primary-500 bg-primary-500" : "border-neutral-300"
+                                }`}>
+                                  {isActive && <Check className="size-3 text-white" />}
+                                </div>
+                                <span className="text-body-md text-neutral-900 dark:text-neutral-100">{option.name}</span>
+                              </div>
+                              {Number(option.price_delta) > 0 && (
+                                <span className="text-body-sm font-medium text-primary-600">
+                                  {option.is_absolute_price
+                                    ? formatPrice(Number(option.price_delta))
+                                    : `+ ${formatPrice(Number(option.price_delta))}`}
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
 
               {modifiers.some(g => g.product_modifier_options.some(o => o.is_removal)) && (
                 <div>
