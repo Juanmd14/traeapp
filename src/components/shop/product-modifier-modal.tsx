@@ -71,10 +71,10 @@ export function ProductModifierModal({
   const toggleOption = (group: ModifierGroup, optionId: string) => {
     setSelected((prev) => {
       const current = prev[group.id] ?? [];
+      const already = current.includes(optionId);
       if (group.max_select === 1) {
         return { ...prev, [group.id]: already ? [] : [optionId] };
       }
-      const already = current.includes(optionId);
       return {
         ...prev,
         [group.id]: already ? current.filter((id) => id !== optionId) : [...current, optionId],
