@@ -12,13 +12,16 @@
  *
  * El template debe tener 4 variables en el body, en este orden:
  *   {{1}} storeName, {{2}} orderNumber, {{3}} totalLabel, {{4}} panelUrl
+ *
+ * Nota: el template aprobado ya contiene "$" antes de {{3}}, por eso acá
+ * se quita un "$" inicial si viniera en totalLabel (para evitar "$$5.500").
  */
 
 export type WhatsappSendInput = {
   to: string;           // E.164 con o sin "+", ej: "+5491122223333"
   storeName: string;
   orderNumber: number | string;
-  totalLabel: string;   // "$5.500"
+  totalLabel: string;   // "5.500 · Efectivo" — sin "$" inicial (el template ya lo trae)
   panelUrl: string;
 };
 
@@ -41,6 +44,7 @@ export async function sendWhatsapp(input: WhatsappSendInput): Promise<WhatsappSe
   }
 
   const to = input.to.replace(/^\+/, "");
+  const totalLabel = input.totalLabel.replace(/^\$/, "");
 
   const url = `https://graph.facebook.com/${GRAPH_VERSION}/${phoneId}/messages`;
   const body = {
@@ -56,7 +60,7 @@ export async function sendWhatsapp(input: WhatsappSendInput): Promise<WhatsappSe
           parameters: [
             { type: "text", text: input.storeName },
             { type: "text", text: String(input.orderNumber) },
-            { type: "text", text: input.totalLabel },
+            { type: "text", text: totalLabel },
             { type: "text", text: input.panelUrl },
           ],
         },
