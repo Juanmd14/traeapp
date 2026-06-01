@@ -124,7 +124,9 @@ Design decisions (stack, security, webhook idempotency, realtime, known trade-of
 
 ### Block 5 — Store panel + Admin + Driver app
 
-- **Store panel**: live KDS for incoming orders, product CRUD with images, promotions, sales statistics, operating hours
+- **Store panel**: live KDS for incoming orders, product CRUD with images and modifier groups (combos, options, min/max), promotions, sales statistics, operating hours
+- **Multi-store switcher**: owners with several locations switch stores from a selector in the panel
+- **WhatsApp notifications to store owner**: on every new order via Meta Cloud API with an approved template (`nuevo_pedido_` es_MX) — system user with a non-expiring token
 - **Admin panel**: management of stores, drivers, users, finance and orders
 - **Driver app**: available orders, accept/reject, status updates (`/driver/disponibles`, `/driver/activo`)
 - **Driver tracking on map**: live position client ↔ client via Supabase Realtime broadcast
@@ -133,7 +135,7 @@ Design decisions (stack, security, webhook idempotency, realtime, known trade-of
 
 ## 🔜 Next steps
 
-- **Notifications**: transactional email for confirmation / status changes, web push (WhatsApp already implemented via Meta Cloud API — requires Meta Business setup + approved template to activate)
+- **Transactional email** for confirmation / status changes and **web push**
 - **MP webhook HMAC verification** (known gap — documented)
 - **Tests**: Vitest + Playwright setup (in progress, part of the author's testing course)
 

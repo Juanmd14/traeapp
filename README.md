@@ -133,7 +133,9 @@ Las decisiones de diseño (stack, seguridad, idempotencia de webhooks, realtime,
 
 ### Bloque 5 — Panel comercio + Admin + App repartidor
 
-- **Panel comercio**: KDS de pedidos en vivo, CRUD de productos con imágenes, promociones, estadísticas de ventas, horarios de operación
+- **Panel comercio**: KDS de pedidos en vivo, CRUD de productos con imágenes y modifier groups (combos, opciones, mínimos/máximos), promociones, estadísticas de ventas, horarios de operación
+- **Multi-store switcher**: owners con varios locales cambian de comercio desde un selector en el panel
+- **Notificaciones WhatsApp al comercio**: en cada pedido nuevo vía Meta Cloud API con template aprobado (`nuevo_pedido_` es_MX) — system user con token sin expiración
 - **Panel admin**: gestión de comercios, repartidores, usuarios, finanzas y pedidos
 - **App del repartidor**: pedidos disponibles, aceptar/rechazar, marcar estados (`/driver/disponibles`, `/driver/activo`)
 - **Tracking del repartidor en mapa**: posición en vivo cliente ↔ cliente vía Supabase Realtime broadcast
@@ -142,7 +144,7 @@ Las decisiones de diseño (stack, seguridad, idempotencia de webhooks, realtime,
 
 ## 🔜 Próximos pasos
 
-- **Notificaciones**: email transaccional para confirmación / cambios de estado, push web, WhatsApp
+- **Email transaccional** para confirmación / cambios de estado y **push web**
 - **Verificación HMAC del webhook MP** (gap conocido — documentado)
 - **Tests**: setup de Vitest + Playwright (en progreso, parte del curso de testing del autor)
 
