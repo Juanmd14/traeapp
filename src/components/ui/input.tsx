@@ -17,7 +17,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:border-primary",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "file:border-0 file:bg-transparent file:text-body-sm file:font-medium",
-          invalid ? "border-destructive" : "border-neutral-200 dark:border-neutral-700",
+          invalid ? "border-destructive" : "border-neutral-300 dark:border-neutral-600",
           className,
         )}
         {...props}

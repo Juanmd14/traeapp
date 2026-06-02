@@ -43,6 +43,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
   const [newAddress, setNewAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [serverError, setServerError] = useState<string | null>(null);
+  const [mpComingSoon, setMpComingSoon] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   // Promo code
@@ -115,6 +116,12 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
 
   const onConfirm = () => {
     setServerError(null);
+    setMpComingSoon(false);
+
+    if (paymentMethod === "mercadopago") {
+      setMpComingSoon(true);
+      return;
+    }
 
     if (!addressText || addressText.length < 5) {
       setServerError("Ingresá una dirección válida");
@@ -170,24 +177,24 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
       <div className="container-shop py-4 pb-8">
         <Link
           href="/carrito"
-          className="inline-flex items-center gap-1 text-body-sm text-neutral-500 hover:text-neutral-900 mb-3"
+          className="inline-flex items-center gap-1 text-body-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 mb-3"
         >
           <ChevronLeft className="size-4" />
           Volver al carrito
         </Link>
 
         <header className="mb-5">
-          <h1 className="text-heading-xl font-semibold text-neutral-900">
+          <h1 className="text-heading-xl font-semibold text-neutral-900 dark:text-neutral-100">
             Confirmar pedido
           </h1>
           {storeName && (
-            <p className="text-body-md text-neutral-500 mt-0.5">En {storeName}</p>
+            <p className="text-body-md text-neutral-500 dark:text-neutral-400 mt-0.5">En {storeName}</p>
           )}
         </header>
 
         {/* Dirección */}
         <section className="mb-5">
-          <h2 className="text-heading-sm font-semibold text-neutral-900 mb-2">
+          <h2 className="text-heading-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
             ¿Dónde te lo entregamos?
           </h2>
           <div className="space-y-2">
@@ -215,11 +222,11 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
                       />
                       <div className="flex-1 min-w-0">
                         {addr.label && (
-                          <p className="text-body-sm font-medium text-neutral-900">
+                          <p className="text-body-sm font-medium text-neutral-900 dark:text-neutral-100">
                             {addr.label}
                           </p>
                         )}
-                        <p className="text-body-sm text-neutral-600 truncate">
+                        <p className="text-body-sm text-neutral-600 dark:text-neutral-400 truncate">
                           {addr.street}{addr.number ? ` ${addr.number}` : ""}
                           {addr.apartment ? `, ${addr.apartment}` : ""}
                         </p>
@@ -265,7 +272,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
 
         {/* Método de pago */}
         <section className="mb-5">
-          <h2 className="text-heading-sm font-semibold text-neutral-900 mb-2">
+          <h2 className="text-heading-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
             ¿Cómo querés pagar?
           </h2>
           <div className="space-y-2">
@@ -283,8 +290,8 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
                 <Banknote className="size-5" />
               </div>
               <div className="flex-1">
-                <p className="text-body-md font-medium text-neutral-900">Efectivo</p>
-                <p className="text-body-xs text-neutral-500">Pagás cuando recibís</p>
+                <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">Efectivo</p>
+                <p className="text-body-xs text-neutral-500 dark:text-neutral-400">Pagás cuando recibís</p>
               </div>
               {paymentMethod === "cash" && (
                 <Check className="size-5 text-accent-600" strokeWidth={3} />
@@ -304,8 +311,13 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
                 <CreditCard className="size-5" />
               </div>
               <div className="flex-1">
-                <p className="text-body-md font-medium text-neutral-900">Mercado Pago</p>
-                <p className="text-body-xs text-neutral-500">
+                <div className="flex items-center gap-2">
+                  <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">Mercado Pago</p>
+                  <span className="text-[10px] font-semibold uppercase tracking-wide bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded-full leading-none">
+                    Próximamente
+                  </span>
+                </div>
+                <p className="text-body-xs text-neutral-500 dark:text-neutral-400">
                   Tarjeta, dinero en cuenta o transferencia
                 </p>
               </div>
@@ -314,6 +326,15 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
               )}
             </button>
           </div>
+
+          {paymentMethod === "mercadopago" && (
+            <div className="mt-3 flex items-start gap-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-md px-3 py-2.5">
+              <CreditCard className="size-4 text-blue-500 shrink-0 mt-0.5" />
+              <p className="text-body-sm text-blue-800 dark:text-blue-300">
+                Mercado Pago estará disponible cuando la plataforma se lance. Por ahora podés pagar con efectivo.
+              </p>
+            </div>
+          )}
         </section>
 
         {/* Notas */}
@@ -360,7 +381,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
                   type="button"
                   onClick={handleApplyPromo}
                   disabled={promoValidating || !promoInput.trim()}
-                  className="px-4 py-2 text-body-sm font-medium bg-neutral-900 text-white rounded-md hover:bg-neutral-700 disabled:opacity-50 transition whitespace-nowrap"
+                  className="px-4 py-2 text-body-sm font-medium bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 rounded-md hover:bg-neutral-700 dark:hover:bg-neutral-300 disabled:opacity-50 transition whitespace-nowrap"
                 >
                   {promoValidating ? "..." : "Aplicar"}
                 </button>
@@ -373,8 +394,8 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
         {/* Resumen */}
         <section className="bg-white dark:bg-neutral-900 rounded-md border border-neutral-200 dark:border-neutral-800 p-4 space-y-2 mb-5">
           <div className="flex justify-between text-body-md">
-            <span className="text-neutral-600">Subtotal</span>
-            <span className="text-neutral-900">{formatPrice(subtotal)}</span>
+            <span className="text-neutral-600 dark:text-neutral-400">Subtotal</span>
+            <span className="text-neutral-900 dark:text-neutral-100">{formatPrice(subtotal)}</span>
           </div>
           {appliedPromo && appliedPromo.discountAmount > 0 && (
             <div className="flex justify-between text-body-md">
@@ -383,7 +404,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
             </div>
           )}
           <div className="flex justify-between text-body-md">
-            <span className="text-neutral-600">Envío</span>
+            <span className="text-neutral-600 dark:text-neutral-400">Envío</span>
             <span className={
               deliveryFee === 0 || appliedPromo?.type === "free_delivery"
                 ? "text-accent-600 font-medium"
@@ -392,7 +413,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
               {deliveryFee === 0 || appliedPromo?.type === "free_delivery" ? "Gratis" : formatPrice(deliveryFee)}
             </span>
           </div>
-          <div className="border-t border-neutral-200 pt-2 flex justify-between text-heading-md font-semibold">
+          <div className="border-t border-neutral-200 dark:border-neutral-700 pt-2 flex justify-between text-heading-md font-semibold dark:text-neutral-100">
             <span>Total</span>
             <span>
               {formatPrice(
@@ -408,6 +429,17 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
           <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md mb-4">
             {serverError}
           </p>
+        )}
+
+        {mpComingSoon && (
+          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-md px-3 py-2.5 mb-4">
+            <p className="text-body-sm font-medium text-blue-800 dark:text-blue-300">
+              Mercado Pago no está disponible todavía
+            </p>
+            <p className="text-body-xs text-blue-700 dark:text-blue-400 mt-0.5">
+              Se habilitará al lanzamiento de la plataforma. Por ahora podés confirmar con efectivo.
+            </p>
+          </div>
         )}
 
         {/* CTA */}
