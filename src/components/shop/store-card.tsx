@@ -22,20 +22,20 @@ export function StoreCard({ store }: { store: StoreCardData }) {
     <Link
       href={`/s/${store.slug}`}
       className={cn(
-        "block bg-white dark:bg-neutral-900 rounded-xl overflow-hidden transition-all duration-300 active:scale-[0.99]",
-        "shadow-[0_0_0_1px_rgba(255,77,58,0.15),0_2px_8px_rgba(28,25,23,0.06),0_0_20px_rgba(255,77,58,0.08)]",
-        "hover:shadow-[0_0_0_1.5px_rgba(255,77,58,0.35),0_4px_16px_rgba(28,25,23,0.08),0_0_32px_rgba(255,77,58,0.18)]",
+        "group block bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden transition-all duration-300 active:scale-[0.99]",
+        "border border-neutral-200/80 dark:border-neutral-800 shadow-card",
+        "hover:shadow-primary hover:border-primary-200/70 dark:hover:border-primary-900/50",
         !store.isOpen && "opacity-60",
       )}
     >
-      <div className="relative h-32 bg-neutral-100 dark:bg-neutral-800">
+      <div className="relative h-32 bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
         {store.coverUrl ? (
           <Image
             src={store.coverUrl}
             alt={store.name}
             fill
             sizes="(max-width: 640px) 100vw, 360px"
-            className="object-cover"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-primary-300 to-primary-500" />

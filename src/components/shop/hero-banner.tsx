@@ -40,13 +40,19 @@ export function HeroBanner() {
   return (
     <section
       className="
-        relative rounded-2xl overflow-hidden
+        relative rounded-3xl overflow-hidden
         bg-gradient-to-br from-primary-50 via-white to-primary-50/40
         dark:from-primary-950/20 dark:via-neutral-900 dark:to-neutral-950
         border border-primary-100/60 dark:border-neutral-800
-        shadow-sm
+        shadow-primary-sm
       "
     >
+      {/* Blob de luz difuminado arriba a la izquierda — profundidad */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-16 -left-10 w-48 h-48 rounded-full bg-primary-200/40 dark:bg-primary-500/10 blur-3xl"
+      />
+
       {/* Isotipo decorativo en la esquina inferior derecha */}
       <div
         aria-hidden
@@ -68,8 +74,9 @@ export function HeroBanner() {
             flex-shrink-0 w-20 h-20 sm:w-28 sm:h-28 rounded-full
             bg-white dark:bg-neutral-100
             flex items-center justify-center
-            border-2 border-primary-100 dark:border-primary-900/40
-            shadow-[0_4px_16px_rgba(255,77,41,0.15)]
+            ring-1 ring-primary-100 dark:ring-primary-900/40
+            border-2 border-white dark:border-neutral-100
+            shadow-[0_6px_24px_rgba(255,77,41,0.22)]
             overflow-hidden
           "
         >
@@ -83,8 +90,11 @@ export function HeroBanner() {
                 width={96}
                 height={96}
                 priority={i === 0}
-                className="absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ease-out"
-                style={{ opacity: allLoaded && i === currentIndex ? 1 : 0 }}
+                className="absolute inset-0 w-full h-full object-contain transition-all duration-500 ease-out"
+                style={{
+                  opacity: allLoaded && i === currentIndex ? 1 : 0,
+                  transform: allLoaded && i === currentIndex ? "scale(1)" : "scale(0.85)",
+                }}
               />
             ))}
           </div>
@@ -93,7 +103,7 @@ export function HeroBanner() {
         {/* Wordmark + eslogan */}
         <div className="flex-1 min-w-0">
           <Logo className="h-7 sm:h-10 w-auto mb-1.5" priority />
-          <p className="text-xs sm:text-base font-display font-semibold text-neutral-700 dark:text-neutral-300 leading-snug">
+          <p className="text-xs sm:text-base font-display font-semibold text-neutral-600 dark:text-neutral-300 leading-relaxed">
             Pedí lo que quieras, llega rápido a tu puerta
           </p>
         </div>

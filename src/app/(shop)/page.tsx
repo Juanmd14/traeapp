@@ -88,7 +88,7 @@ export default async function HomePage() {
 
       {/* CATEGORÍAS */}
       <section>
-        <h2 className="text-heading-md font-semibold mb-3">Categorías</h2>
+        <h2 className="text-heading-md font-display font-bold mb-3">Categorías</h2>
         <div className="scroll-snap-x">
           {mappedCategories.map((c) => (
             <CategoryPill key={c.slug} category={c} />
@@ -100,7 +100,7 @@ export default async function HomePage() {
       {featured.length > 0 && (
         <section>
           <div className="flex items-baseline justify-between mb-3">
-            <h2 className="text-heading-md font-semibold">
+            <h2 className="text-heading-md font-display font-bold">
               Comercios destacados
             </h2>
           </div>

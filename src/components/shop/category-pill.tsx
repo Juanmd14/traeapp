@@ -34,8 +34,8 @@ export function CategoryPill({ category }: { category: Category }) {
     >
       <div
         className={cn(
-          "size-12 sm:size-14 rounded-full flex items-center justify-center transition overflow-hidden",
-          "hover:scale-105 active:scale-95",
+          "size-12 sm:size-14 rounded-full flex items-center justify-center transition-all duration-200 overflow-hidden",
+          "hover:scale-105 active:scale-95 hover:shadow-primary-sm hover:border-primary-200",
           "bg-white dark:bg-neutral-100 border-2 border-primary-100 dark:border-primary-900/40",
         )}
       >

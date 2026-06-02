@@ -143,6 +143,12 @@ export default async function StorePage({ params }: Props) {
           />
         )}
 
+        {/* Overlay degradado para contraste del botón volver */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10 pointer-events-none"
+        />
+
         <Link
           href="/"
           className="absolute top-3 left-3 size-9 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-card hover:bg-white transition"
@@ -154,7 +160,7 @@ export default async function StorePage({ params }: Props) {
 
       {/* Header info */}
       <div className="container-shop -mt-8 relative">
-        <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-card p-4 sm:p-5">
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-card p-4 sm:p-5">
           <div className="flex items-start gap-3">
             {store.logo_url ? (
               <Image
@@ -162,10 +168,10 @@ export default async function StorePage({ params }: Props) {
                 alt=""
                 width={56}
                 height={56}
-                className="rounded-md object-cover shrink-0"
+                className="size-14 rounded-xl object-cover shrink-0 ring-1 ring-neutral-200 dark:ring-neutral-700"
               />
             ) : (
-              <div className="size-14 rounded-md bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-heading-md shrink-0">
+              <div className="size-14 rounded-xl bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-heading-md shrink-0">
                 {store.name.charAt(0)}
               </div>
             )}
