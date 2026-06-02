@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { X, Plus, Minus, Check, MinusCircle } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 
@@ -37,6 +38,8 @@ type Props = {
     name: string;
     price: number;
     imageUrl?: string | null;
+    description?: string | null;
+    compareAtPrice?: number | null;
   };
   modifiers: ModifierGroup[];
   quantityOptions?: QuantityOption[];
@@ -67,6 +70,12 @@ export function ProductModifierModal({
   const hasModifiers = modifiers.length > 0;
   const hasQuantityOptions = quantityOptions.length > 0;
   const showManualQuantity = !hideManualQuantity && !hasQuantityOptions;
+
+  const hasDiscount =
+    product.compareAtPrice != null && product.compareAtPrice > product.price;
+  const discountPct = hasDiscount
+    ? Math.round(((product.compareAtPrice! - product.price) / product.compareAtPrice!) * 100)
+    : 0;
 
   const toggleOption = (group: ModifierGroup, optionId: string) => {
     setSelected((prev) => {
@@ -136,25 +145,62 @@ export function ProductModifierModal({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-xl w-full max-w-md max-h-[90vh] flex flex-col"
+        className="bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between p-4 border-b border-neutral-100 dark:border-neutral-800">
-          <div>
-            <h3 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100">{product.name}</h3>
-            <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-              {hasQuantityOptions 
-                ? `Desde ${formatPrice(Math.min(...quantityOptions.map(q => Number(q.price))))}`
-                : `${formatPrice(baseUnitPrice)} base`
-              }
-            </p>
-          </div>
+        {/* Imagen hero */}
+        <div className="relative h-44 sm:h-48 shrink-0">
+          {product.imageUrl ? (
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 100vw, 448px"
+              className="object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-neutral-100 dark:from-neutral-800 to-neutral-200 dark:to-neutral-700 flex items-center justify-center">
+              <span className="text-5xl opacity-30">🍽️</span>
+            </div>
+          )}
+
+          {hasDiscount && (
+            <div className="absolute top-3 left-3 bg-warning-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-md">
+              -{discountPct}%
+            </div>
+          )}
+
           <button
             onClick={onClose}
-            className="size-8 flex items-center justify-center rounded-md text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+            className="absolute top-3 right-3 size-8 flex items-center justify-center rounded-full bg-white/90 dark:bg-neutral-900/80 backdrop-blur text-neutral-700 dark:text-neutral-200 shadow-card hover:bg-white dark:hover:bg-neutral-900 transition"
+            aria-label="Cerrar"
           >
             <X className="size-4" />
           </button>
+        </div>
+
+        {/* Título + precio + descripción */}
+        <div className="p-4 border-b border-neutral-100 dark:border-neutral-800">
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100">{product.name}</h3>
+            <div className="text-right shrink-0">
+              {hasDiscount && (
+                <p className="text-body-xs text-neutral-400 line-through leading-none">
+                  {formatPrice(product.compareAtPrice!)}
+                </p>
+              )}
+              <p className="text-body-md font-bold text-neutral-900 dark:text-neutral-100">
+                {hasQuantityOptions
+                  ? `Desde ${formatPrice(Math.min(...quantityOptions.map(q => Number(q.price))))}`
+                  : formatPrice(baseUnitPrice)}
+              </p>
+            </div>
+          </div>
+          {product.description && (
+            <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mt-1.5 leading-relaxed">
+              {product.description}
+            </p>
+          )}
         </div>
 
         <div className="overflow-y-auto flex-1 p-4 space-y-5">

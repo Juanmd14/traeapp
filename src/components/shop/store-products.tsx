@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { ProductCard } from "@/components/shop/product-card";
+import { CategoryNav } from "@/components/shop/category-nav";
 import type { ModifierGroup, QuantityOption } from "@/components/shop/product-modifier-modal";
 
 type ProductData = {
@@ -95,12 +96,15 @@ async function ProductCategories({ storeId, storeName, storeSlug, deliveryFee, m
     );
   }
 
+  const visibleCategories = categoriesWithProducts.filter((c) => c.products.length > 0);
+
   return (
     <>
-      {categoriesWithProducts
-        .filter((c) => c.products.length > 0)
+      <CategoryNav categories={visibleCategories.map((c) => ({ id: c.id, name: c.name }))} />
+
+      {visibleCategories
         .map((cat) => (
-          <section key={cat.id}>
+          <section key={cat.id} id={`cat-${cat.id}`} className="scroll-mt-4">
             <h2 className="text-[13px] font-bold uppercase tracking-widest text-neutral-400 mb-3 pl-1">
               {cat.name}
             </h2>

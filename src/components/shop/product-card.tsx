@@ -76,9 +76,15 @@ export function ProductCard({
     setTimeout(() => setJustAdded(false), 1500);
   };
 
-  const handleAdd = () => {
+  const handleAddClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (needsModal) { setShowModifierModal(true); return; }
     doAdd([], 1);
+  };
+
+  const openDetail = () => {
+    if (!product.isAvailable) return;
+    setShowModifierModal(true);
   };
 
   const handleSwitch = () => {
@@ -114,14 +120,21 @@ export function ProductCard({
   return (
     <>
       <div
+        onClick={openDetail}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetail(); }
+        }}
+        role="button"
+        tabIndex={product.isAvailable ? 0 : -1}
+        aria-label={`Ver ${product.name}`}
         className={cn(
           "bg-white dark:bg-neutral-900 rounded-2xl flex items-stretch relative overflow-hidden",
-          "shadow-[0_2px_10px_rgba(230,56,35,0.18)]",
-          "hover:shadow-[0_6px_20px_rgba(230,56,35,0.25)]",
-          "hover:scale-[1.01]",
+          "border border-neutral-200/80 dark:border-neutral-800",
+          "shadow-sm hover:shadow-md",
+          "hover:border-neutral-300 dark:hover:border-neutral-700",
           "active:scale-[0.99]",
           "transition-all duration-200",
-          !product.isAvailable && "opacity-55"
+          product.isAvailable ? "cursor-pointer" : "opacity-55 cursor-default"
         )}
       >
         {/* Info — izquierda */}
@@ -149,7 +162,7 @@ export function ProductCard({
             </div>
 
             <button
-              onClick={handleAdd}
+              onClick={handleAddClick}
               disabled={!product.isAvailable}
               className={cn(
                 "flex items-center justify-center flex-shrink-0 transition-all duration-150 active:scale-90",
@@ -177,13 +190,13 @@ export function ProductCard({
         </div>
 
         {/* Imagen — derecha, flush */}
-        <div className="relative w-[100px] sm:w-[120px] flex-shrink-0 self-stretch">
+        <div className="relative w-[112px] sm:w-[128px] flex-shrink-0 self-stretch">
           {product.imageUrl ? (
             <Image
               src={product.imageUrl}
               alt={product.name}
               fill
-              sizes="(max-width: 640px) 100px, 120px"
+              sizes="(max-width: 640px) 112px, 128px"
               className="object-cover"
             />
           ) : (
@@ -211,7 +224,7 @@ export function ProductCard({
       {/* Modal de modificadores */}
       {showModifierModal && (
         <ProductModifierModal
-          product={{ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl }}
+          product={{ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl, description: product.description, compareAtPrice: product.compareAtPrice }}
           modifiers={modifiers}
           quantityOptions={quantityOptions}
           hideManualQuantity={hideManualQuantity}
