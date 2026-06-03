@@ -32,9 +32,7 @@ export default async function ComercioLayout({
 }) {
   const session = await requireAuth("/login?next=/comercio");
 
-  const stores = session.role !== "admin"
-    ? await getUserStoresWithNames(session.id)
-    : [];
+  const stores = await getUserStoresWithNames(session.id);
 
   if (session.role !== "admin" && stores.length === 0) {
     redirect("/comercio/onboarding");
