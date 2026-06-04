@@ -9,14 +9,14 @@ type LogoProps = Omit<ImageProps, "src" | "alt"> & {
 
 const SOURCES = {
   full: {
-    color: "/brand/logo-vadelivery-color.svg",
-    white: "/brand/logo-vadelivery-white.svg",
+    color: "/brand/logo-trae-color.svg",
+    white: "/brand/logo-trae-white.svg",
     width: 540,
     height: 200,
   },
   icon: {
-    color: "/brand/icon-vadelivery.svg",
-    white: "/brand/icon-vadelivery.svg",
+    color: "/brand/icon-trae.svg",
+    white: "/brand/icon-trae.svg",
     width: 160,
     height: 170,
   },

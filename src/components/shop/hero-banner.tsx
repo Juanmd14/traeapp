@@ -59,7 +59,7 @@ export function HeroBanner() {
         className="pointer-events-none absolute -bottom-6 -right-6 opacity-[0.07] dark:opacity-[0.10]"
       >
         <Image
-          src="/brand/icon-vadelivery.svg"
+          src="/brand/icon-trae.svg"
           alt=""
           width={180}
           height={190}

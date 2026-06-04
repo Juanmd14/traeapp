@@ -1,4 +1,4 @@
-// Generates app icons from public/brand/app-icon-vadelivery-512.svg into src/app/ and public/.
+// Generates app icons from public/brand/app-icon-trae-512.svg into src/app/ and public/.
 // Run with: node scripts/generate-icons.mjs
 import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
-const source = resolve(root, "public/brand/app-icon-vadelivery-512.svg");
+const source = resolve(root, "public/brand/app-icon-trae-512.svg");
 const appOutDir = resolve(root, "src/app");
 const publicOutDir = resolve(root, "public");
 
