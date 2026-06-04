@@ -14,14 +14,18 @@ import {
   storeProfileSchema,
   storeAddressSchema,
   storeNotificationsSchema,
+  storePaymentsSchema,
   type StoreProfileInput,
   type StoreAddressInput,
   type StoreNotificationsInput,
+  type StorePaymentsInput,
 } from "@/schemas";
 import {
   updateStoreProfileAction,
   updateStoreAddressAction,
   updateStoreNotificationsAction,
+  updateStorePaymentsAction,
+  disconnectMpAction,
   testWhatsappAction,
 } from "@/server/actions/stores";
 import { cn } from "@/lib/utils";
@@ -39,6 +43,8 @@ type Initial = {
   cover_url: string | null;
   whatsapp_number: string | null;
   whatsapp_notifications_enabled: boolean;
+  commission_pct: number;
+  mp_connected_at: string | null;
 };
 
 type Props = {
@@ -58,6 +64,11 @@ export function StoreDatosForm({ storeId, initial }: Props) {
   const [pendingTest, startTest] = useTransition();
   const [logoUrl, setLogoUrl] = useState(initial.logo_url);
   const [coverUrl, setCoverUrl] = useState(initial.cover_url);
+  const [serverErrorPayments, setServerErrorPayments] = useState<string | null>(null);
+  const [paymentsFeedback, setPaymentsFeedback] = useState<string | null>(null);
+  const [pendingPayments, startPayments] = useTransition();
+  const [pendingDisconnect, startDisconnect] = useTransition();
+  const [mpConnectedAt, setMpConnectedAt] = useState(initial.mp_connected_at);
 
   const profileForm = useForm<StoreProfileInput>({
     resolver: zodResolver(storeProfileSchema),
@@ -76,6 +87,14 @@ export function StoreDatosForm({ storeId, initial }: Props) {
       lat: initial.lat ?? undefined,
       lng: initial.lng ?? undefined,
       deliveryRadiusKm: Number(initial.delivery_radius_km) || 5,
+    },
+  });
+
+  const paymentsForm = useForm<StorePaymentsInput>({
+    resolver: zodResolver(storePaymentsSchema),
+    defaultValues: {
+      mpAccessToken: "",
+      commissionPct: Number(initial.commission_pct) || 12,
     },
   });
 
@@ -124,6 +143,39 @@ export function StoreDatosForm({ storeId, initial }: Props) {
         return;
       }
       setNotifFeedback("Notificaciones guardadas.");
+      router.refresh();
+    });
+  };
+
+  const onPaymentsSubmit = (data: StorePaymentsInput) => {
+    setServerErrorPayments(null);
+    setPaymentsFeedback(null);
+    startPayments(async () => {
+      const result = await updateStorePaymentsAction({ ...data, storeId });
+      if (result?.serverError) {
+        setServerErrorPayments(result.serverError);
+        return;
+      }
+      if ((data.mpAccessToken ?? "").trim().length > 0) {
+        setMpConnectedAt(new Date().toISOString());
+        paymentsForm.setValue("mpAccessToken", "");
+      }
+      setPaymentsFeedback("Configuración de pagos guardada.");
+      router.refresh();
+    });
+  };
+
+  const onDisconnectMp = () => {
+    setServerErrorPayments(null);
+    setPaymentsFeedback(null);
+    startDisconnect(async () => {
+      const result = await disconnectMpAction({ storeId });
+      if (result?.serverError) {
+        setServerErrorPayments(result.serverError);
+        return;
+      }
+      setMpConnectedAt(null);
+      setPaymentsFeedback("Cuenta de Mercado Pago desconectada.");
       router.refresh();
     });
   };
@@ -259,6 +311,105 @@ export function StoreDatosForm({ storeId, initial }: Props) {
 
           <Button type="submit" loading={pendingProfile}>
             Guardar datos y contacto
+          </Button>
+        </form>
+      </section>
+
+      <section className="border-t border-neutral-200 dark:border-neutral-800 pt-10">
+        <h2 className="text-heading-md font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
+          Pagos con Mercado Pago
+        </h2>
+        <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mb-5">
+          Conectá tu cuenta para que los pagos vayan directo a vos. Vadelivery
+          retiene una comisión por cada venta.
+        </p>
+
+        <form onSubmit={paymentsForm.handleSubmit(onPaymentsSubmit)} className="space-y-4">
+          {mpConnectedAt ? (
+            <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900 rounded-md px-3 py-2.5">
+              <div>
+                <p className="text-body-sm font-medium text-emerald-800 dark:text-emerald-300">
+                  Cuenta conectada
+                </p>
+                <p className="text-body-xs text-emerald-700/80 dark:text-emerald-400/80">
+                  Desde {new Date(mpConnectedAt).toLocaleDateString("es-AR", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onDisconnectMp}
+                loading={pendingDisconnect}
+              >
+                Desconectar
+              </Button>
+            </div>
+          ) : (
+            <FormField
+              label="Access Token de Mercado Pago"
+              htmlFor="sd-mp-token"
+              error={paymentsForm.formState.errors.mpAccessToken?.message}
+              hint={
+                <>
+                  Lo sacás del{" "}
+                  <a
+                    href="https://www.mercadopago.com.ar/developers/panel/credentials"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary-600 hover:underline"
+                  >
+                    panel de credenciales de MP
+                  </a>
+                  . Empieza con TEST- (pruebas) o APP_USR- (producción).
+                </>
+              }
+            >
+              <Input
+                id="sd-mp-token"
+                type="password"
+                autoComplete="off"
+                placeholder="APP_USR-..."
+                invalid={!!paymentsForm.formState.errors.mpAccessToken}
+                {...paymentsForm.register("mpAccessToken")}
+              />
+            </FormField>
+          )}
+
+          <FormField
+            label="Comisión de vadelivery (%)"
+            htmlFor="sd-commission-pct"
+            error={paymentsForm.formState.errors.commissionPct?.message}
+            hint="Porcentaje que retiene la plataforma de cada venta con Mercado Pago. Máximo 30%."
+          >
+            <Input
+              id="sd-commission-pct"
+              type="number"
+              min="0"
+              max="30"
+              step="0.5"
+              invalid={!!paymentsForm.formState.errors.commissionPct}
+              {...paymentsForm.register("commissionPct", { valueAsNumber: true })}
+            />
+          </FormField>
+
+          {serverErrorPayments && (
+            <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">
+              {serverErrorPayments}
+            </p>
+          )}
+
+          {paymentsFeedback && (
+            <p className="text-body-sm text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-2 rounded-md">
+              {paymentsFeedback}
+            </p>
+          )}
+
+          <Button type="submit" loading={pendingPayments}>
+            Guardar configuración de pagos
           </Button>
         </form>
       </section>

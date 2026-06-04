@@ -1,11 +1,6 @@
 import "server-only";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 
-export const mp = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN!,
-  options: { timeout: 5000 },
-});
-
 export type MpItem = {
   id: string;
   title: string;
@@ -13,14 +8,24 @@ export type MpItem = {
   unit_price: number;
 };
 
+function mpClient(accessToken: string) {
+  return new MercadoPagoConfig({
+    accessToken,
+    options: { timeout: 5000 },
+  });
+}
+
 export async function createPreference(params: {
   orderId: string;
+  storeId: string;
   items: MpItem[];
   payerEmail?: string;
+  accessToken: string;
+  marketplaceFee?: number;
 }) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
-  const pref = await new Preference(mp).create({
+  const pref = await new Preference(mpClient(params.accessToken)).create({
     body: {
       items: params.items.map((i) => ({
         ...i,
@@ -34,10 +39,9 @@ export async function createPreference(params: {
         pending: `${appUrl}/pedido/${params.orderId}?status=pending`,
       },
       auto_return: "approved",
-      notification_url: `${appUrl}/api/webhooks/mercadopago`,
-      metadata: { order_id: params.orderId },
-      // Excluir métodos opcionales si querés (ej: ticket en efectivo)
-      // payment_methods: { excluded_payment_types: [{ id: 'ticket' }] }
+      notification_url: `${appUrl}/api/webhooks/mercadopago?store_id=${params.storeId}`,
+      metadata: { order_id: params.orderId, store_id: params.storeId },
+      marketplace_fee: params.marketplaceFee,
     },
   });
 
@@ -48,8 +52,8 @@ export async function createPreference(params: {
   };
 }
 
-export async function getPayment(paymentId: string) {
-  return await new Payment(mp).get({ id: paymentId });
+export async function getPayment(paymentId: string, accessToken: string) {
+  return await new Payment(mpClient(accessToken)).get({ id: paymentId });
 }
 
 /**

@@ -100,9 +100,33 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. Obtener pago desde MP
+    // Resolver el access_token del seller: vadelivery agrega ?store_id=...
+    // al notification_url cuando crea la preference (ver mercadopago.service.ts).
+    // Sin store_id no podemos llamar a getPayment con las credenciales correctas.
+    const storeId = qp.get("store_id");
+    if (!storeId) {
+      return NextResponse.json(
+        { error: "store_id missing in notification_url" },
+        { status: 400 }
+      );
+    }
+
+    const { data: store } = await (supabaseAdmin.from("stores") as any)
+      .select("mp_access_token")
+      .eq("id", storeId)
+      .single();
+
+    if (!store?.mp_access_token) {
+      return NextResponse.json(
+        { error: "Store has no MP credentials" },
+        { status: 404 }
+      );
+    }
+
+    // 1. Obtener pago desde MP (con el token del seller)
     const payment = await getPayment(
-      String(paymentId)
+      String(paymentId),
+      store.mp_access_token,
     );
 
     if (!payment) {

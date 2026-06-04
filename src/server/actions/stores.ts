@@ -15,6 +15,7 @@ import {
   storeOperationSchema,
   storeProfileSchema,
   storeNotificationsSchema,
+  storePaymentsSchema,
 } from "@/schemas";
 import { slugify } from "@/lib/utils";
 import { sendWhatsapp } from "@/server/services/whatsapp.service";
@@ -247,6 +248,77 @@ export const testWhatsappAction = authAction
       );
     }
 
+    return { ok: true };
+  });
+
+const updateStorePaymentsInput = storePaymentsSchema.extend({
+  storeId: z.string().uuid(),
+});
+
+export const updateStorePaymentsAction = authAction
+  .schema(updateStorePaymentsInput)
+  .action(async ({ parsedInput, ctx }) => {
+    const supabase = createClient();
+    const { data: membership } = await supabase
+      .from("store_users")
+      .select("role")
+      .eq("store_id", parsedInput.storeId)
+      .eq("user_id", ctx.session.id)
+      .eq("is_active", true)
+      .single();
+
+    if (
+      (!membership || (membership as { role: string }).role !== "owner") &&
+      ctx.session.role !== "admin"
+    ) {
+      throw new Error("Solo el dueño del comercio puede configurar Mercado Pago");
+    }
+
+    const token = parsedInput.mpAccessToken?.trim() ?? "";
+    const update: Record<string, unknown> = {
+      commission_pct: parsedInput.commissionPct,
+    };
+    if (token.length > 0) {
+      update.mp_access_token = token;
+      update.mp_connected_at = new Date().toISOString();
+    }
+
+    const { error } = await (supabaseAdmin.from("stores") as any)
+      .update(update)
+      .eq("id", parsedInput.storeId);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/comercio", "layout");
+    return { ok: true };
+  });
+
+export const disconnectMpAction = authAction
+  .schema(z.object({ storeId: z.string().uuid() }))
+  .action(async ({ parsedInput, ctx }) => {
+    const supabase = createClient();
+    const { data: membership } = await supabase
+      .from("store_users")
+      .select("role")
+      .eq("store_id", parsedInput.storeId)
+      .eq("user_id", ctx.session.id)
+      .eq("is_active", true)
+      .single();
+
+    if (
+      (!membership || (membership as { role: string }).role !== "owner") &&
+      ctx.session.role !== "admin"
+    ) {
+      throw new Error("Solo el dueño del comercio puede desconectar Mercado Pago");
+    }
+
+    const { error } = await (supabaseAdmin.from("stores") as any)
+      .update({ mp_access_token: null, mp_connected_at: null })
+      .eq("id", parsedInput.storeId);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/comercio", "layout");
     return { ok: true };
   });
 

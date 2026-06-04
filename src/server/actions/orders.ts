@@ -42,7 +42,7 @@ export const createOrderAction = authAction
 
     // 1. Validar comercio
     const { data: store, error: storeErr } = await (supabaseAdmin.from("stores") as any)
-      .select("id, name, status, delivery_fee, min_order_amount, accepts_cash, accepts_mp, commission_pct")
+      .select("id, name, status, delivery_fee, min_order_amount, accepts_cash, accepts_mp, commission_pct, mp_access_token")
       .eq("id", parsedInput.storeId)
       .single();
 
@@ -54,6 +54,9 @@ export const createOrderAction = authAction
     }
     if (parsedInput.paymentMethod === "mercadopago" && !store.accepts_mp) {
       throw new Error("Este comercio no acepta Mercado Pago");
+    }
+    if (parsedInput.paymentMethod === "mercadopago" && !store.mp_access_token) {
+      throw new Error("Este comercio aún no conectó su cuenta de Mercado Pago");
     }
 
     // 2. Traer productos
@@ -188,6 +191,9 @@ export const createOrderAction = authAction
       try {
         const pref = await createPreference({
           orderId: order.id,
+          storeId: store.id,
+          accessToken: store.mp_access_token,
+          marketplaceFee: pricing.commissionAmount > 0 ? pricing.commissionAmount : undefined,
           items: [
             ...orderItems.map((i) => ({
               id: i.product_id,
