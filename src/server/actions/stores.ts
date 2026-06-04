@@ -16,6 +16,7 @@ import {
   storeProfileSchema,
   storeNotificationsSchema,
   storePaymentsSchema,
+  storeCommissionSchema,
 } from "@/schemas";
 import { slugify } from "@/lib/utils";
 import { sendWhatsapp } from "@/server/services/whatsapp.service";
@@ -275,21 +276,41 @@ export const updateStorePaymentsAction = authAction
     }
 
     const token = parsedInput.mpAccessToken?.trim() ?? "";
-    const update: Record<string, unknown> = {
-      commission_pct: parsedInput.commissionPct,
-    };
-    if (token.length > 0) {
-      update.mp_access_token = token;
-      update.mp_connected_at = new Date().toISOString();
+    if (token.length === 0) {
+      return { ok: true };
     }
 
     const { error } = await (supabaseAdmin.from("stores") as any)
-      .update(update)
+      .update({
+        mp_access_token: token,
+        mp_connected_at: new Date().toISOString(),
+      })
       .eq("id", parsedInput.storeId);
 
     if (error) throw new Error(error.message);
 
     revalidatePath("/comercio", "layout");
+    return { ok: true };
+  });
+
+const updateStoreCommissionInput = storeCommissionSchema.extend({
+  storeId: z.string().uuid(),
+});
+
+export const updateStoreCommissionAction = authAction
+  .schema(updateStoreCommissionInput)
+  .action(async ({ parsedInput, ctx }) => {
+    if (ctx.session.role !== "admin") {
+      throw new Error("Solo el administrador puede modificar la comisión");
+    }
+
+    const { error } = await (supabaseAdmin.from("stores") as any)
+      .update({ commission_pct: parsedInput.commissionPct })
+      .eq("id", parsedInput.storeId);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/admin/comercios", "layout");
     return { ok: true };
   });
 

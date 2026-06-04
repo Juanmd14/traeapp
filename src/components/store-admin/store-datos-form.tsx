@@ -92,10 +92,7 @@ export function StoreDatosForm({ storeId, initial }: Props) {
 
   const paymentsForm = useForm<StorePaymentsInput>({
     resolver: zodResolver(storePaymentsSchema),
-    defaultValues: {
-      mpAccessToken: "",
-      commissionPct: Number(initial.commission_pct) || 12,
-    },
+    defaultValues: { mpAccessToken: "" },
   });
 
   const notificationsForm = useForm<StoreNotificationsInput>({
@@ -379,22 +376,10 @@ export function StoreDatosForm({ storeId, initial }: Props) {
             </FormField>
           )}
 
-          <FormField
-            label="Comisión de vadelivery (%)"
-            htmlFor="sd-commission-pct"
-            error={paymentsForm.formState.errors.commissionPct?.message}
-            hint="Porcentaje que retiene la plataforma de cada venta con Mercado Pago. Máximo 30%."
-          >
-            <Input
-              id="sd-commission-pct"
-              type="number"
-              min="0"
-              max="30"
-              step="0.5"
-              invalid={!!paymentsForm.formState.errors.commissionPct}
-              {...paymentsForm.register("commissionPct", { valueAsNumber: true })}
-            />
-          </FormField>
+          <p className="text-body-xs text-neutral-500 dark:text-neutral-400">
+            Comisión de vadelivery: <strong>{initial.commission_pct}%</strong> por venta con MP.
+            Si querés cambiarla, escribinos.
+          </p>
 
           {serverErrorPayments && (
             <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">

@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { requireRole } from "@/server/auth/session";
 import { StoreStatusSelect } from "@/components/admin/store-status-select";
 import { StoreOwnersManager } from "@/components/admin/store-owners-manager";
+import { StoreCommissionEditor } from "@/components/admin/store-commission-editor";
 import { formatPrice } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -66,7 +67,6 @@ export default async function AdminComercioDetailPage({
     { label: "Costo de envío", value: formatPrice(store.delivery_fee) },
     { label: "Pedido mínimo", value: store.min_order_amount > 0 ? formatPrice(store.min_order_amount) : "Sin mínimo" },
     { label: "Tiempo promedio", value: `${store.avg_prep_minutes} min` },
-    { label: "Comisión", value: `${store.commission_pct}%` },
     { label: "Calificación", value: store.rating_count > 0 ? `${Number(store.rating_avg).toFixed(1)} (${store.rating_count} reseñas)` : "Sin reseñas" },
     { label: "Registrado", value: new Date(store.created_at).toLocaleDateString("es-AR") },
   ];
@@ -111,6 +111,17 @@ export default async function AdminComercioDetailPage({
             </div>
           ))}
         </dl>
+      </section>
+
+      {/* Comisión */}
+      <section className="bg-white rounded-xl border border-neutral-200 p-5 mb-4">
+        <h2 className="text-heading-sm font-semibold text-neutral-900 mb-3">
+          Comisión Mercado Pago
+        </h2>
+        <StoreCommissionEditor
+          storeId={store.id}
+          initial={Number(store.commission_pct ?? 12)}
+        />
       </section>
 
       {/* Dueños */}

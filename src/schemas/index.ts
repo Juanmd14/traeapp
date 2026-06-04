@@ -99,9 +99,13 @@ export const storePaymentsSchema = z.object({
     .regex(/^(TEST-|APP_USR-)/, "El token debe empezar con TEST- o APP_USR-")
     .optional()
     .or(z.literal("")),
-  commissionPct: z.coerce.number().min(0).max(30),
 });
 export type StorePaymentsInput = z.infer<typeof storePaymentsSchema>;
+
+export const storeCommissionSchema = z.object({
+  commissionPct: z.coerce.number().min(0).max(30),
+});
+export type StoreCommissionInput = z.infer<typeof storeCommissionSchema>;
 
 export const storeNotificationsSchema = z
   .object({
