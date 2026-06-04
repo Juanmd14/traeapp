@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MapPin } from "lucide-react";
+import { MapPin, Info } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -376,10 +376,17 @@ export function StoreDatosForm({ storeId, initial }: Props) {
             </FormField>
           )}
 
-          <p className="text-body-xs text-neutral-500 dark:text-neutral-400">
-            Comisión de vadelivery: <strong>{initial.commission_pct}%</strong> por venta con MP.
-            Si querés cambiarla, escribinos.
-          </p>
+          <div className="flex items-start gap-3 rounded-md border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/30 px-4 py-3">
+            <Info className="size-4 mt-0.5 shrink-0 text-blue-600 dark:text-blue-400" />
+            <div>
+              <p className="text-body-xs font-medium text-blue-800 dark:text-blue-300">
+                Comisión de vadelivery
+              </p>
+              <p className="text-heading-md font-semibold text-blue-900 dark:text-blue-200 mt-0.5">
+                {initial.commission_pct}% <span className="text-body-sm font-normal text-blue-800/80 dark:text-blue-300/80">por venta con Mercado Pago</span>
+              </p>
+            </div>
+          </div>
 
           {serverErrorPayments && (
             <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">
