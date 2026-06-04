@@ -43,7 +43,6 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
   const [newAddress, setNewAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [serverError, setServerError] = useState<string | null>(null);
-  const [mpComingSoon, setMpComingSoon] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   // Promo code
@@ -116,12 +115,6 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
 
   const onConfirm = () => {
     setServerError(null);
-    setMpComingSoon(false);
-
-    if (paymentMethod === "mercadopago") {
-      setMpComingSoon(true);
-      return;
-    }
 
     if (!addressText || addressText.length < 5) {
       setServerError("Ingresá una dirección válida");
@@ -311,12 +304,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
                 <CreditCard className="size-5" />
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">Mercado Pago</p>
-                  <span className="text-[10px] font-semibold uppercase tracking-wide bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded-full leading-none">
-                    Próximamente
-                  </span>
-                </div>
+                <p className="text-body-md font-medium text-neutral-900 dark:text-neutral-100">Mercado Pago</p>
                 <p className="text-body-xs text-neutral-500 dark:text-neutral-400">
                   Tarjeta, dinero en cuenta o transferencia
                 </p>
@@ -331,7 +319,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
             <div className="mt-3 flex items-start gap-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-md px-3 py-2.5">
               <CreditCard className="size-4 text-blue-500 shrink-0 mt-0.5" />
               <p className="text-body-sm text-blue-800 dark:text-blue-300">
-                Mercado Pago estará disponible cuando la plataforma se lance. Por ahora podés pagar con efectivo.
+                Vas a confirmar y te redirigimos a Mercado Pago para completar el pago de forma segura.
               </p>
             </div>
           )}
@@ -429,17 +417,6 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
           <p className="text-body-sm text-destructive bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md mb-4">
             {serverError}
           </p>
-        )}
-
-        {mpComingSoon && (
-          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-md px-3 py-2.5 mb-4">
-            <p className="text-body-sm font-medium text-blue-800 dark:text-blue-300">
-              Mercado Pago no está disponible todavía
-            </p>
-            <p className="text-body-xs text-blue-700 dark:text-blue-400 mt-0.5">
-              Se habilitará al lanzamiento de la plataforma. Por ahora podés confirmar con efectivo.
-            </p>
-          </div>
         )}
 
         {/* CTA */}

@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 import { NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -13,19 +15,88 @@ type PaymentWebhookStatus =
   | "refunded"
   | "cancelled";
 
+/**
+ * Valida la firma del webhook de Mercado Pago (header `x-signature`).
+ * MP firma un manifest `id:<data.id>;request-id:<x-request-id>;ts:<ts>;`
+ * con HMAC-SHA256 usando el secret del panel (MP_WEBHOOK_SECRET).
+ *
+ * Devuelve true (válido) si MP_WEBHOOK_SECRET no está configurado, para no
+ * romper el entorno local/sandbox. En producción, configurá el secret y
+ * cualquier POST sin firma válida será rechazado.
+ */
+function verifyMpSignature(req: Request, dataId: string): boolean {
+  const secret = process.env.MP_WEBHOOK_SECRET;
+  if (!secret) return true; // sin secret → no validamos (dev/sandbox)
+
+  const xSignature = req.headers.get("x-signature");
+  const xRequestId = req.headers.get("x-request-id") ?? "";
+  if (!xSignature) return false;
+
+  // x-signature: "ts=1700000000,v1=abc123..."
+  const parts = Object.fromEntries(
+    xSignature.split(",").map((p) => {
+      const [k, v] = p.split("=");
+      return [k?.trim(), v?.trim()];
+    }),
+  );
+  const ts = parts["ts"];
+  const v1 = parts["v1"];
+  if (!ts || !v1) return false;
+
+  // data.id alfanumérico va en minúsculas según la doc de MP.
+  const id = /[a-zA-Z]/.test(dataId) ? dataId.toLowerCase() : dataId;
+  const manifest = `id:${id};request-id:${xRequestId};ts:${ts};`;
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(manifest)
+    .digest("hex");
+
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(expected, "hex"),
+      Buffer.from(v1, "hex"),
+    );
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    // El body puede venir vacío (algunas notificaciones mandan todo por query).
+    const body = await req.json().catch(() => ({} as any));
+    const url = new URL(req.url);
+    const qp = url.searchParams;
 
-    // Mercado Pago manda distintos formatos según el evento
+    // MP notifica con distintos topics al mismo webhook: "payment" y
+    // "merchant_order". Solo nos interesa "payment"; el resto se acusa con 200
+    // para que MP no reintente (si no, busca un merchant_order como pago → 404).
+    const topic =
+      qp.get("type") ?? qp.get("topic") ?? body?.type ?? body?.topic ?? null;
+
+    if (topic && topic !== "payment") {
+      return NextResponse.json({ ok: true, ignored: topic });
+    }
+
+    // El id del pago puede venir por body o por query (data.id / id).
     const paymentId =
       body?.data?.id ??
+      qp.get("data.id") ??
+      qp.get("id") ??
       body?.resource?.split("/")?.pop();
 
     if (!paymentId) {
       return NextResponse.json(
         { error: "Payment id missing" },
         { status: 400 }
+      );
+    }
+
+    // Validar firma (solo si MP_WEBHOOK_SECRET está configurado).
+    if (!verifyMpSignature(req, String(qp.get("data.id") ?? paymentId))) {
+      return NextResponse.json(
+        { error: "Invalid signature" },
+        { status: 401 }
       );
     }
 

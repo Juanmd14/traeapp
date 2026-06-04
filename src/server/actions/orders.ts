@@ -214,8 +214,9 @@ export const createOrderAction = authAction
           ok: true,
           orderId: order.id,
           orderNumber: order.order_number,
-          checkoutUrl:
-            process.env.NODE_ENV === "production" ? pref.initPoint : pref.sandboxInitPoint,
+          // Con credenciales de test user (APP_USR-) el flujo correcto es
+          // init_point. sandbox_init_point es del flujo legacy con creds TEST-.
+          checkoutUrl: pref.initPoint ?? pref.sandboxInitPoint,
         };
       } catch (err) {
         await (supabaseAdmin.from("orders") as any)
