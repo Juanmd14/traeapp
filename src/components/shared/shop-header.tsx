@@ -11,7 +11,7 @@ import { UserMenuDropdown } from "@/components/shared/user-menu-dropdown";
 function BrandLogo() {
   return (
     <div className="flex items-center shrink-0 gap-3 pr-1">
-      <ElasticLogo className="h-10 w-auto" />
+      <ElasticLogo className="h-12 sm:h-14 w-auto" />
       <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-700" />
     </div>
   );
