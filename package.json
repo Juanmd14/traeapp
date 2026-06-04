@@ -5,13 +5,13 @@
   "description": "Local-first delivery marketplace — Next.js App Router, Supabase (Postgres + RLS + Realtime), and Mercado Pago checkout with idempotent webhooks.",
   "author": "Juan M. (https://github.com/Juanmd14)",
   "license": "MIT",
-  "homepage": "https://github.com/Juanmd14/vadelivery#readme",
+  "homepage": "https://github.com/Juanmd14/traeapp#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Juanmd14/vadelivery.git"
+    "url": "https://github.com/Juanmd14/traeapp.git"
   },
   "bugs": {
-    "url": "https://github.com/Juanmd14/vadelivery/issues"
+    "url": "https://github.com/Juanmd14/traeapp/issues"
   },
   "keywords": [
     "nextjs",
