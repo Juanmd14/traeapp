@@ -2,13 +2,13 @@ import Link from "next/link";
 import { Bike, Store, Clock, MapPin, ShieldCheck, Zap, Star } from "lucide-react";
 
 export const metadata = {
-  title: "Vadelivery — Pedí lo que quieras, llega rápido",
+  title: "Trae App — Pedí lo que quieras, llega rápido",
   description:
     "Conectamos los mejores comercios de tu ciudad con repartidores de confianza. Seguí tu pedido en tiempo real.",
   openGraph: {
-    title: "Vadelivery — Delivery en tu ciudad",
+    title: "Trae App — Delivery en tu ciudad",
     description: "Pedí a los mejores comercios locales. Rápido, fácil y seguro.",
-    siteName: "Vadelivery",
+    siteName: "Trae App",
   },
 };
 
@@ -314,7 +314,7 @@ export default function LandingPage() {
               ¿Tenés un comercio?
             </h2>
             <p className="text-body-lg text-neutral-400 mb-3 max-w-lg mx-auto">
-              Unite a Vadelivery y empezá a recibir pedidos hoy.
+              Unite a Trae y empezá a recibir pedidos hoy.
             </p>
             <ul className="text-body-md text-neutral-400 space-y-1 mb-8">
               <li>✓ Panel de gestión completo con KDS en tiempo real</li>

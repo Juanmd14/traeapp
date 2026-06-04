@@ -25,7 +25,7 @@ const SOURCES = {
 export function Logo({
   variant = "full",
   forceWhite = false,
-  alt = "Vadelivery",
+  alt = "Trae App",
   className,
   width,
   height,

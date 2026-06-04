@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import { Mail } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Ayuda — Vadelivery",
-  description: "Encontrá respuestas a las preguntas más frecuentes sobre Vadelivery.",
+  title: "Ayuda — Trae App",
+  description: "Encontrá respuestas a las preguntas más frecuentes sobre Trae.",
 };
 
 const faqs: { category: string; items: { q: string; a: string }[] }[] = [

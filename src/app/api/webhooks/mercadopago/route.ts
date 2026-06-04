@@ -100,7 +100,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Resolver el access_token del seller: vadelivery agrega ?store_id=...
+    // Resolver el access_token del seller: Trae agrega ?store_id=...
     // al notification_url cuando crea la preference (ver mercadopago.service.ts).
     // Sin store_id no podemos llamar a getPayment con las credenciales correctas.
     const storeId = qp.get("store_id");

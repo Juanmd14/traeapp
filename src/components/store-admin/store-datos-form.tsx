@@ -317,7 +317,7 @@ export function StoreDatosForm({ storeId, initial }: Props) {
           Pagos con Mercado Pago
         </h2>
         <p className="text-body-sm text-neutral-500 dark:text-neutral-400 mb-5">
-          Conectá tu cuenta para que los pagos vayan directo a vos. Vadelivery
+          Conectá tu cuenta para que los pagos vayan directo a vos. Trae
           retiene una comisión por cada venta.
         </p>
 
@@ -380,7 +380,7 @@ export function StoreDatosForm({ storeId, initial }: Props) {
             <Info className="size-4 mt-0.5 shrink-0 text-blue-600 dark:text-blue-400" />
             <div>
               <p className="text-body-xs font-medium text-blue-800 dark:text-blue-300">
-                Comisión de vadelivery
+                Comisión de Trae
               </p>
               <p className="text-heading-md font-semibold text-blue-900 dark:text-blue-200 mt-0.5">
                 {initial.commission_pct}% <span className="text-body-sm font-normal text-blue-800/80 dark:text-blue-300/80">por venta con Mercado Pago</span>

@@ -2,7 +2,7 @@
 -- 0015 — Credenciales Mercado Pago por comercio (Marketplace)
 -- ================================================================
 -- Cada store guarda su propio access token. La preference se crea
--- con ese token (el dinero acredita directo al seller) y vadelivery
+-- con ese token (el dinero acredita directo al seller) y Trae
 -- cobra una comisión vía marketplace_fee usando stores.commission_pct.
 --
 -- Seguridad: el access token NUNCA se expone al cliente. Se revoca

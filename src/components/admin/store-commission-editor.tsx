@@ -41,7 +41,7 @@ export function StoreCommissionEditor({ storeId, initial }: Props) {
   return (
     <div className="space-y-3">
       <FormField
-        label="Comisión de vadelivery (%)"
+        label="Comisión de Trae (%)"
         htmlFor={`commission-${storeId}`}
         hint="Porcentaje que retiene la plataforma por cada venta con Mercado Pago. Máximo 30%."
       >

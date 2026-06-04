@@ -1,7 +1,7 @@
 /**
  * Envío de WhatsApp para notificar al dueño del comercio.
  *
- * Provider: WhatsApp Cloud API (Meta). Vadelivery se registra una sola vez
+ * Provider: WhatsApp Cloud API (Meta). Trae se registra una sola vez
  * como sender — cada local solo carga su número en /comercio/datos.
  *
  * Setup global (env vars):

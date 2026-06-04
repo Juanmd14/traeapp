@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props) {
   if (!data) return { title: "Categoría" };
 
   return {
-    title: `${(data as CategoryData).name} — Vadelivery`,
+    title: `${(data as CategoryData).name} — Trae App`,
     description: `Comercios de ${(data as CategoryData).name} en tu zona`,
   };
 }

@@ -1,6 +1,6 @@
 {
-    "name": "Vadelivery",
-    "short_name": "Vadelivery",
+    "name": "Trae App",
+    "short_name": "Trae",
     "description": "El delivery de tu ciudad. Comercios locales, repartidores propios.",
     "start_url": "/",
     "display": "standalone",
