@@ -57,7 +57,7 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.451.0",
     "mercadopago": "^2.0.15",
-    "next": "14.2.13",
+    "next": "^16.2.9",
     "next-safe-action": "^7.9.3",
     "next-themes": "^0.4.6",
     "react": "^18.3.1",
