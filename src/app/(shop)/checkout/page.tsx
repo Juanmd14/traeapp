@@ -8,7 +8,7 @@ export const metadata = { title: "Confirmar pedido" };
 export default async function CheckoutPage() {
   const session = await requireAuth("/login?next=/checkout");
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: addresses } = await supabase
     .from("addresses")
     .select("id, label, street, number, apartment, city, is_default")

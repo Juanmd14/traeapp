@@ -17,10 +17,10 @@ export default async function ProductosPage() {
     redirect("/comercio/onboarding");
   }
 
-  const storeId = getActiveStoreId(stores);
+  const storeId = await getActiveStoreId(stores);
   if (!storeId) redirect("/comercio/onboarding");
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: productsData } = await supabase
     .from("products")
     .select("*, product_quantity_options(id, quantity, price, is_default, sort_order), product_modifiers(id, name, is_required, max_select, product_modifier_options(id, name, price_delta, is_removal))")

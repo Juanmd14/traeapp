@@ -21,7 +21,7 @@ type OrderRow = {
 export default async function PedidosPage() {
   const session = await requireAuth("/login?next=/pedidos");
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: orders } = await supabase
     .from("orders")
     .select(`

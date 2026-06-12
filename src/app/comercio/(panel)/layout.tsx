@@ -38,7 +38,7 @@ export default async function ComercioLayout({
     redirect("/comercio/onboarding");
   }
 
-  const activeStoreId = getActiveStoreId(stores) ?? "";
+  const activeStoreId = (await getActiveStoreId(stores)) ?? "";
   const activeStore = stores.find((s) => s.storeId === activeStoreId);
   const multiStore = stores.length > 1;
 

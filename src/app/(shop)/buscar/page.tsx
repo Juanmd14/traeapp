@@ -30,7 +30,7 @@ type ProductWithStore = {
 
 export default async function BuscarPage({ searchParams }: Props) {
   const q = searchParams.q?.trim() ?? "";
-  const supabase = createClient();
+  const supabase = await createClient();
 
   let stores: any[] = [];
   let products: ProductWithStore[] = [];

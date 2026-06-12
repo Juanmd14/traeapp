@@ -15,10 +15,10 @@ export default async function HorariosPage() {
     redirect("/comercio/onboarding");
   }
 
-  const storeId = getActiveStoreId(stores);
+  const storeId = await getActiveStoreId(stores);
   if (!storeId) redirect("/comercio/onboarding");
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data } = await supabase
     .from("store_hours")
     .select("weekday, opens_at, closes_at")

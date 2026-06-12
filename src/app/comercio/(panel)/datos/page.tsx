@@ -47,7 +47,7 @@ export default async function DatosComercioPage() {
     redirect("/comercio/onboarding");
   }
 
-  const storeId = getActiveStoreId(stores);
+  const storeId = await getActiveStoreId(stores);
 
   if (!storeId) {
     redirect("/comercio/onboarding");

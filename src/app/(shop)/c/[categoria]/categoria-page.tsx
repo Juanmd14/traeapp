@@ -33,7 +33,7 @@ type StoreQuery = {
 export const revalidate = 60;
 
 export async function generateMetadata({ params }: Props) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data } = await supabase
     .from("categories")
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function CategoriaPage({ params }: Props) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Buscar la categoría por slug
   const { data: categoryData } = await supabase

@@ -288,7 +288,7 @@ export const createOrderAction = authAction
 export const cancelOrderAction = authAction
   .schema(z.object({ orderId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: order } = await (supabase.from("orders") as any)
       .select("id, status, customer_id")
       .eq("id", parsedInput.orderId)
@@ -324,7 +324,7 @@ export const acceptOrderAction = authAction
 
     if (!order) throw new Error("Pedido no encontrado");
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await (supabase.from("store_users") as any)
       .select("user_id")
       .eq("store_id", order.store_id)
@@ -380,7 +380,7 @@ export const markOrderReadyAction = authAction
 
     if (!order) throw new Error("Pedido no encontrado");
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await (supabase.from("store_users") as any)
       .select("user_id")
       .eq("store_id", order.store_id)
@@ -428,7 +428,7 @@ export const rejectOrderAction = authAction
 
     if (!order) throw new Error("Pedido no encontrado");
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await (supabase.from("store_users") as any)
       .select("user_id")
       .eq("store_id", order.store_id)

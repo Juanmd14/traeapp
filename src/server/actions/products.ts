@@ -14,7 +14,7 @@ const createProductInput = productSchema.extend({
 
 async function ensureStoreMember(userId: string, storeId: string, role: string) {
   if (role === "admin") return;
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: membership } = await supabase
     .from("store_users")
     .select("user_id")

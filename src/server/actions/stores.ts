@@ -101,7 +101,7 @@ const updateStoreProfileInput = storeProfileSchema.extend({
 export const updateStoreProfileAction = authAction
   .schema(updateStoreProfileInput)
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -142,7 +142,7 @@ export const updateStoreAddressAction = authAction
   .schema(updateStoreAddressInput)
   .action(async ({ parsedInput, ctx }) => {
     // Verificar membresía
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -178,7 +178,7 @@ const updateStoreNotificationsInput = storeNotificationsSchema.and(
 export const updateStoreNotificationsAction = authAction
   .schema(updateStoreNotificationsInput)
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -211,7 +211,7 @@ export const updateStoreNotificationsAction = authAction
 export const testWhatsappAction = authAction
   .schema(z.object({ storeId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -259,7 +259,7 @@ const updateStorePaymentsInput = storePaymentsSchema.extend({
 export const updateStorePaymentsAction = authAction
   .schema(updateStorePaymentsInput)
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -317,7 +317,7 @@ export const updateStoreCommissionAction = authAction
 export const disconnectMpAction = authAction
   .schema(z.object({ storeId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -350,7 +350,7 @@ const updateStoreOperationInput = storeOperationSchema.extend({
 export const updateStoreOperationAction = authAction
   .schema(updateStoreOperationInput)
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -387,7 +387,7 @@ export const updateStoreOperationAction = authAction
 export const publishStoreAction = authAction
   .schema(z.object({ storeId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -441,7 +441,7 @@ export const toggleStoreStatusAction = authAction
     pause: z.boolean(),
   }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -481,7 +481,7 @@ export const uploadStoreImageAction = authAction
     const { storeId, imageBase64, type } = parsedInput;
 
     // Verificar membresía
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -552,7 +552,7 @@ export const uploadStoreImageAction = authAction
 export const getStoreHoursAction = authAction
   .schema(z.object({ storeId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -601,7 +601,7 @@ export const updateStoreHoursAction = authAction
   .action(async ({ parsedInput, ctx }) => {
     const { storeId, hours } = parsedInput;
 
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -645,7 +645,7 @@ export const updateStoreHoursAction = authAction
 export const getPromotionsAction = authAction
   .schema(z.object({ storeId: z.string().uuid() }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -685,7 +685,7 @@ const createPromotionSchema = z.object({
 export const createPromotionAction = authAction
   .schema(createPromotionSchema)
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -736,7 +736,7 @@ export const togglePromotionAction = authAction
     active: z.boolean(),
   }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -766,7 +766,7 @@ export const deletePromotionAction = authAction
     promotionId: z.string().uuid(),
   }))
   .action(async ({ parsedInput, ctx }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: membership } = await supabase
       .from("store_users")
       .select("role")
@@ -802,7 +802,7 @@ export async function setActiveStoreAction(formData: FormData) {
     throw new Error("No tenés acceso a ese comercio");
   }
 
-  (cookies() as any).set("active_store_id", storeId, {
+  (await cookies() as any).set("active_store_id", storeId, {
     path: "/comercio",
     httpOnly: true,
     sameSite: "lax",

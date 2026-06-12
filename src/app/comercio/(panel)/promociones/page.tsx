@@ -15,10 +15,10 @@ export default async function PromocionesPage() {
     redirect("/comercio/onboarding");
   }
 
-  const storeId = getActiveStoreId(stores);
+  const storeId = await getActiveStoreId(stores);
   if (!storeId) redirect("/comercio/onboarding");
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data } = await supabase
     .from("promotions")
     .select("*")
