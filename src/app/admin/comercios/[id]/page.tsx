@@ -5,7 +5,8 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { requireRole } from "@/server/auth/session";
 import { StoreStatusSelect } from "@/components/admin/store-status-select";
 import { StoreOwnersManager } from "@/components/admin/store-owners-manager";
-import { formatPrice } from "@/lib/utils";
+import { StoreCommissionEditor } from "@/components/admin/store-commission-editor";
+import { StoreOperationEditor } from "@/components/admin/store-operation-editor";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,8 @@ type StoreDetail = {
   commission_pct: number;
   avg_prep_minutes: number;
   min_order_amount: number;
+  accepts_cash: boolean;
+  accepts_mp: boolean;
   rating_avg: number;
   rating_count: number;
   created_at: string;
@@ -45,6 +48,7 @@ export default async function AdminComercioDetailPage({
     .select(`
       id, name, slug, status, email, phone, address,
       delivery_fee, commission_pct, avg_prep_minutes, min_order_amount,
+      accepts_cash, accepts_mp,
       rating_avg, rating_count, created_at,
       categories ( name ),
       store_users (
@@ -63,10 +67,6 @@ export default async function AdminComercioDetailPage({
     { label: "Email", value: store.email ?? "—" },
     { label: "Teléfono", value: store.phone ?? "—" },
     { label: "Dirección", value: store.address },
-    { label: "Costo de envío", value: formatPrice(store.delivery_fee) },
-    { label: "Pedido mínimo", value: store.min_order_amount > 0 ? formatPrice(store.min_order_amount) : "Sin mínimo" },
-    { label: "Tiempo promedio", value: `${store.avg_prep_minutes} min` },
-    { label: "Comisión", value: `${store.commission_pct}%` },
     { label: "Calificación", value: store.rating_count > 0 ? `${Number(store.rating_avg).toFixed(1)} (${store.rating_count} reseñas)` : "Sin reseñas" },
     { label: "Registrado", value: new Date(store.created_at).toLocaleDateString("es-AR") },
   ];
@@ -111,6 +111,37 @@ export default async function AdminComercioDetailPage({
             </div>
           ))}
         </dl>
+      </section>
+
+      {/* Operación */}
+      <section className="bg-white rounded-xl border border-neutral-200 p-5 mb-4">
+        <h2 className="text-heading-sm font-semibold text-neutral-900 mb-1">
+          Operación
+        </h2>
+        <p className="text-body-xs text-neutral-500 mb-4">
+          Envío, pedido mínimo, tiempo de preparación y métodos de pago.
+        </p>
+        <StoreOperationEditor
+          storeId={store.id}
+          initial={{
+            deliveryFee: Number(store.delivery_fee ?? 0),
+            minOrderAmount: Number(store.min_order_amount ?? 0),
+            avgPrepMinutes: Number(store.avg_prep_minutes ?? 25),
+            acceptsCash: store.accepts_cash ?? true,
+            acceptsMp: store.accepts_mp ?? true,
+          }}
+        />
+      </section>
+
+      {/* Comisión */}
+      <section className="bg-white rounded-xl border border-neutral-200 p-5 mb-4">
+        <h2 className="text-heading-sm font-semibold text-neutral-900 mb-3">
+          Comisión Mercado Pago
+        </h2>
+        <StoreCommissionEditor
+          storeId={store.id}
+          initial={Number(store.commission_pct ?? 12)}
+        />
       </section>
 
       {/* Dueños */}

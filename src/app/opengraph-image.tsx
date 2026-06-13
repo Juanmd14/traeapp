@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Vadelivery — Marketplace de delivery local";
+export const alt = "Trae App — Marketplace de delivery local";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -38,10 +38,10 @@ export default function OpengraphImage() {
               letterSpacing: -1,
             }}
           >
-            V
+            T
           </div>
           <div style={{ fontSize: 28, fontWeight: 600, opacity: 0.95 }}>
-            Vadelivery
+            Trae App
           </div>
         </div>
 

@@ -1,13 +1,13 @@
 /**
  * Supabase client para Server Components, Server Actions y Route Handlers.
- * Lee/escribe cookies via Next 14 cookies() API.
+ * Lee/escribe cookies via Next 16 cookies() API (async).
  */
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database.types";
 
-export function createClient() {
-  const cookieStore = cookies();
+export async function createClient() {
+  const cookieStore = await cookies();
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

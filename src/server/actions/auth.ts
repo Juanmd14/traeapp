@@ -22,8 +22,8 @@ import {
 type RateLimitEntry = { count: number; resetAt: number };
 const rateLimitMap = new Map<string, RateLimitEntry>();
 
-function getClientIp(): string {
-  const headersList = headers();
+async function getClientIp(): Promise<string> {
+  const headersList = await headers();
   return (
     headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     headersList.get("x-real-ip") ??
@@ -60,13 +60,13 @@ function isRateLimited(key: string, max: number, windowMs: number): boolean {
 export const loginAction = action
   .schema(loginSchema)
   .action(async ({ parsedInput }) => {
-    const ip = getClientIp();
+    const ip = await getClientIp();
 
     if (isRateLimited(`login:${ip}`, 5, 15 * 60 * 1000)) {
       throw new Error("Demasiados intentos. Esperá 15 minutos e intentá de nuevo.");
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: parsedInput.email,
@@ -100,13 +100,13 @@ export const loginAction = action
 export const registerAction = action
   .schema(registerSchema)
   .action(async ({ parsedInput }) => {
-    const ip = getClientIp();
+    const ip = await getClientIp();
 
     if (isRateLimited(`register:${ip}`, 3, 60 * 60 * 1000)) {
       throw new Error("Demasiados registros desde tu red. Intentá en una hora.");
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase.auth.signUp({
       email: parsedInput.email,
@@ -145,7 +145,7 @@ export const verifyOtpAction = action
       throw new Error("Demasiados intentos. Esperá 30 minutos.");
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase.auth.verifyOtp({
       email: parsedInput.email,
@@ -172,7 +172,7 @@ export const resendOtpAction = action
       throw new Error("Ya enviamos varios códigos. Esperá unos minutos.");
     }
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Para signup pendiente (email no confirmado) hay que usar resend({ type: "signup" }).
     // Para login (email ya confirmado) sirve signInWithOtp.
@@ -197,7 +197,7 @@ export const resendOtpAction = action
  * ============================================ */
 
 export async function loginWithGoogleAction(): Promise<{ url: string }> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -218,7 +218,7 @@ export async function loginWithGoogleAction(): Promise<{ url: string }> {
 export const completeProfileAction = action
   .schema(signupSchema)
   .action(async ({ parsedInput }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("No autenticado");
@@ -243,8 +243,8 @@ export const completeProfileAction = action
 export const resetPasswordRequestAction = action
   .schema(resetPasswordRequestSchema)
   .action(async ({ parsedInput: { email } }) => {
-    const supabase = createClient();
-    const origin = headers().get("origin") ?? "";
+    const supabase = await createClient();
+    const origin = (await headers()).get("origin") ?? "";
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${origin}/auth/callback?next=/nueva-password`,
@@ -257,7 +257,7 @@ export const resetPasswordRequestAction = action
 export const updatePasswordAction = authAction
   .schema(newPasswordSchema)
   .action(async ({ parsedInput: { password } }) => {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { error } = await supabase.auth.updateUser({ password });
     if (error) throw new Error("No se pudo actualizar la contraseña. Intentá de nuevo.");
     return { ok: true };
@@ -268,7 +268,7 @@ export const updatePasswordAction = authAction
  * ============================================ */
 
 export async function logoutAction() {
-  const supabase = createClient();
+  const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/");
 }
@@ -278,7 +278,7 @@ export async function logoutAction() {
  * ============================================ */
 
 export const getDriverStatusAction = authAction.action(async ({ ctx }) => {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await (supabase.from("driver_status") as any)
     .select("is_online")

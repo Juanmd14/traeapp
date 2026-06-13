@@ -70,7 +70,7 @@ export default async function PedidosPage() {
     redirect("/comercio/onboarding");
   }
 
-  const storeId = getActiveStoreId(stores);
+  const storeId = await getActiveStoreId(stores);
 
   if (!storeId) {
     redirect("/comercio/onboarding");

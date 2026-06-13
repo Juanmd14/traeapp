@@ -38,7 +38,7 @@ export default async function ComercioLayout({
     redirect("/comercio/onboarding");
   }
 
-  const activeStoreId = getActiveStoreId(stores) ?? "";
+  const activeStoreId = (await getActiveStoreId(stores)) ?? "";
   const activeStore = stores.find((s) => s.storeId === activeStoreId);
   const multiStore = stores.length > 1;
 
@@ -47,7 +47,7 @@ export default async function ComercioLayout({
       {/* Sidebar desktop */}
       <aside className="hidden lg:flex w-60 bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 flex-col">
         <div className="p-5 border-b border-neutral-200 dark:border-neutral-800">
-          <Link href="/" className="flex items-center gap-2" aria-label="Vadelivery — Inicio">
+          <Link href="/" className="flex items-center gap-2" aria-label="Trae App — Inicio">
             <Logo className="h-8 w-auto max-w-[120px]" />
           </Link>
           <p className="text-body-xs text-neutral-500 dark:text-neutral-400 mt-1.5">Panel comercio</p>
@@ -112,7 +112,7 @@ export default async function ComercioLayout({
       <main className="flex-1 flex flex-col min-w-0">
         {/* Top bar móvil */}
         <header className="lg:hidden bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
-          <Link href="/" className="flex items-center min-w-0" aria-label="Vadelivery — Inicio">
+          <Link href="/" className="flex items-center min-w-0" aria-label="Trae App — Inicio">
             <Logo className="h-7 w-auto max-w-[108px]" />
           </Link>
           <div className="flex items-center gap-2">

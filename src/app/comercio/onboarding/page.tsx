@@ -13,7 +13,7 @@ const STEPS = [
 export const metadata = { title: "Crear comercio" };
 
 export default async function OnboardingBasicPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: categories } = await supabase
     .from("categories")
     .select("id, name, emoji")

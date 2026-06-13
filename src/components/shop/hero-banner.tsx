@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Logo } from "@/components/brand/logo";
 
 const HERO_ICONS = [
   { src: "/icons/pizza-blanco2.png",        alt: "Pizza",        fallback: "🍕" },
@@ -59,7 +58,7 @@ export function HeroBanner() {
         className="pointer-events-none absolute -bottom-6 -right-6 opacity-[0.07] dark:opacity-[0.10]"
       >
         <Image
-          src="/brand/icon-vadelivery.svg"
+          src="/brand/icon-trae.svg"
           alt=""
           width={180}
           height={190}
@@ -102,7 +101,14 @@ export function HeroBanner() {
 
         {/* Wordmark + eslogan */}
         <div className="flex-1 min-w-0">
-          <Logo className="h-7 sm:h-10 w-auto mb-1.5" priority />
+          <div className="flex items-baseline gap-1.5 sm:gap-2.5 mb-1 sm:mb-1.5">
+            <span className="font-display font-black text-3xl sm:text-5xl text-neutral-900 dark:text-white tracking-tight leading-none uppercase">
+              Trae
+            </span>
+            <span className="font-display font-black text-3xl sm:text-5xl text-primary-600 dark:text-primary-400 tracking-tight leading-none uppercase">
+              App
+            </span>
+          </div>
           <p className="text-xs sm:text-base font-display font-semibold text-neutral-600 dark:text-neutral-300 leading-relaxed">
             Pedí lo que quieras, llega rápido a tu puerta
           </p>

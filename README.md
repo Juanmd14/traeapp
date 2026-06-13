@@ -1,6 +1,6 @@
-# Vadelivery
+# Trae App
 
-[![CI](https://github.com/Juanmd14/vadelivery/actions/workflows/ci.yml/badge.svg)](https://github.com/Juanmd14/vadelivery/actions/workflows/ci.yml)
+[![CI](https://github.com/Juanmd14/traeapp/actions/workflows/ci.yml/badge.svg)](https://github.com/Juanmd14/traeapp/actions/workflows/ci.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20RLS-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
@@ -288,7 +288,7 @@ pnpm db:seed      # corre seed.sql
 
 ```
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_APP_NAME=Vadelivery
+NEXT_PUBLIC_APP_NAME=Trae App
 NEXT_PUBLIC_SUPABASE_URL=https://XXX.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_ROLE_KEY=eyJ...

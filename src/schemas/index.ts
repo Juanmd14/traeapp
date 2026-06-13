@@ -93,6 +93,20 @@ export const storeProfileSchema = z.object({
 });
 export type StoreProfileInput = z.infer<typeof storeProfileSchema>;
 
+export const storePaymentsSchema = z.object({
+  mpAccessToken: z
+    .string()
+    .regex(/^(TEST-|APP_USR-)/, "El token debe empezar con TEST- o APP_USR-")
+    .optional()
+    .or(z.literal("")),
+});
+export type StorePaymentsInput = z.infer<typeof storePaymentsSchema>;
+
+export const storeCommissionSchema = z.object({
+  commissionPct: z.coerce.number().min(0).max(30),
+});
+export type StoreCommissionInput = z.infer<typeof storeCommissionSchema>;
+
 export const storeNotificationsSchema = z
   .object({
     whatsappEnabled: z.boolean(),

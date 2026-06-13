@@ -33,7 +33,7 @@ type StoreQuery = {
 export const revalidate = 60;
 
 export async function generateMetadata({ params }: Props) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data } = await supabase
     .from("categories")
@@ -44,13 +44,13 @@ export async function generateMetadata({ params }: Props) {
   if (!data) return { title: "Categoría" };
 
   return {
-    title: `${(data as CategoryData).name} — Vadelivery`,
+    title: `${(data as CategoryData).name} — Trae App`,
     description: `Comercios de ${(data as CategoryData).name} en tu zona`,
   };
 }
 
 export default async function CategoriaPage({ params }: Props) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Buscar la categoría por slug
   const { data: categoryData } = await supabase

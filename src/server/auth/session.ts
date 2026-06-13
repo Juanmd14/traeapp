@@ -20,7 +20,7 @@ export type SessionProfile = {
 };
 
 export async function getSession(): Promise<SessionProfile | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return null;
@@ -64,7 +64,7 @@ export async function requireRole(
 }
 
 export async function getUserStores(userId: string): Promise<Array<{ storeId: string; role: "owner" | "manager" | "staff" }>> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data } = await (supabase.from("store_users") as any)
     .select("store_id, role")
     .eq("user_id", userId)
@@ -83,7 +83,7 @@ export type StoreWithName = {
 };
 
 export async function getUserStoresWithNames(userId: string): Promise<StoreWithName[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data } = await (supabase.from("store_users") as any)
     .select("store_id, role, stores(name)")
     .eq("user_id", userId)
@@ -97,9 +97,9 @@ export async function getUserStoresWithNames(userId: string): Promise<StoreWithN
 }
 
 /** Devuelve el storeId activo leyendo la cookie; cae al primero si no hay cookie válida. */
-export function getActiveStoreId(stores: Array<{ storeId: string }>): string | null {
+export async function getActiveStoreId(stores: Array<{ storeId: string }>): Promise<string | null> {
   if (stores.length === 0) return null;
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const savedId = (cookieStore as any).get("active_store_id")?.value as string | undefined;
   if (savedId && stores.some((s) => s.storeId === savedId)) {
     return savedId;

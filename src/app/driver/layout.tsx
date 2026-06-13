@@ -24,7 +24,7 @@ export default async function DriverLayout({ children }: { children: React.React
           <Link
             href="/"
             className="flex items-center"
-            aria-label="Vadelivery — Inicio"
+            aria-label="Trae App — Inicio"
           >
             <Logo className="h-7 w-auto" />
           </Link>

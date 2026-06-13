@@ -5,13 +5,13 @@
   "description": "Local-first delivery marketplace — Next.js App Router, Supabase (Postgres + RLS + Realtime), and Mercado Pago checkout with idempotent webhooks.",
   "author": "Juan M. (https://github.com/Juanmd14)",
   "license": "MIT",
-  "homepage": "https://github.com/Juanmd14/vadelivery#readme",
+  "homepage": "https://github.com/Juanmd14/traeapp#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Juanmd14/vadelivery.git"
+    "url": "https://github.com/Juanmd14/traeapp.git"
   },
   "bugs": {
-    "url": "https://github.com/Juanmd14/vadelivery/issues"
+    "url": "https://github.com/Juanmd14/traeapp/issues"
   },
   "keywords": [
     "nextjs",
@@ -27,7 +27,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "type-check": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:types": "supabase gen types typescript --local > src/types/database.types.ts",
@@ -57,7 +57,7 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.451.0",
     "mercadopago": "^2.0.15",
-    "next": "14.2.13",
+    "next": "^16.2.9",
     "next-safe-action": "^7.9.3",
     "next-themes": "^0.4.6",
     "react": "^18.3.1",

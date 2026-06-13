@@ -10,7 +10,7 @@ export const metadata = { title: "Mis direcciones" };
 export default async function DireccionesPage() {
   const session = await requireAuth("/login?next=/direcciones");
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data } = await supabase
     .from("addresses")
     .select("id, label, street, number, apartment, neighborhood, reference, city, is_default")

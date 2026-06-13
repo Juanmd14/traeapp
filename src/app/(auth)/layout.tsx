@@ -32,7 +32,7 @@ export default function AuthLayout({
         </div>
 
         <p className="text-body-sm opacity-70">
-          © {new Date().getFullYear()} Vadelivery
+          © {new Date().getFullYear()} Trae
         </p>
       </div>
 

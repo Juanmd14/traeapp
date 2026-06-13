@@ -18,8 +18,8 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL ?? "https://vadelivery.vercel.app"
   ),
   title: {
-    default: "Vadelivery — Pedí lo que quieras, llega rápido",
-    template: "%s · Vadelivery",
+    default: "Trae App — Pedí lo que quieras, llega rápido",
+    template: "%s · Trae App",
   },
   description:
     "El delivery de tu ciudad. Comercios locales, repartidores propios.",
@@ -28,14 +28,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_AR",
     url: "/",
-    siteName: "Vadelivery",
-    title: "Vadelivery — Marketplace de delivery local",
+    siteName: "Trae App",
+    title: "Trae App — Marketplace de delivery local",
     description:
       "Auth OTP, RLS en Postgres, checkout con Mercado Pago y tracking realtime. Next.js + Supabase + Mercado Pago.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vadelivery — Marketplace de delivery local",
+    title: "Trae App — Marketplace de delivery local",
     description:
       "Next.js + Supabase + Mercado Pago. Checkout integrado y tracking realtime.",
   },

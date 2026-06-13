@@ -1,0 +1,20 @@
+<svg width="540" height="200" viewBox="0 0 540 200" xmlns="http://www.w3.org/2000/svg">
+  <svg x="15" y="52" width="138" height="94" viewBox="0 0 152 104" overflow="visible">
+    <g fill="#FF5A1F">
+      <path d="M 16 64 L 16 46 Q 16 33 31 33 L 53 33 Q 67 33 71 48 L 75 64 Z" />
+      <path d="M 60 55 L 99 55 L 99 65 L 60 65 Z" />
+      <path d="M 88 65 L 101 31 Q 103 25 110 26 Q 117 28 115 35 L 122 65 Z" />
+    </g>
+    <g stroke="#FF5A1F" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M 110 30 L 120 18" />
+      <path d="M 111 17 L 128 15" />
+      <rect x="8" y="6" width="30" height="29" rx="6" />
+      <line x1="11" y1="19" x2="35" y2="19" />
+    </g>
+    <circle cx="42" cy="78" r="17" stroke="#FF5A1F" stroke-width="9.5" fill="none" />
+    <circle cx="112" cy="78" r="17" stroke="#FF5A1F" stroke-width="9.5" fill="none" />
+  </svg>
+  <text x="178" y="118" font-family="'Space Mono', 'Courier New', monospace" font-weight="700" font-size="70" letter-spacing="-2.1" fill="#FFF4EB">trae</text>
+  <rect x="178" y="138" width="30" height="3" rx="1.5" fill="#FF5A1F" />
+  <text x="218" y="151" font-family="'Space Mono', 'Courier New', monospace" font-weight="700" font-size="17" letter-spacing="2.04" fill="#FF5A1F">app</text>
+</svg>

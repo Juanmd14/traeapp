@@ -1,6 +1,6 @@
 {
-    "name": "Vadelivery",
-    "short_name": "Vadelivery",
+    "name": "Trae App",
+    "short_name": "Trae",
     "description": "El delivery de tu ciudad. Comercios locales, repartidores propios.",
     "start_url": "/",
     "display": "standalone",
@@ -9,7 +9,7 @@
     "orientation": "portrait",
     "icons": [
       {
-        "src": "/brand/icon-vadelivery.svg",
+        "src": "/brand/app-icon-trae-512.svg",
         "sizes": "any",
         "type": "image/svg+xml",
         "purpose": "any"

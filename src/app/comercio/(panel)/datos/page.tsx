@@ -29,6 +29,8 @@ type StoreData = {
   cover_url: string | null;
   whatsapp_number: string | null;
   whatsapp_notifications_enabled: boolean | null;
+  commission_pct: number | null;
+  mp_connected_at: string | null;
 };
 
 export default async function DatosComercioPage() {
@@ -45,7 +47,7 @@ export default async function DatosComercioPage() {
     redirect("/comercio/onboarding");
   }
 
-  const storeId = getActiveStoreId(stores);
+  const storeId = await getActiveStoreId(stores);
 
   if (!storeId) {
     redirect("/comercio/onboarding");
@@ -67,7 +69,9 @@ export default async function DatosComercioPage() {
       logo_url,
       cover_url,
       whatsapp_number,
-      whatsapp_notifications_enabled
+      whatsapp_notifications_enabled,
+      commission_pct,
+      mp_connected_at
     `)
     .eq("id", storeId)
     .single();
@@ -115,6 +119,8 @@ export default async function DatosComercioPage() {
           whatsapp_number: store.whatsapp_number,
           whatsapp_notifications_enabled:
             store.whatsapp_notifications_enabled ?? false,
+          commission_pct: Number(store.commission_pct ?? 12),
+          mp_connected_at: store.mp_connected_at,
         }}
       />
     </div>

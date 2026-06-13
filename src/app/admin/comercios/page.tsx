@@ -29,6 +29,7 @@ type Store = {
   slug: string;
   status: string;
   created_at: string;
+  mp_connected_at: string | null;
   categories: { name: string } | null;
   store_users: { profiles: { full_name: string; email: string } | null }[];
 };
@@ -38,7 +39,7 @@ export default async function AdminComerciosPage() {
 
   const { data: stores } = await (supabaseAdmin.from("stores") as any)
     .select(`
-      id, name, slug, status, created_at,
+      id, name, slug, status, created_at, mp_connected_at,
       categories ( name ),
       store_users ( profiles:user_id ( full_name, email ) )
     `)
@@ -48,6 +49,7 @@ export default async function AdminComerciosPage() {
   const all = (stores ?? []) as Store[];
   const active = all.filter((s) => s.status === "active").length;
   const pendingReview = all.filter((s) => s.status === "pending_review").length;
+  const mpConnected = all.filter((s) => !!s.mp_connected_at).length;
 
   return (
     <div>
@@ -58,6 +60,7 @@ export default async function AdminComerciosPage() {
             {active} activo{active !== 1 ? "s" : ""}
             {pendingReview > 0 && ` · ${pendingReview} en revisión`}
             {" · "}{all.length} en total
+            {" · "}{mpConnected} con MP conectado
           </p>
         </div>
         <Link
@@ -82,6 +85,7 @@ export default async function AdminComerciosPage() {
                   <th className="text-left px-4 py-3 font-medium text-neutral-500">Comercio</th>
                   <th className="text-left px-4 py-3 font-medium text-neutral-500">Dueño</th>
                   <th className="text-left px-4 py-3 font-medium text-neutral-500">Estado</th>
+                  <th className="text-left px-4 py-3 font-medium text-neutral-500">MP</th>
                   <th className="text-left px-4 py-3 font-medium text-neutral-500">Registro</th>
                   <th className="px-4 py-3" />
                 </tr>
@@ -119,6 +123,20 @@ export default async function AdminComerciosPage() {
                             currentStatus={store.status}
                           />
                         </div>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        {store.mp_connected_at ? (
+                          <span
+                            className="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold bg-accent-100 text-accent-700"
+                            title={`Conectado el ${new Date(store.mp_connected_at).toLocaleDateString("es-AR")}`}
+                          >
+                            Conectado
+                          </span>
+                        ) : (
+                          <span className="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold bg-neutral-100 text-neutral-500">
+                            Sin conectar
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-neutral-500 whitespace-nowrap">
                         {new Date(store.created_at).toLocaleDateString("es-AR", {
