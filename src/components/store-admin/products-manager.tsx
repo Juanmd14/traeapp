@@ -1286,15 +1286,16 @@ function ProductFormDialog({
             </Button>
           </div>
         </form>
-      </DialogContent>
 
-      {cropFile && (
-        <ImageCropModal
-          file={cropFile}
-          onConfirm={handleCropConfirm}
-          onCancel={() => setCropFile(null)}
-        />
-      )}
+        {/* Dentro de DialogContent para que Radix no bloquee los clics del recorte. */}
+        {cropFile && (
+          <ImageCropModal
+            file={cropFile}
+            onConfirm={handleCropConfirm}
+            onCancel={() => setCropFile(null)}
+          />
+        )}
+      </DialogContent>
     </Dialog>
   );
 }

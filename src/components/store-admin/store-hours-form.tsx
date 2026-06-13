@@ -43,6 +43,8 @@ export function StoreHoursForm({ storeId, initial }: Props) {
   });
 
   const hours = watch("hours");
+  // "Aplicar a todos" se muestra una sola vez, en el primer día abierto.
+  const firstOpenIndex = hours.findIndex((h) => h.isOpen);
 
   const onSubmit = async (data: { storeId: string; hours: typeof hours }) => {
     setLoading(true);
@@ -204,15 +206,17 @@ export function StoreHoursForm({ storeId, initial }: Props) {
                     <Plus className="size-3.5" />
                     Agregar tramo
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => applyToAll(index)}
-                    className="inline-flex items-center gap-1 text-body-xs text-neutral-500 dark:text-neutral-400 hover:text-primary-600 hover:underline"
-                    title="Usar este mismo horario para toda la semana"
-                  >
-                    <Copy className="size-3.5" />
-                    Aplicar a todos
-                  </button>
+                  {index === firstOpenIndex && (
+                    <button
+                      type="button"
+                      onClick={() => applyToAll(index)}
+                      className="inline-flex items-center gap-1 text-body-xs text-neutral-500 dark:text-neutral-400 hover:text-primary-600 hover:underline"
+                      title="Usar este mismo horario para toda la semana"
+                    >
+                      <Copy className="size-3.5" />
+                      Aplicar a todos
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (
