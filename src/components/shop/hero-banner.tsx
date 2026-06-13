@@ -62,6 +62,7 @@ export function HeroBanner() {
           alt=""
           width={180}
           height={190}
+          priority
           className="w-32 h-32 sm:w-44 sm:h-44"
         />
       </div>
