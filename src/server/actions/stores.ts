@@ -573,12 +573,14 @@ export const getStoreHoursAction = authAction
 
     if (error) throw new Error(error.message);
 
-    // Convertir a formato más útil
+    // Agrupar los tramos de cada día (un día puede tener varios: ej 08–13 y 14–17).
     const hoursByDay = Array(7).fill(null).map((_, i) => {
-      const day = data?.find((h) => h.weekday === i);
-      return day
-        ? { isOpen: true, opensAt: day.opens_at.slice(0, 5), closesAt: day.closes_at.slice(0, 5) }
-        : { isOpen: false, opensAt: "09:00", closesAt: "22:00" };
+      const ranges = (data ?? [])
+        .filter((h) => h.weekday === i)
+        .map((h) => ({ opensAt: h.opens_at.slice(0, 5), closesAt: h.closes_at.slice(0, 5) }));
+      return ranges.length > 0
+        ? { isOpen: true, ranges }
+        : { isOpen: false, ranges: [{ opensAt: "09:00", closesAt: "22:00" }] };
     });
 
     return { ok: true, hours: hoursByDay };
@@ -586,11 +588,19 @@ export const getStoreHoursAction = authAction
 
 const dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
+const timeRangeSchema = z.object({
+  opensAt: z.string().regex(/^\d{2}:\d{2}$/),
+  closesAt: z.string().regex(/^\d{2}:\d{2}$/),
+});
+
 const updateStoreHoursSchema = z.object({
   storeId: z.string().uuid(),
   hours: z.array(z.object({
     weekday: z.number().min(0).max(6),
     isOpen: z.boolean(),
+    // Cada día puede tener varios tramos (ej: 08:00–13:00 y 14:00–17:00).
+    ranges: z.array(timeRangeSchema).optional(),
+    // Compatibilidad con el formato viejo de un solo tramo.
     opensAt: z.string().regex(/^\d{2}:\d{2}$/).optional(),
     closesAt: z.string().regex(/^\d{2}:\d{2}$/).optional(),
   })),
@@ -617,15 +627,23 @@ export const updateStoreHoursAction = authAction
     // Eliminar horarios existentes
     await supabaseAdmin.from("store_hours").delete().eq("store_id", storeId);
 
-    // Insertar nuevos horarios (solo los que están abiertos)
+    // Insertar nuevos horarios: una fila por tramo de cada día abierto.
     const toInsert = hours
       .filter((h) => h.isOpen)
-      .map((h) => ({
-        store_id: storeId,
-        weekday: h.weekday,
-        opens_at: h.opensAt || "09:00",
-        closes_at: h.closesAt || "22:00",
-      }));
+      .flatMap((h) => {
+        const ranges = h.ranges && h.ranges.length > 0
+          ? h.ranges
+          : [{ opensAt: h.opensAt || "09:00", closesAt: h.closesAt || "22:00" }];
+        return ranges
+          // Descartar tramos incompletos o sin duración (cierra antes/igual que abre).
+          .filter((r) => r.opensAt && r.closesAt && r.closesAt > r.opensAt)
+          .map((r) => ({
+            store_id: storeId,
+            weekday: h.weekday,
+            opens_at: r.opensAt,
+            closes_at: r.closesAt,
+          }));
+      });
 
     if (toInsert.length > 0) {
       const { error } = await supabaseAdmin

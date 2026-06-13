@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
+import { openStoreIds, type StoreHourRow } from "@/lib/store-hours";
 import { StoreCard, type StoreCardData } from "@/components/shop/store-card";
 
 type Props = {
@@ -88,6 +89,19 @@ export default async function CategoriaPage({ params }: Props) {
     .order("is_featured", { ascending: false })
     .order("rating_avg", { ascending: false });
 
+  // "Abierto ahora" según los tramos de store_hours.
+  const storeIds = ((storesData ?? []) as StoreQuery[]).map((s) => s.id);
+  const { data: hoursRows } = storeIds.length
+    ? await supabase
+        .from("store_hours")
+        .select("store_id, weekday, opens_at, closes_at")
+        .in("store_id", storeIds)
+    : { data: [] };
+  const hourRows = (hoursRows ?? []) as StoreHourRow[];
+  const openIds = openStoreIds(hourRows);
+  // Comercios sin horarios cargados se consideran siempre abiertos.
+  const withHours = new Set(hourRows.map((r) => r.store_id));
+
   const stores: StoreCardData[] = ((storesData ?? []) as StoreQuery[]).map((s) => {
     const minMin = Math.max(15, s.avg_prep_minutes - 5);
     const maxMin = s.avg_prep_minutes + 10;
@@ -102,7 +116,7 @@ export default async function CategoriaPage({ params }: Props) {
       deliveryMinMin: minMin,
       deliveryMaxMin: maxMin,
       deliveryFee: Number(s.delivery_fee ?? 0),
-      isOpen: true,
+      isOpen: !withHours.has(s.id) || openIds.has(s.id),
     };
   });
 

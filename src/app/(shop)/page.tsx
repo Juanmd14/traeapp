@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { openStoreIds, type StoreHourRow } from "@/lib/store-hours";
 import { HeroBanner } from "@/components/shop/hero-banner";
 import { CategoryPill, type Category } from "@/components/shop/category-pill";
 import { StoreCard, type StoreCardData } from "@/components/shop/store-card";
@@ -59,6 +60,19 @@ export default async function HomePage() {
     })
   );
 
+  // "Abierto ahora" según los tramos de store_hours de los comercios listados.
+  const storeIds = ((stores ?? []) as StoreQuery[]).map((s) => s.id);
+  const { data: hoursRows } = storeIds.length
+    ? await supabase
+        .from("store_hours")
+        .select("store_id, weekday, opens_at, closes_at")
+        .in("store_id", storeIds)
+    : { data: [] };
+  const hourRows = (hoursRows ?? []) as StoreHourRow[];
+  const openIds = openStoreIds(hourRows);
+  // Comercios sin horarios cargados se consideran siempre abiertos.
+  const withHours = new Set(hourRows.map((r) => r.store_id));
+
   const mappedStores: StoreCardData[] = (
     (stores ?? []) as StoreQuery[]
   ).map((s) => {
@@ -75,7 +89,7 @@ export default async function HomePage() {
       deliveryMinMin: minMin,
       deliveryMaxMin: maxMin,
       deliveryFee: Number(s.delivery_fee ?? 0),
-      isOpen: true,
+      isOpen: !withHours.has(s.id) || openIds.has(s.id),
     };
   });
 

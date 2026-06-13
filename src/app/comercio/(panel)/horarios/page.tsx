@@ -22,13 +22,17 @@ export default async function HorariosPage() {
   const { data } = await supabase
     .from("store_hours")
     .select("weekday, opens_at, closes_at")
-    .eq("store_id", storeId) as { data: { weekday: number; opens_at: string; closes_at: string }[] | null };
+    .eq("store_id", storeId)
+    .order("opens_at") as { data: { weekday: number; opens_at: string; closes_at: string }[] | null };
 
+  // Agrupamos todas las filas de cada día en sus tramos (ej: 08–13 y 14–17).
   const initial = Array(7).fill(null).map((_, i) => {
-    const day = data?.find((h) => h.weekday === i);
-    return day
-      ? { isOpen: true, opensAt: day.opens_at.slice(0, 5), closesAt: day.closes_at.slice(0, 5) }
-      : { isOpen: false, opensAt: "09:00", closesAt: "22:00" };
+    const ranges = (data ?? [])
+      .filter((h) => h.weekday === i)
+      .map((h) => ({ opensAt: h.opens_at.slice(0, 5), closesAt: h.closes_at.slice(0, 5) }));
+    return ranges.length > 0
+      ? { isOpen: true, ranges }
+      : { isOpen: false, ranges: [{ opensAt: "09:00", closesAt: "22:00" }] };
   });
 
   return (

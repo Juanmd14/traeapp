@@ -84,10 +84,14 @@ export function ProductModifierModal({
       if (group.max_select === 1) {
         return { ...prev, [group.id]: already ? [] : [optionId] };
       }
-      return {
-        ...prev,
-        [group.id]: already ? current.filter((id) => id !== optionId) : [...current, optionId],
-      };
+      if (already) {
+        return { ...prev, [group.id]: current.filter((id) => id !== optionId) };
+      }
+      // No permitir superar el máximo configurado por el comercio.
+      if (current.length >= group.max_select) {
+        return prev;
+      }
+      return { ...prev, [group.id]: [...current, optionId] };
     });
   };
 
@@ -214,6 +218,9 @@ export function ProductModifierModal({
                     .filter(o => !o.is_removal)
                     .sort((a, b) => a.sort_order - b.sort_order);
 
+                  const selectedCount = (selected[group.id] ?? []).length;
+                  const atMax = group.max_select > 1 && selectedCount >= group.max_select;
+
                   return (
                     <div key={group.id}>
                       <div className="flex items-center gap-2 mb-3">
@@ -225,22 +232,26 @@ export function ProductModifierModal({
                         )}
                         {group.max_select > 1 && (
                           <span className="text-[10px] text-neutral-400">
-                            (hasta {group.max_select})
+                            (elegí hasta {group.max_select}) · {selectedCount}/{group.max_select}
                           </span>
                         )}
                       </div>
                       <div className="space-y-2">
                         {addOptions.map((option) => {
                           const isActive = isSelected(group.id, option.id);
+                          const isDisabled = atMax && !isActive;
 
                           return (
                             <button
                               key={option.id}
                               type="button"
                               onClick={() => toggleOption(group, option.id)}
+                              disabled={isDisabled}
                               className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition ${
                                 isActive
                                   ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
+                                  : isDisabled
+                                  ? "border-neutral-200 dark:border-neutral-800 opacity-40 cursor-not-allowed"
                                   : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
                               }`}
                             >

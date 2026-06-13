@@ -4,7 +4,7 @@ import { useState, useTransition, useRef } from "react";
 import Image from "next/image";
 import {
   Plus, Pencil, Trash2, Package,
-  Search, Check, EyeOff, X, Upload,
+  Search, Check, EyeOff, X, Upload, Crop,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
+import { ImageCropModal } from "@/components/store-admin/image-crop-modal";
 import { productSchema, type ProductInput } from "@/schemas";
 import {
   createProductAction,
@@ -407,6 +408,9 @@ function ProductFormDialog({
     initial?.image_url ?? "",
   );
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  // Archivo original sin recortar — fuente para el recorte opcional.
+  const [originalFile, setOriginalFile] = useState<File | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [quantityOptions, setQuantityOptions] = useState<QuantityOptionInput[]>(
     initial?.quantity_options ?? []
@@ -462,10 +466,24 @@ function ProductFormDialog({
       setServerError("La imagen es muy grande (máx 2MB)");
       return;
     }
+    // La foto se sube tal cual; el recorte es opcional (botón en la preview).
+    setServerError(null);
+    setOriginalFile(file);
     setPendingFile(file);
-    const preview = URL.createObjectURL(file);
-    setImagePreview(preview);
+    setImagePreview(URL.createObjectURL(file));
     setShowUrlInput(false);
+  };
+
+  const handleCropConfirm = (cropped: File) => {
+    setPendingFile(cropped);
+    setImagePreview(URL.createObjectURL(cropped));
+    setCropFile(null);
+  };
+
+  const handleRemoveImage = () => {
+    setImagePreview("");
+    setPendingFile(null);
+    setOriginalFile(null);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -479,6 +497,8 @@ function ProductFormDialog({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) handleFileSelect(file);
+    // permitir re-seleccionar el mismo archivo
+    e.target.value = "";
   };
 
   const uploadPendingFile = async (productId: string): Promise<string | null> => {
@@ -684,13 +704,26 @@ function ProductFormDialog({
                     className="object-cover"
                     unoptimized
                   />
-                  <button
-                    type="button"
-                    onClick={() => { setImagePreview(""); setPendingFile(null); }}
-                    className="absolute top-2 right-2 size-6 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 dark:text-neutral-400 hover:text-destructive transition shadow-sm"
-                  >
-                    <X className="size-3.5" />
-                  </button>
+                  <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                    {originalFile && (
+                      <button
+                        type="button"
+                        onClick={() => setCropFile(originalFile)}
+                        className="h-7 px-2.5 bg-white/90 rounded-full flex items-center gap-1 text-body-xs font-medium text-neutral-700 dark:text-neutral-700 hover:text-primary-600 transition shadow-sm"
+                      >
+                        <Crop className="size-3.5" />
+                        Recortar
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="size-7 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 dark:text-neutral-700 hover:text-destructive transition shadow-sm"
+                      aria-label="Quitar imagen"
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button
@@ -700,6 +733,9 @@ function ProductFormDialog({
                 >
                   <Upload className="size-8" />
                   <span className="text-body-sm">Subir imagen</span>
+                  <span className="text-body-xs text-neutral-400 dark:text-neutral-500">
+                    Después podés recortarla para enfocar el producto
+                  </span>
                 </button>
               )}
             </div>
@@ -721,13 +757,26 @@ function ProductFormDialog({
                     className="object-cover"
                     unoptimized
                   />
-                  <button
-                    type="button"
-                    onClick={() => { setImagePreview(""); setPendingFile(null); }}
-                    className="absolute top-2 right-2 size-6 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 dark:text-neutral-400 hover:text-destructive transition shadow-sm"
-                  >
-                    <X className="size-3.5" />
-                  </button>
+                  <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                    {originalFile && (
+                      <button
+                        type="button"
+                        onClick={() => setCropFile(originalFile)}
+                        className="h-7 px-2.5 bg-white/90 rounded-full flex items-center gap-1 text-body-xs font-medium text-neutral-700 dark:text-neutral-700 hover:text-primary-600 transition shadow-sm"
+                      >
+                        <Crop className="size-3.5" />
+                        Recortar
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="size-7 bg-white/90 rounded-full flex items-center justify-center text-neutral-600 dark:text-neutral-700 hover:text-destructive transition shadow-sm"
+                      aria-label="Quitar imagen"
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button
@@ -1113,7 +1162,7 @@ function ProductFormDialog({
                   <p className="text-body-sm font-medium text-neutral-700 dark:text-neutral-300">
                     Grupos personalizados
                   </p>
-                  <p className="text-[11px] text-neutral-400 mt-0.5">Ej: Punto de cocción, Tamaño, Salsa</p>
+                  <p className="text-[11px] text-neutral-400 mt-0.5">Ej: Sabores, Punto de cocción, Tamaño. Marcá &quot;Obligatorio&quot; y elegí cuántos puede elegir el cliente.</p>
                 </div>
                 <button
                   type="button"
@@ -1151,14 +1200,16 @@ function ProductFormDialog({
                       <span className="text-body-sm text-neutral-700 dark:text-neutral-300">Obligatorio</span>
                     </label>
                     <label className="flex items-center gap-2">
-                      <span className="text-[12px] text-neutral-500 dark:text-neutral-400">Máx. opciones:</span>
+                      <span className="text-[12px] text-neutral-500 dark:text-neutral-400">
+                        Máximo que puede elegir el cliente:
+                      </span>
                       <input
                         type="number"
                         min="1"
                         max="20"
                         value={group.max_select}
-                        onChange={(e) => setCustomGroups(customGroups.map((g, i) => i === gIdx ? { ...g, max_select: parseInt(e.target.value) || 1 } : g))}
-                        className="w-12 border border-neutral-200 dark:border-neutral-700 rounded px-2 py-1 text-sm text-center bg-transparent text-neutral-900 dark:text-neutral-100"
+                        onChange={(e) => setCustomGroups(customGroups.map((g, i) => i === gIdx ? { ...g, max_select: Math.max(1, parseInt(e.target.value) || 1) } : g))}
+                        className="w-14 border border-neutral-200 dark:border-neutral-700 rounded px-2 py-1 text-sm text-center bg-transparent text-neutral-900 dark:text-neutral-100"
                       />
                     </label>
                   </div>
@@ -1236,6 +1287,14 @@ function ProductFormDialog({
           </div>
         </form>
       </DialogContent>
+
+      {cropFile && (
+        <ImageCropModal
+          file={cropFile}
+          onConfirm={handleCropConfirm}
+          onCancel={() => setCropFile(null)}
+        />
+      )}
     </Dialog>
   );
 }
