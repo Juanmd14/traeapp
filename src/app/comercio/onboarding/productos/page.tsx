@@ -12,12 +12,13 @@ const STEPS = [
 
 export const metadata = { title: "Productos · Onboarding" };
 
-export default function OnboardingProductsPage({
+export default async function OnboardingProductsPage({
   searchParams,
 }: {
-  searchParams: { storeId?: string };
+  searchParams: Promise<{ storeId?: string }>;
 }) {
-  if (!searchParams.storeId) redirect("/comercio/onboarding");
+  const { storeId } = await searchParams;
+  if (!storeId) redirect("/comercio/onboarding");
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -33,7 +34,7 @@ export default function OnboardingProductsPage({
           </p>
         </header>
 
-        <OnboardingProductsForm storeId={searchParams.storeId} />
+        <OnboardingProductsForm storeId={storeId} />
       </div>
     </div>
   );

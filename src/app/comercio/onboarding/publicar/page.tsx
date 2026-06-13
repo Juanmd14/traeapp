@@ -26,11 +26,12 @@ type StoreData = {
 export default async function OnboardingPublishPage({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     storeId?: string;
-  };
+  }>;
 }) {
-  if (!searchParams.storeId) {
+  const { storeId } = await searchParams;
+  if (!storeId) {
     redirect("/comercio/onboarding");
   }
 
@@ -43,7 +44,7 @@ export default async function OnboardingPublishPage({
       name,
       address
     `)
-    .eq("id", searchParams.storeId)
+    .eq("id", storeId)
     .single();
 
   const store = data as StoreData | null;
