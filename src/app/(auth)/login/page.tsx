@@ -8,10 +8,11 @@ export const metadata = { title: "Ingresar" };
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { next?: string };
+  searchParams: Promise<{ next?: string }>;
 }) {
+  const { next } = await searchParams;
   const session = await getSession();
-  if (session) redirect(searchParams.next ?? "/");
+  if (session) redirect(next ?? "/");
 
   return (
     <div className="space-y-6">

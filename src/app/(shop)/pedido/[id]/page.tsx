@@ -53,10 +53,12 @@ export default async function OrderPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { status?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ status?: string }>;
 }) {
-  const session = await requireAuth(`/login?next=/pedido/${params.id}`);
+  const { id } = await params;
+  const { status: statusParam } = await searchParams;
+  const session = await requireAuth(`/login?next=/pedido/${id}`);
   const supabase = await createClient();
 
   const { data } = await supabase
@@ -84,7 +86,7 @@ export default async function OrderPage({
       customer_id,
       stores ( id, name, slug, phone )
     `)
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   const order = data as OrderData | null;
@@ -132,7 +134,7 @@ export default async function OrderPage({
         </h1>
       </header>
 
-      {searchParams.status === "success" && (
+      {statusParam === "success" && (
         <div className="bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800/40 rounded-md p-3 mb-4">
           <p className="text-body-md font-medium text-accent-900 dark:text-accent-200">
             ¡Pago aprobado! 🎉
@@ -144,7 +146,7 @@ export default async function OrderPage({
         </div>
       )}
 
-      {searchParams.status === "pending" && (
+      {statusParam === "pending" && (
         <div className="bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800/40 rounded-md p-3 mb-4">
           <p className="text-body-md font-medium text-warning-900 dark:text-warning-200">
             Pago pendiente

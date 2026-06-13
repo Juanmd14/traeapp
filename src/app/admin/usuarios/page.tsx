@@ -34,11 +34,12 @@ type Profile = {
 export default async function AdminUsuariosPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) {
   await requireRole("admin");
 
-  const q = searchParams.q?.trim() ?? "";
+  const { q: rawQ } = await searchParams;
+  const q = rawQ?.trim() ?? "";
 
   let query = (supabaseAdmin.from("profiles") as any)
     .select("id, full_name, email, phone, role, is_active, created_at")

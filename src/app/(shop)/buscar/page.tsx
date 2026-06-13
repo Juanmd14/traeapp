@@ -7,7 +7,7 @@ export const metadata = { title: "Buscar" };
 export const dynamic = "force-dynamic";
 
 type Props = {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 };
 
 type ProductWithStore = {
@@ -29,7 +29,8 @@ type ProductWithStore = {
 };
 
 export default async function BuscarPage({ searchParams }: Props) {
-  const q = searchParams.q?.trim() ?? "";
+  const { q: rawQ } = await searchParams;
+  const q = rawQ?.trim() ?? "";
   const supabase = await createClient();
 
   let stores: any[] = [];

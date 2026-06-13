@@ -8,7 +8,7 @@ import { StoreProducts } from "@/components/shop/store-products";
 import { formatPrice, formatDeliveryTime } from "@/lib/utils";
 
 type Props = {
-  params: { storeSlug: string };
+  params: Promise<{ storeSlug: string }>;
 };
 
 type StoreData = {
@@ -51,12 +51,13 @@ function promoLabel(promo: PromoData): string {
 export const revalidate = 30;
 
 export async function generateMetadata({ params }: Props) {
+  const { storeSlug } = await params;
   const supabase = await createClient();
 
   const { data } = await supabase
     .from("stores")
     .select("name, description")
-    .eq("slug", params.storeSlug)
+    .eq("slug", storeSlug)
     .eq("status", "active")
     .single();
 
@@ -78,6 +79,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function StorePage({ params }: Props) {
+  const { storeSlug } = await params;
   const supabase = await createClient();
 
   const { data } = await supabase
@@ -98,7 +100,7 @@ export default async function StorePage({ params }: Props) {
       status,
       categories ( name )
     `)
-    .eq("slug", params.storeSlug)
+    .eq("slug", storeSlug)
     .eq("status", "active")
     .single();
 

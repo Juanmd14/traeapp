@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { StoreCard, type StoreCardData } from "@/components/shop/store-card";
 
 type Props = {
-  params: { categoria: string };
+  params: Promise<{ categoria: string }>;
 };
 
 type CategoryData = {
@@ -33,12 +33,13 @@ type StoreQuery = {
 export const revalidate = 60;
 
 export async function generateMetadata({ params }: Props) {
+  const { categoria } = await params;
   const supabase = await createClient();
 
   const { data } = await supabase
     .from("categories")
     .select("name")
-    .eq("slug", params.categoria)
+    .eq("slug", categoria)
     .single();
 
   if (!data) return { title: "Categoría" };
@@ -50,13 +51,14 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function CategoriaPage({ params }: Props) {
+  const { categoria } = await params;
   const supabase = await createClient();
 
   // Buscar la categoría por slug
   const { data: categoryData } = await supabase
     .from("categories")
     .select("id, name, slug, emoji")
-    .eq("slug", params.categoria)
+    .eq("slug", categoria)
     .eq("is_active", true)
     .single();
 

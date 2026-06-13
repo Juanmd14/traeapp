@@ -43,11 +43,11 @@ type Order = {
 export default async function AdminPedidosPage({
   searchParams,
 }: {
-  searchParams: { estado?: string };
+  searchParams: Promise<{ estado?: string }>;
 }) {
   await requireRole("admin");
 
-  const statusFilter = searchParams.estado;
+  const { estado: statusFilter } = await searchParams;
 
   let query = (supabaseAdmin.from("orders") as any)
     .select(`

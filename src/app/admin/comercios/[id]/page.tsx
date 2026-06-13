@@ -40,9 +40,10 @@ type StoreDetail = {
 export default async function AdminComercioDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   await requireRole("admin");
+  const { id } = await params;
 
   const { data } = await (supabaseAdmin.from("stores") as any)
     .select(`
@@ -56,7 +57,7 @@ export default async function AdminComercioDetailPage({
         profiles:user_id ( full_name, email )
       )
     `)
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (!data) notFound();
