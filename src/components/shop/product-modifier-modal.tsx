@@ -152,16 +152,26 @@ export function ProductModifierModal({
         className="bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Imagen hero */}
-        <div className="relative h-44 sm:h-48 shrink-0">
+        {/* Imagen hero — se muestra completa (object-contain) con fondo borroso */}
+        <div className="relative h-44 sm:h-48 shrink-0 overflow-hidden bg-neutral-100 dark:bg-neutral-800">
           {product.imageUrl ? (
-            <Image
-              src={product.imageUrl}
-              alt={product.name}
-              fill
-              sizes="(max-width: 640px) 100vw, 448px"
-              className="object-cover"
-            />
+            <>
+              <Image
+                src={product.imageUrl}
+                alt=""
+                aria-hidden
+                fill
+                sizes="(max-width: 640px) 100vw, 448px"
+                className="object-cover scale-110 blur-xl opacity-60"
+              />
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                sizes="(max-width: 640px) 100vw, 448px"
+                className="object-contain"
+              />
+            </>
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-neutral-100 dark:from-neutral-800 to-neutral-200 dark:to-neutral-700 flex items-center justify-center">
               <span className="text-5xl opacity-30">🍽️</span>
