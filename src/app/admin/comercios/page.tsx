@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { requireRole } from "@/server/auth/session";
 import { ExternalLink, Plus, Settings } from "lucide-react";
 import { StoreStatusSelect } from "@/components/admin/store-status-select";
+import { StoreBoostControl } from "@/components/admin/store-boost-control";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Comercios · Admin" };
@@ -30,6 +31,8 @@ type Store = {
   status: string;
   created_at: string;
   mp_connected_at: string | null;
+  boost_rank: number;
+  boost_expires_at: string | null;
   categories: { name: string } | null;
   store_users: { profiles: { full_name: string; email: string } | null }[];
 };
@@ -40,6 +43,7 @@ export default async function AdminComerciosPage() {
   const { data: stores } = await (supabaseAdmin.from("stores") as any)
     .select(`
       id, name, slug, status, created_at, mp_connected_at,
+      boost_rank, boost_expires_at,
       categories ( name ),
       store_users ( profiles:user_id ( full_name, email ) )
     `)
@@ -85,6 +89,7 @@ export default async function AdminComerciosPage() {
                   <th className="text-left px-4 py-3 font-medium text-neutral-500">Comercio</th>
                   <th className="text-left px-4 py-3 font-medium text-neutral-500">Dueño</th>
                   <th className="text-left px-4 py-3 font-medium text-neutral-500">Estado</th>
+                  <th className="text-left px-4 py-3 font-medium text-neutral-500">Posición</th>
                   <th className="text-left px-4 py-3 font-medium text-neutral-500">MP</th>
                   <th className="text-left px-4 py-3 font-medium text-neutral-500">Registro</th>
                   <th className="px-4 py-3" />
@@ -123,6 +128,13 @@ export default async function AdminComerciosPage() {
                             currentStatus={store.status}
                           />
                         </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <StoreBoostControl
+                          storeId={store.id}
+                          boostRank={store.boost_rank ?? 0}
+                          boostExpiresAt={store.boost_expires_at}
+                        />
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         {store.mp_connected_at ? (

@@ -1464,6 +1464,8 @@ export type Database = {
           accepts_mp: boolean
           address: string
           avg_prep_minutes: number
+          boost_expires_at: string | null
+          boost_rank: number
           category_id: string | null
           commission_pct: number
           cover_url: string | null
@@ -1492,6 +1494,8 @@ export type Database = {
           accepts_mp?: boolean
           address: string
           avg_prep_minutes?: number
+          boost_expires_at?: string | null
+          boost_rank?: number
           category_id?: string | null
           commission_pct?: number
           cover_url?: string | null
@@ -1520,6 +1524,8 @@ export type Database = {
           accepts_mp?: boolean
           address?: string
           avg_prep_minutes?: number
+          boost_expires_at?: string | null
+          boost_rank?: number
           category_id?: string | null
           commission_pct?: number
           cover_url?: string | null

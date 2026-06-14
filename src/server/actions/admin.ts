@@ -50,6 +50,32 @@ export const updateStoreStatusAction = adminAction
     return { ok: true };
   });
 
+/**
+ * Posiciona un comercio en el home (destacado pago).
+ * boost_rank: 0 = sin destacar; mayor = más arriba.
+ * expiresAt opcional: cuando pasa, el destacado se ignora.
+ */
+export const updateStoreBoostAction = adminAction
+  .schema(z.object({
+    storeId: z.string().uuid(),
+    boostRank: z.coerce.number().int().min(0).max(100),
+    expiresAt: z.string().optional().nullable(),
+  }))
+  .action(async ({ parsedInput }) => {
+    const { error } = await (supabaseAdmin.from("stores") as any)
+      .update({
+        boost_rank: parsedInput.boostRank,
+        // Sin rank no tiene sentido la fecha; se limpia.
+        boost_expires_at:
+          parsedInput.boostRank > 0 ? parsedInput.expiresAt || null : null,
+      })
+      .eq("id", parsedInput.storeId);
+    if (error) throw new Error(error.message);
+    revalidatePath("/admin/comercios");
+    revalidatePath("/", "layout");
+    return { ok: true };
+  });
+
 export const addStoreOwnerAction = adminAction
   .schema(z.object({
     storeId: z.string().uuid(),

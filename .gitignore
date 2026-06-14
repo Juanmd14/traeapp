@@ -47,6 +47,8 @@ next-env.d.ts
 .branches
 .temp
 supabase/.temp/
+# Migraciones: no se publican en el repo (se aplican a mano en Supabase)
+supabase/migrations/
 
 # IDE
 .vscode/*
