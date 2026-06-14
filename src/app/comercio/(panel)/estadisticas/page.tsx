@@ -72,11 +72,11 @@ export default async function EstadisticasPage() {
   // Top productos del mes (via órdenes completadas del mes)
   const { data: ordersWithItems } = await supabase
     .from("orders")
-    .select("order_items(product_name, total)")
+    .select("order_items(product_name, quantity)")
     .eq("store_id", storeId)
     .in("status", ["completed", "delivered"])
     .gte("created_at", monthStr) as {
-      data: { order_items: { product_name: string; total: number }[] }[] | null;
+      data: { order_items: { product_name: string; quantity: number }[] }[] | null;
     };
 
   // Rating promedio
@@ -139,18 +139,18 @@ export default async function EstadisticasPage() {
     ingresos: Math.round(dailyMap.get(key)?.revenue ?? 0),
   }));
 
-  // ── Top productos del mes (por ingreso) ───────────────────────────────
+  // ── Top productos del mes (por unidades vendidas) ─────────────────────
   const productMap = new Map<string, number>();
   ordersWithItems?.forEach(order => {
     order.order_items?.forEach(item => {
-      productMap.set(item.product_name, (productMap.get(item.product_name) ?? 0) + Number(item.total));
+      productMap.set(item.product_name, (productMap.get(item.product_name) ?? 0) + Number(item.quantity));
     });
   });
 
   const topProducts = Array.from(productMap.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
-    .map(([name, revenue]) => ({ name, revenue }));
+    .map(([name, units]) => ({ name, units }));
 
   // ── Rating ────────────────────────────────────────────────────────────
   const reviewCount = reviewsData?.length ?? 0;
