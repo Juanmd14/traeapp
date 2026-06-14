@@ -36,6 +36,7 @@ const config: Config = {
           700: "#A82A14",
           800: "#852010",
           900: "#5F170C",
+          950: "#380D06",
           DEFAULT: "#C8351A",
           foreground: "#FFFFFF",
         },
@@ -50,6 +51,7 @@ const config: Config = {
           700: "#15803D",
           800: "#166534",
           900: "#14532D",
+          950: "#052E16",
           DEFAULT: "#16A34A",
           foreground: "#FFFFFF",
         },
@@ -64,6 +66,7 @@ const config: Config = {
           700: "#B45309",
           800: "#92400E",
           900: "#78350F",
+          950: "#451A03",
           DEFAULT: "#FFB627",
         },
         // === NEUTROS CÁLIDOS (stone) ===
@@ -79,6 +82,7 @@ const config: Config = {
           700: "#44403C",
           800: "#292524",
           900: "#1C1917",
+          950: "#0C0A09",
         },
         // === SHADCN tokens (mapeados a nuestro sistema) ===
         background: "hsl(var(--background))",
