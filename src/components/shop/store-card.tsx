@@ -15,6 +15,8 @@ export type StoreCardData = {
   deliveryFee: number;
   promoBadge?: string;
   isOpen: boolean;
+  /** Texto de próxima apertura cuando está cerrado, ej "Abre a las 9:00". */
+  closedLabel?: string | null;
 };
 
 export function StoreCard({ store }: { store: StoreCardData }) {
@@ -53,10 +55,15 @@ export function StoreCard({ store }: { store: StoreCardData }) {
         )}
 
         {!store.isOpen && (
-          <div className="absolute inset-0 bg-neutral-900/40 flex items-center justify-center">
+          <div className="absolute inset-0 bg-neutral-900/40 flex flex-col items-center justify-center gap-1">
             <span className="bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-body-sm font-medium px-3 py-1 rounded-full">
               Cerrado
             </span>
+            {store.closedLabel && (
+              <span className="text-white text-body-xs font-medium drop-shadow">
+                {store.closedLabel}
+              </span>
+            )}
           </div>
         )}
       </div>

@@ -52,3 +52,54 @@ export function openStoreIds(rows: StoreHourRow[], now: Date = new Date()): Set<
   }
   return open;
 }
+
+const DAY_NAMES = [
+  "domingo",
+  "lunes",
+  "martes",
+  "miércoles",
+  "jueves",
+  "viernes",
+  "sábado",
+];
+
+/**
+ * Para un comercio cerrado, devuelve un texto con la próxima apertura, ej:
+ *   "Abre a las 9:00"      (abre hoy más tarde)
+ *   "Abre mañana 9:00"
+ *   "Abre el lunes 9:00"
+ * Devuelve null si no hay horarios o no encuentra apertura en los próximos 7 días.
+ */
+export function nextOpenLabel(
+  rows: StoreHourRow[],
+  now: Date = new Date(),
+): string | null {
+  if (!rows || rows.length === 0) return null;
+  const { weekday, hhmm } = nowInArgentina(now);
+
+  // Recorre hoy (tramos que abren después de ahora) y los próximos 6 días.
+  for (let offset = 0; offset < 7; offset++) {
+    const day = (weekday + offset) % 7;
+    const candidates = rows
+      .filter((r) => r.weekday === day)
+      .map((r) => r.opens_at.slice(0, 5))
+      // Hoy: solo tramos que todavía no abrieron.
+      .filter((opens) => offset > 0 || opens > hhmm)
+      .sort();
+
+    if (candidates.length === 0) continue;
+    const opens = formatHHMM(candidates[0]!);
+
+    if (offset === 0) return `Abre a las ${opens}`;
+    if (offset === 1) return `Abre mañana ${opens}`;
+    return `Abre el ${DAY_NAMES[day]} ${opens}`;
+  }
+
+  return null;
+}
+
+/** "09:00" → "9:00" (saca el cero inicial de la hora). */
+function formatHHMM(hhmm: string): string {
+  const [h, m] = hhmm.split(":");
+  return `${Number(h)}:${m}`;
+}

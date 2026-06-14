@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { openStoreIds, type StoreHourRow } from "@/lib/store-hours";
+import { openStoreIds, nextOpenLabel, type StoreHourRow } from "@/lib/store-hours";
 import { HeroBanner } from "@/components/shop/hero-banner";
 import { CategoryPill, type Category } from "@/components/shop/category-pill";
 import { StoreCard, type StoreCardData } from "@/components/shop/store-card";
@@ -77,6 +77,14 @@ export default async function HomePage() {
   const openIds = openStoreIds(hourRows);
   // Comercios sin horarios cargados se consideran siempre abiertos.
   const withHours = new Set(hourRows.map((r) => r.store_id));
+  // Agrupar tramos por comercio para calcular la próxima apertura.
+  const hoursByStore = new Map<string, StoreHourRow[]>();
+  for (const r of hourRows) {
+    if (!r.store_id) continue;
+    const list = hoursByStore.get(r.store_id) ?? [];
+    list.push(r);
+    hoursByStore.set(r.store_id, list);
+  }
 
   // Ventas por comercio: cantidad de pedidos entregados/completados.
   // Se usa para ordenar el listado (el que más vende, primero).
@@ -106,6 +114,8 @@ export default async function HomePage() {
       (s.boost_rank ?? 0) > 0 &&
       (!s.boost_expires_at || new Date(s.boost_expires_at).getTime() > now);
 
+    const isOpen = !withHours.has(s.id) || openIds.has(s.id);
+
     return {
       slug: s.slug,
       name: s.name,
@@ -116,7 +126,10 @@ export default async function HomePage() {
       deliveryMinMin: minMin,
       deliveryMaxMin: maxMin,
       deliveryFee: Number(s.delivery_fee ?? 0),
-      isOpen: !withHours.has(s.id) || openIds.has(s.id),
+      isOpen,
+      closedLabel: isOpen
+        ? null
+        : nextOpenLabel(hoursByStore.get(s.id) ?? []),
       salesCount: salesByStore.get(s.id) ?? 0,
       boost: boostActive ? s.boost_rank ?? 0 : 0,
     };
