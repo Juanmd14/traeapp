@@ -203,7 +203,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
                       className={cn(
                         "w-full text-left bg-white dark:bg-neutral-900 border-2 rounded-md p-3 flex gap-3 items-start transition-all",
                         isSelected
-                          ? "border-accent-500 bg-accent-50 dark:bg-accent-950/20 ring-2 ring-accent-100"
+                          ? "border-accent-500 bg-accent-50 dark:bg-accent-950/20 ring-2 ring-accent-100 dark:ring-accent-900/40"
                           : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600",
                       )}
                     >
@@ -275,11 +275,11 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
               className={cn(
                 "w-full text-left bg-white dark:bg-neutral-900 border-2 rounded-md p-3 flex gap-3 items-center transition-all",
                 paymentMethod === "cash"
-                  ? "border-accent-500 bg-accent-50 dark:bg-accent-950/20 ring-2 ring-accent-100"
+                  ? "border-accent-500 bg-accent-50 dark:bg-accent-950/20 ring-2 ring-accent-100 dark:ring-accent-900/40"
                   : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600",
               )}
             >
-              <div className="size-9 bg-accent-100 text-accent-700 rounded-md flex items-center justify-center shrink-0">
+              <div className="size-9 bg-accent-100 dark:bg-accent-950/40 text-accent-700 dark:text-accent-400 rounded-md flex items-center justify-center shrink-0">
                 <Banknote className="size-5" />
               </div>
               <div className="flex-1">
@@ -296,11 +296,11 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
               className={cn(
                 "w-full text-left bg-white dark:bg-neutral-900 border-2 rounded-md p-3 flex gap-3 items-center transition-all",
                 paymentMethod === "mercadopago"
-                  ? "border-accent-500 bg-accent-50 dark:bg-accent-950/20 ring-2 ring-accent-100"
+                  ? "border-accent-500 bg-accent-50 dark:bg-accent-950/20 ring-2 ring-accent-100 dark:ring-accent-900/40"
                   : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600",
               )}
             >
-              <div className="size-9 bg-blue-100 text-blue-700 rounded-md flex items-center justify-center shrink-0">
+              <div className="size-9 bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 rounded-md flex items-center justify-center shrink-0">
                 <CreditCard className="size-5" />
               </div>
               <div className="flex-1">
@@ -346,7 +346,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
             <div className="flex items-center justify-between bg-accent-50 dark:bg-accent-950/20 border border-accent-200 dark:border-accent-900 rounded-md px-3 py-2.5">
               <div className="flex items-center gap-2">
                 <Tag className="size-4 text-accent-600" />
-                <span className="text-body-sm font-medium text-accent-800">
+                <span className="text-body-sm font-medium text-accent-800 dark:text-accent-300">
                   {appliedPromo.code}
                   {appliedPromo.type === "free_delivery" ? " — Envío gratis" : ` — ${formatPrice(appliedPromo.discountAmount)} de descuento`}
                 </span>
@@ -387,8 +387,8 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
           </div>
           {appliedPromo && appliedPromo.discountAmount > 0 && (
             <div className="flex justify-between text-body-md">
-              <span className="text-accent-700">Descuento ({appliedPromo.code})</span>
-              <span className="text-accent-700 font-medium">- {formatPrice(appliedPromo.discountAmount)}</span>
+              <span className="text-accent-700 dark:text-accent-400">Descuento ({appliedPromo.code})</span>
+              <span className="text-accent-700 dark:text-accent-400 font-medium">- {formatPrice(appliedPromo.discountAmount)}</span>
             </div>
           )}
           <div className="flex justify-between text-body-md">
@@ -396,7 +396,7 @@ export function CheckoutForm({ addresses, userEmail }: Props) {
             <span className={
               deliveryFee === 0 || appliedPromo?.type === "free_delivery"
                 ? "text-accent-600 font-medium"
-                : "text-neutral-900"
+                : "text-neutral-900 dark:text-neutral-100"
             }>
               {deliveryFee === 0 || appliedPromo?.type === "free_delivery" ? "Gratis" : formatPrice(deliveryFee)}
             </span>
