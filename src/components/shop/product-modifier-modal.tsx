@@ -162,8 +162,10 @@ export function ProductModifierModal({
                 aria-hidden
                 fill
                 sizes="(max-width: 640px) 100vw, 448px"
-                className="object-cover scale-110 blur-xl opacity-60"
+                className="object-cover scale-125 blur-2xl opacity-30"
               />
+              {/* Velo para suavizar el fondo y mantener legibles los botones */}
+              <div className="absolute inset-0 bg-white/40 dark:bg-neutral-900/40" />
               <Image
                 src={product.imageUrl}
                 alt={product.name}
