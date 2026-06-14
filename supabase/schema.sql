@@ -297,7 +297,8 @@ create table public.product_modifier_options (
   id            uuid primary key default gen_random_uuid(),
   modifier_id   uuid not null references public.product_modifiers(id) on delete cascade,
   name          text not null,
-  price_delta   numeric(12,2) not null default 0
+  price_delta   numeric(12,2) not null default 0,
+  is_removal    boolean not null default false
 );
 
 create index product_modifiers_product_idx on public.product_modifiers(product_id);

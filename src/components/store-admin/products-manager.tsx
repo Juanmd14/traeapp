@@ -597,13 +597,18 @@ function ProductFormDialog({
     }
 
     startTransition(async () => {
-      await upsertQuantityOptionsAction({
+      const qtyResult = await upsertQuantityOptionsAction({
         storeId,
         productId,
         hasQuantityOptions,
         hideManualQuantity,
         options: quantityOptions,
       });
+
+      if (qtyResult?.serverError) {
+        setServerError(qtyResult.serverError);
+        return;
+      }
 
       const validRemovable = removableIngredients.filter((i) => i.trim());
       const validExtras = extras
@@ -618,13 +623,18 @@ function ProductFormDialog({
           options: g.options.filter((o) => o.name.trim()).map((o) => ({ name: o.name.trim(), price: o.price })),
         }));
 
-      await upsertModifiersAction({
+      const modResult = await upsertModifiersAction({
         storeId,
         productId,
         removableIngredients: validRemovable,
         extras: validExtras,
         customGroups: validCustomGroups,
       });
+
+      if (modResult?.serverError) {
+        setServerError(modResult.serverError);
+        return;
+      }
 
       const updated: ProductRow = {
         ...savedProduct,
@@ -652,9 +662,11 @@ function ProductFormDialog({
             price_delta: e.price,
             is_removal: false,
           })),
-          ...validCustomGroups.flatMap((g) =>
+          ...validCustomGroups.flatMap((g, gIdx) =>
             g.options.map((o) => ({
-              modifier_id: "",
+              // id sintético único por grupo: si se reedita sin recargar, el
+              // agrupado por modifier_id no colapsa todos los grupos en uno.
+              modifier_id: `local-${gIdx}`,
               modifier_name: g.name,
               modifier_is_required: g.is_required,
               modifier_max_select: g.max_select,

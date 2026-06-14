@@ -140,7 +140,7 @@ export const upsertQuantityOptionsAction = authAction
   .action(async ({ parsedInput, ctx }) => {
     await ensureStoreMember(ctx.session.id, parsedInput.storeId, ctx.session.role);
 
-    await supabaseAdmin
+    const { error: updateError } = await supabaseAdmin
       .from("products")
       .update({
         has_quantity_options: parsedInput.hasQuantityOptions,
@@ -149,10 +149,14 @@ export const upsertQuantityOptionsAction = authAction
       .eq("id", parsedInput.productId)
       .eq("store_id", parsedInput.storeId);
 
-    await supabaseAdmin
+    if (updateError) throw new Error(updateError.message);
+
+    const { error: deleteError } = await supabaseAdmin
       .from("product_quantity_options")
       .delete()
       .eq("product_id", parsedInput.productId);
+
+    if (deleteError) throw new Error(deleteError.message);
 
     if (parsedInput.hasQuantityOptions && parsedInput.options.length > 0) {
       const optionsToInsert = parsedInput.options.map((opt, idx) => ({
@@ -164,9 +168,11 @@ export const upsertQuantityOptionsAction = authAction
         sort_order: idx,
       }));
 
-      await supabaseAdmin
+      const { error: insertError } = await supabaseAdmin
         .from("product_quantity_options")
         .insert(optionsToInsert);
+
+      if (insertError) throw new Error(insertError.message);
     }
 
     revalidatePath("/comercio", "layout");
@@ -201,13 +207,15 @@ export const upsertModifiersAction = authAction
   .action(async ({ parsedInput, ctx }) => {
     await ensureStoreMember(ctx.session.id, parsedInput.storeId, ctx.session.role);
 
-    await supabaseAdmin
+    const { error: deleteError } = await supabaseAdmin
       .from("product_modifiers")
       .delete()
       .eq("product_id", parsedInput.productId);
 
+    if (deleteError) throw new Error(deleteError.message);
+
     if (parsedInput.removableIngredients.length > 0) {
-      const { data: modifier } = await supabaseAdmin
+      const { data: modifier, error: modError } = await supabaseAdmin
         .from("product_modifiers")
         .insert({
           product_id: parsedInput.productId,
@@ -219,6 +227,8 @@ export const upsertModifiersAction = authAction
         .select("id")
         .single();
 
+      if (modError) throw new Error(modError.message);
+
       if (modifier) {
         const optionsToInsert = parsedInput.removableIngredients.map((name) => ({
           modifier_id: modifier.id,
@@ -227,14 +237,16 @@ export const upsertModifiersAction = authAction
           is_removal: true,
         }));
 
-        await supabaseAdmin
+        const { error: optError } = await supabaseAdmin
           .from("product_modifier_options")
           .insert(optionsToInsert);
+
+        if (optError) throw new Error(optError.message);
       }
     }
 
     if (parsedInput.extras.length > 0) {
-      const { data: modifier } = await supabaseAdmin
+      const { data: modifier, error: modError } = await supabaseAdmin
         .from("product_modifiers")
         .insert({
           product_id: parsedInput.productId,
@@ -246,6 +258,8 @@ export const upsertModifiersAction = authAction
         .select("id")
         .single();
 
+      if (modError) throw new Error(modError.message);
+
       if (modifier) {
         const optionsToInsert = parsedInput.extras.map((extra) => ({
           modifier_id: modifier.id,
@@ -254,9 +268,11 @@ export const upsertModifiersAction = authAction
           is_removal: false,
         }));
 
-        await supabaseAdmin
+        const { error: optError } = await supabaseAdmin
           .from("product_modifier_options")
           .insert(optionsToInsert);
+
+        if (optError) throw new Error(optError.message);
       }
     }
 
@@ -264,7 +280,7 @@ export const upsertModifiersAction = authAction
       const validOptions = group.options.filter((o) => o.name.trim());
       if (validOptions.length === 0) continue;
 
-      const { data: modifier } = await supabaseAdmin
+      const { data: modifier, error: modError } = await supabaseAdmin
         .from("product_modifiers")
         .insert({
           product_id: parsedInput.productId,
@@ -276,8 +292,10 @@ export const upsertModifiersAction = authAction
         .select("id")
         .single();
 
+      if (modError) throw new Error(modError.message);
+
       if (modifier) {
-        await supabaseAdmin
+        const { error: optError } = await supabaseAdmin
           .from("product_modifier_options")
           .insert(
             validOptions.map((o) => ({
@@ -287,6 +305,8 @@ export const upsertModifiersAction = authAction
               is_removal: false,
             }))
           );
+
+        if (optError) throw new Error(optError.message);
       }
     }
 
